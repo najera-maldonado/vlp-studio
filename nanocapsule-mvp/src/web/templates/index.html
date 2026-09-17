@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nanocapsule MVP - NGL Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/ngl@2.0.0-dev.37/dist/ngl.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Computer+Modern+Serif&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', 'Computer Modern Serif', serif;
+            background: #ffffff;
+            color: #000000;
+            font-size: 12pt;
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        #viewport {
+            width: 100vw;
+            height: 100vh;
+            background: #ffffff;
+            border: 0.5pt solid #000;
+        }
+
+        /* Panel de biblioteca - estilo científico */
+        .library-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 350px;
+            background: #f8f8f8;
+            border: 0.5pt solid #000;
+            padding: 15px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .library-panel h2 {
+            font-weight: bold;
+            font-size: 14pt;
+            margin-bottom: 10px;
+            border-bottom: 0.5pt solid #000;
+            padding-bottom: 5px;
+        }
+
+        .library-section {
+            margin-bottom: 15px;
+        }
+
+        .library-section h3 {
+            font-size: 11pt;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* Selectores estilo científico */
+        select {
+            width: 100%;
+            padding: 4px;
+            border: 0.5pt solid #000;
+            background: white;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            margin-bottom: 5px;
+            color: #000;
+            cursor: pointer;
+        }
+
+        option {
+            background: white;
+            color: #000;
+        }
+
+        /* Botones estilo científico */
+        button {
+            padding: 5px 8px;
+            background: white;
+            border: 0.5pt solid #000;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 9pt;
+            cursor: pointer;
+            margin: 2px 2px 2px 0;
+            transition: none;
+        }
+
+        button:hover {
+            background: #f0f0f0;
+        }
+
+        button:disabled {
+            background: #e8e8e8;
+            cursor: not-allowed;
+            color: #666;
+        }
+
+        button.primary {
+            background: #000;
+            color: white;
+        }
+
+        button.primary:hover {
+            background: #333;
+        }
+
+        /* Info de estructura */
+        .structure-info {
+            margin-top: 8px;
+            padding: 8px;
+            background: white;
+            border: 0.5pt solid #ccc;
+            font-size: 10pt;
+            font-family: 'Courier New', monospace;
+            color: #666;
+        }
+
+        /* Panel de control científico (basado en ngl-viewer.html) */
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 350px;
+            background: #f8f8f8;
+            border: 0.5pt solid #000;
+            padding: 15px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .control-panel h2 {
+            font-weight: bold;
+            font-size: 14pt;
+            margin-bottom: 10px;
+            border-bottom: 0.5pt solid #000;
+            padding-bottom: 5px;
+        }
+
+        .control-section {
+            margin-bottom: 15px;
+        }
+
+        .control-section h3 {
+            font-size: 11pt;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* Sliders estilo científico */
+        .slider-container {
+            margin: 8px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+            font-size: 10pt;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+
+        .slider-value {
+            color: #000;
+            font-weight: normal;
+            font-family: 'Courier New', monospace;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        /* Checkboxes estilo paper */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-container label {
+            cursor: pointer;
+            font-size: 10pt;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+
+        /* Panel de información */
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: #f8f8f8;
+            border: 0.5pt solid #000;
+            padding: 10px;
+            font-size: 10pt;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+
+        .info-item {
+            margin: 3px 0;
+            font-size: 9pt;
+        }
+
+        .info-label {
+            color: #000;
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+
+        .info-value {
+            color: #000;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Mensajes estilo paper */
+        .message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 0.5pt solid #000;
+            padding: 15px;
+            display: none;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            z-index: 1000;
+        }
+
+        .message.error {
+            background: #ffe6e6;
+        }
+
+        .message.success {
+            background: #e6ffe6;
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        /* Loading científico */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: none;
+            background: white;
+            border: 0.5pt solid #000;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 2px solid #ddd;
+            border-top: 2px solid #000;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Experimento status */
+        .experiment-status {
+            margin-top: 10px;
+            padding: 8px;
+            background: white;
+            border: 0.5pt solid #000;
+            font-size: 10pt;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Panel superior de secuencias (estilo PyMOL) -->
+    <div id="sequence-panel" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #f8f8f8;
+        border-bottom: 2px solid #333;
+        padding: 5px;
+        z-index: 1000;
+        display: none;
+        max-height: 150px;
+        overflow-y: auto;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+    ">
+        <div id="sequence-content"></div>
+        <button onclick="toggleSequencePanel()" style="
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            padding: 2px 8px;
+            font-size: 10px;
+        ">✕</button>
+    </div>
+
+    <!-- Viewport para NGL -->
+    <div id="viewport"></div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>Cargando estructura...</div>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="message" id="message"></div>
+
+    <!-- Panel de Biblioteca de Estructuras -->
+    <div class="library-panel">
+        <h2>Biblioteca de Estructuras</h2>
+
+        <div class="library-section">
+            <h3>Seleccionar Cápside</h3>
+            <select id="capsid-select">
+                <option value="">Cargando cápsides...</option>
+            </select>
+            <div id="capsid-info" class="structure-info" style="display: none;"></div>
+        </div>
+
+        <div class="library-section">
+            <h3>Seleccionar Enzima</h3>
+            <select id="enzyme-select">
+                <option value="">Cargando enzimas...</option>
+            </select>
+            <div id="enzyme-info" class="structure-info" style="display: none;"></div>
+        </div>
+
+        <div class="library-section">
+            <button id="load-structures" disabled>Cargar Estructuras</button>
+            <button id="preview-enzymes" disabled>Vista Previa con Enzimas</button>
+            <button id="clear-all">Limpiar Todo</button>
+        </div>
+
+        <div class="library-section">
+            <h3>Análisis de Cápside</h3>
+            <button id="calculate-radius" disabled>Calcular Radio Interno</button>
+            <div id="radius-result" class="structure-info" style="display: none;"></div>
+        </div>
+
+        <div class="library-section">
+            <h3>Configurar Experimento</h3>
+
+            <div class="checkbox-container">
+                <input type="radio" id="exp-maximum" name="experiment-type" value="maximum" checked>
+                <label for="exp-maximum">Empaquetamiento Máximo</label>
+            </div>
+
+            <div class="checkbox-container">
+                <input type="radio" id="exp-manual" name="experiment-type" value="manual">
+                <label for="exp-manual">Número Específico:</label>
+            </div>
+
+            <div id="manual-controls" style="display: none; margin-left: 20px;">
+                <label style="font-size: 10pt; margin-bottom: 5px; display: block;">Enzimas a empaquetar:</label>
+                <input type="number" id="n-enzymes" value="10" min="1" max="100"
+                       style="width: 60px; padding: 3px; border: 0.5pt solid #000;">
+
+                <div class="checkbox-container" style="margin-top: 8px;">
+                    <input type="checkbox" id="save-pdb" checked>
+                    <label for="save-pdb">Guardar archivo PDB</label>
+                </div>
+            </div>
+
+            <div style="margin-top: 10px;">
+                <button id="run-experiment" disabled class="primary">
+                    <span id="experiment-button-text">Ejecutar Experimento (10 Réplicas)</span>
+                </button>
+            </div>
+
+            <div id="experiment-status" class="experiment-status" style="display: none;"></div>
+        </div>
+
+        <div class="library-section">
+            <h3>Descargas</h3>
+            <button id="download-zip" disabled>Descargar ZIP</button>
+            <button id="list-files">Ver Archivos</button>
+            <button id="cleanup-files">Limpiar Antiguos</button>
+            <div id="files-list" class="structure-info" style="display: none; max-height: 120px; overflow-y: auto;"></div>
+        </div>
+
+        <div class="library-section">
+            <h3>Cadenas y Secuencias</h3>
+            <button id="show-chains" onclick="toggleSequencePanel()">Mostrar Secuencias (Superior)</button>
+        </div>
+    </div>
+
+    <!-- Panel de Control (basado en ngl-viewer.html) -->
+    <div class="control-panel">
+        <h2>Control de Visualización</h2>
+
+        <!-- Representaciones -->
+        <div class="control-section">
+            <h3>Representación</h3>
+            <select id="mainRep" onchange="changeRepresentation()">
+                <option value="cartoon">Cartoon (Cintas)</option>
+                <option value="surface">Superficie</option>
+                <option value="ball+stick">Bolas y Palos</option>
+                <option value="licorice">Licoricia</option>
+                <option value="spacefill">Esferas VDW</option>
+                <option value="line">Líneas</option>
+                <option value="point">Puntos</option>
+                <option value="backbone">Backbone</option>
+                <option value="ribbon">Ribbon</option>
+            </select>
+        </div>
+
+        <!-- Transparencia -->
+        <div class="control-section">
+            <h3>Transparencia</h3>
+
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Opacidad Cápside</span>
+                    <span class="slider-value" id="capsideOpacityValue">30%</span>
+                </div>
+                <input type="range" id="capsideOpacity" min="0" max="100" value="30"
+                       oninput="updateOpacity('capside', this.value)">
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Opacidad Enzima</span>
+                    <span class="slider-value" id="enzymeOpacityValue">100%</span>
+                </div>
+                <input type="range" id="enzymeOpacity" min="0" max="100" value="100"
+                       oninput="updateOpacity('enzyme', this.value)">
+            </div>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="showCapside" checked onchange="toggleVisibility('capside')">
+                <label for="showCapside">Mostrar Cápside</label>
+            </div>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="showEnzyme" checked onchange="toggleVisibility('enzyme')">
+                <label for="showEnzyme">Mostrar Enzimas</label>
+            </div>
+        </div>
+
+        <!-- Colores -->
+        <div class="control-section">
+            <h3>Esquema de Colores</h3>
+            <select id="colorScheme" onchange="changeColorScheme()">
+                <option value="chainid">Por Cadena</option>
+                <option value="residueindex">Por Residuo</option>
+                <option value="element">Por Elemento</option>
+                <option value="secondaryStructure">Estructura 2°</option>
+                <option value="hydrophobicity">Hidrofobicidad</option>
+                <option value="bfactor">Factor B</option>
+                <option value="charge">Por Carga</option>
+                <option value="uniform">Color Único</option>
+            </select>
+        </div>
+
+        <!-- Visualización Interior -->
+        <div class="control-section">
+            <h3>Visualización Interior</h3>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="enable-clipping" onchange="toggleInteriorView()">
+                <label for="enable-clipping">Activar Corte Interior</label>
+            </div>
+
+            <div id="interior-controls" style="display: none;">
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Profundidad de Corte</span>
+                        <span class="slider-value" id="clip-depth-value">50%</span>
+                    </div>
+                    <input type="range" id="clip-depth" min="0" max="100" value="50"
+                           oninput="updateClipDepth(this.value)">
+                </div>
+
+                <select id="clip-direction" onchange="changeClipDirection()">
+                    <option value="front">Corte Frontal</option>
+                    <option value="back">Corte Posterior</option>
+                    <option value="top">Corte Superior</option>
+                    <option value="bottom">Corte Inferior</option>
+                    <option value="left">Corte Izquierdo</option>
+                    <option value="right">Corte Derecho</option>
+                </select>
+
+                <div style="margin-top: 8px;">
+                    <button onclick="animateInteriorScan()">Escaneo Automático</button>
+                    <button onclick="resetInteriorView()">Resetear</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controles de cámara -->
+        <div class="control-section">
+            <h3>Cámara</h3>
+            <button onclick="centerView()">Centrar Vista</button>
+            <button onclick="autoRotate()">Auto-rotar</button>
+            <button onclick="screenshot()">Captura</button>
+            <button onclick="toggleFullscreen()">Pantalla Completa</button>
+        </div>
+    </div>
+
+    <!-- Panel de información -->
+    <div class="info-panel">
+        <div class="info-item">
+            <span class="info-label">Átomos totales:</span>
+            <span class="info-value" id="atomCount">0</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Estructuras:</span>
+            <span class="info-value" id="structureCount">0</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">FPS:</span>
+            <span class="info-value" id="fps">60</span>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales NGL
+        let stage;
+        let capsideComponent = null;
+        let enzymeComponent = null;
+        let currentReps = {};
+        let isRotating = false;
+
+        // Variables de estado
+        let currentCapsides = [];
+        let currentEnzymes = [];
+        let selectedCapsid = null;
+        let selectedEnzyme = null;
+
+        // Inicializar NGL
+        function initNGL() {
+            stage = new NGL.Stage("viewport", {
+                backgroundColor: "#1a1a1a",
+                ambientLight: 0.2,
+                cameraType: "perspective",
+                clipNear: 0.1,
+                clipFar: 10000,
+                fogNear: 100,
+                fogFar: 1000
+            });
+
+            // Handlers de eventos
+            stage.signals.componentAdded.add(function(component) {
+                updateInfo();
+            });
+
+            // Controles de mouse
+            stage.mouseControls.add("scroll", NGL.MouseActions.zoomScroll);
+            stage.mouseControls.add("drag-left", NGL.MouseActions.rotateDrag);
+            stage.mouseControls.add("drag-right", NGL.MouseActions.panDrag);
+            stage.mouseControls.add("drag-middle", NGL.MouseActions.panDrag);
+            stage.mouseControls.add("drag-shift-left", NGL.MouseActions.panDrag);
+
+            // Handle window resize
+            window.addEventListener("resize", function() {
+                stage.handleResize();
+            }, false);
+        }
+
+        // Cargar biblioteca al inicio
+        document.addEventListener('DOMContentLoaded', function() {
+            initNGL();
+            loadLibrary();
+            updateFPS();
+            showMessage('NGL Viewer listo', 'success');
+        });
+
+        // Cargar biblioteca de estructuras
+        async function loadLibrary() {
+            try {
+                const response = await fetch('/api/library/combinations');
+                const data = await response.json();
+
+                currentCapsides = data.capsides;
+                currentEnzymes = data.enzymes;
+
+                // Actualizar selectores
+                updateSelector('capsid-select', currentCapsides, 'Selecciona una cápside...');
+                updateSelector('enzyme-select', currentEnzymes, 'Selecciona una enzima...');
+
+                showMessage(`Biblioteca cargada: ${data.total_combinations} combinaciones`, 'success');
+
+            } catch (error) {
+                console.error('Error cargando biblioteca:', error);
+                showMessage('Error cargando biblioteca', 'error');
+            }
+        }
+
+        // Actualizar selector
+        function updateSelector(selectId, items, placeholder) {
+            const select = document.getElementById(selectId);
+
+            // Limpiar opciones
+            select.innerHTML = `<option value="">${placeholder}</option>`;
+
+            // Añadir nuevas opciones
+            items.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                select.appendChild(option);
+            });
+        }
+
+        // Event listeners para selectores
+        document.getElementById('capsid-select').addEventListener('change', function() {
+            selectedCapsid = this.value;
+            if (this.value) {
+                loadStructureInfo('capside', this.value, 'capsid-info');
+            } else {
+                document.getElementById('capsid-info').style.display = 'none';
+            }
+            updateButtons();
+        });
+
+        document.getElementById('enzyme-select').addEventListener('change', function() {
+            selectedEnzyme = this.value;
+            if (this.value) {
+                loadStructureInfo('enzima', this.value, 'enzyme-info');
+            } else {
+                document.getElementById('enzyme-info').style.display = 'none';
+            }
+            updateButtons();
+        });
+
+        // Cargar información de estructura
+        async function loadStructureInfo(type, name, infoElementId) {
+            try {
+                const response = await fetch(`/api/structure/${type}/${name}`);
+                const data = await response.json();
+
+                const infoDiv = document.getElementById(infoElementId);
+                infoDiv.innerHTML = `
+                    ${data.name}<br>
+                    Átomos: ${data.atoms}<br>
+                    Tamaño: ${data.size_mb} MB
+                `;
+                infoDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error cargando info:', error);
+            }
+        }
+
+        // Variables globales para radio calculado
+        let calculatedRadius = null;
+
+        // Actualizar estado de botones
+        function updateButtons() {
+            const loadBtn = document.getElementById('load-structures');
+            const previewBtn = document.getElementById('preview-enzymes');
+            const expBtn = document.getElementById('run-experiment');
+            const radiusBtn = document.getElementById('calculate-radius');
+            const downloadBtn = document.getElementById('download-zip');
+
+            const canLoad = selectedCapsid && selectedEnzyme;
+            const canCalculateRadius = selectedCapsid;
+            const canPreview = selectedCapsid && selectedEnzyme && calculatedRadius;
+            const canDownload = selectedCapsid && selectedEnzyme;
+
+            loadBtn.disabled = !canLoad;
+            previewBtn.disabled = !canPreview;
+            expBtn.disabled = !canLoad;
+            radiusBtn.disabled = !canCalculateRadius;
+            downloadBtn.disabled = !canDownload;
+        }
+
+        // Cargar estructuras seleccionadas
+        document.getElementById('load-structures').addEventListener('click', async function() {
+            if (!selectedCapsid || !selectedEnzyme) return;
+
+            try {
+                showLoading(true);
+
+                // Cargar cápside
+                const capsidPath = `/api/structure/capside/${selectedCapsid}`;
+                const capsidResponse = await fetch(capsidPath);
+                const capsidInfo = await capsidResponse.json();
+
+                const capsidData = await fetch(capsidInfo.path);
+                const capsidText = await capsidData.text();
+
+                const capsidBlob = new Blob([capsidText], {type: 'text/plain'});
+                capsideComponent = await stage.loadFile(capsidBlob, {ext: 'pdb', name: `${selectedCapsid}_capside.pdb`});
+                setupCapsideView(capsideComponent);
+
+                // Cargar enzima
+                const enzymePath = `/api/structure/enzima/${selectedEnzyme}`;
+                const enzymeResponse = await fetch(enzymePath);
+                const enzymeInfo = await enzymeResponse.json();
+
+                const enzymeData = await fetch(enzymeInfo.path);
+                const enzymeText = await enzymeData.text();
+
+                const enzymeBlob = new Blob([enzymeText], {type: 'text/plain'});
+                enzymeComponent = await stage.loadFile(enzymeBlob, {ext: 'pdb', name: `${selectedEnzyme}_enzyme.pdb`});
+                setupEnzymeView(enzymeComponent);
+
+                stage.autoView();
+                showLoading(false);
+                showMessage('Estructuras cargadas correctamente', 'success');
+
+            } catch (error) {
+                console.error('Error cargando estructuras:', error);
+                showLoading(false);
+                showMessage('Error cargando estructuras', 'error');
+            }
+        });
+
+        // Calcular radio interno
+        document.getElementById('calculate-radius').addEventListener('click', async function() {
+            if (!selectedCapsid) return;
+
+            try {
+                const radiusDiv = document.getElementById('radius-result');
+                radiusDiv.style.display = 'block';
+                radiusDiv.innerHTML = 'Calculando radio...';
+
+                showLoading(true);
+
+                const response = await fetch('/api/capsid/radius', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        capsid: selectedCapsid
+                    })
+                });
+
+                const data = await response.json();
+                showLoading(false);
+
+                if (response.ok) {
+                    calculatedRadius = data.internal_radius;  // Guardar radio para vista previa
+                    radiusDiv.innerHTML = `
+                        Radio Interno: ${data.internal_radius.toFixed(1)} Å<br>
+                        Archivo: ${data.radius_file}
+                    `;
+                    showMessage(`Radio calculado: ${data.internal_radius.toFixed(1)} Å`, 'success');
+                    updateButtons(); // Habilitar vista previa
+                } else {
+                    radiusDiv.innerHTML = `Error: ${data.error}`;
+                    showMessage('Error calculando radio', 'error');
+                }
+
+            } catch (error) {
+                console.error('Error calculando radio:', error);
+                showLoading(false);
+                showMessage('Error de conexión', 'error');
+            }
+        });
+
+        // Función para actualizar texto del botón
+        function updateExperimentButtonText() {
+            const buttonText = document.getElementById('experiment-button-text');
+            const isManual = document.getElementById('exp-manual').checked;
+
+            if (isManual) {
+                buttonText.textContent = 'Generar PDB con Enzimas';
+            } else {
+                buttonText.textContent = 'Ejecutar Experimento (10 Réplicas)';
+            }
+        }
+
+        // Event listeners para tipo de experimento
+        document.getElementById('exp-maximum').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('manual-controls').style.display = 'none';
+                updateExperimentButtonText();
+            }
+        });
+
+        document.getElementById('exp-manual').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('manual-controls').style.display = 'block';
+                updateExperimentButtonText();
+            }
+        });
+
+        // Event listener para cambios en número de enzimas
+        document.getElementById('n-enzymes').addEventListener('input', updateExperimentButtonText);
+
+        // Ejecutar experimento
+        document.getElementById('run-experiment').addEventListener('click', async function() {
+            if (!selectedCapsid || !selectedEnzyme) return;
+
+            try {
+                const statusDiv = document.getElementById('experiment-status');
+                statusDiv.style.display = 'block';
+
+                // Determinar tipo de experimento
+                const isManual = document.getElementById('exp-manual').checked;
+                const nEnzymes = isManual ? parseInt(document.getElementById('n-enzymes').value) : null;
+
+                if (isManual) {
+                    // MODO MANUAL: Generar PDB directamente y mostrarlo
+                    statusDiv.innerHTML = 'Generando PDB con enzimas...';
+
+                    if (!calculatedRadius) {
+                        showMessage('Primero debes calcular el radio interno', 'error');
+                        return;
+                    }
+
+                    showLoading(true);
+
+                    const savePdb = document.getElementById('save-pdb').checked;
+
+                    const response = await fetch('/api/preview/enzymes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            capsid: selectedCapsid,
+                            enzyme: selectedEnzyme,
+                            n_enzymes: nEnzymes,
+                            radius: calculatedRadius,
+                            save_file: savePdb
+                        })
+                    });
+
+                    if (response.ok) {
+                        // Leer el contenido PDB generado
+                        const pdbContent = await response.text();
+
+                        // Limpiar componentes anteriores
+                        stage.removeAllComponents();
+                        capsideComponent = null;
+                        enzymeComponent = null;
+                        currentReps = {};
+
+                        // Cargar la estructura combinada
+                        const blob = new Blob([pdbContent], {type: 'text/plain'});
+                        const component = await stage.loadFile(blob, {
+                            ext: 'pdb',
+                            name: `${selectedCapsid}_${nEnzymes}enzymes.pdb`
+                        });
+
+                        // Configurar representación para el resultado final
+                        // Cápside semi-transparente
+                        component.addRepresentation("surface", {
+                            opacity: 0.3,
+                            color: "chainid",
+                            side: "double",
+                            surfaceType: "sas",
+                            sele: "not model 1-99"
+                        });
+
+                        // Enzimas como cartoon con colores únicos por cadena
+                        component.addRepresentation("cartoon", {
+                            color: "chainid",  // Cambiar de "model" a "chainid" para colores únicos
+                            opacity: 0.9,
+                            sele: "model 1-99"
+                        });
+
+                        stage.autoView();
+                        showLoading(false);
+
+                        // Verificar si se guardó el archivo
+                        const savedPath = response.headers.get('X-Saved-Path');
+                        const wasFileSaved = savedPath && savedPath !== 'not-saved';
+
+                        statusDiv.innerHTML = `
+                            PDB generado correctamente<br>
+                            Enzimas empaquetadas: ${nEnzymes}<br>
+                            ${wasFileSaved ?
+                                `Archivo guardado en: Output/Generated_PDBs/` :
+                                'Solo visualización (no guardado)'
+                            }
+                        `;
+                        showMessage(`PDB ${wasFileSaved ? 'generado y guardado' : 'visualizado'} con ${nEnzymes} enzimas`, 'success');
+
+                    } else {
+                        const errorData = await response.json();
+                        showLoading(false);
+                        statusDiv.innerHTML = `Error generando PDB: ${errorData.error}`;
+                        showMessage('Error generando PDB', 'error');
+                    }
+
+                } else {
+                    // MODO MÁXIMO: Ejecutar experimento con 7 réplicas en paralelo
+                    statusDiv.innerHTML = 'Ejecutando 7 réplicas en paralelo...<br><small>Esto puede tomar varios minutos</small>';
+                    showLoading(true);
+
+                    const response = await fetch('/api/experiment/run', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            capsid: selectedCapsid,
+                            enzyme: selectedEnzyme,
+                            n_replicas: 10,
+                            run_packing: true  // Ejecutar las réplicas realmente
+                        })
+                    });
+
+                    const data = await response.json();
+                    showLoading(false);
+
+                    if (response.ok) {
+                        if (data.status === 'completed') {
+                            statusDiv.innerHTML = `
+                                <strong>Experimento completado</strong><br>
+                                Mejor resultado: ${data.best_result} enzimas<br>
+                                Promedio: ${data.mean.toFixed(1)} ± ${data.stdev.toFixed(1)}<br>
+                                Réplicas exitosas: ${data.n_replicas_success}/${data.n_replicas_total}<br>
+                                <small>Directorio: ${data.experiment_dir}</small>
+                            `;
+                            showMessage(`Experimento completado. Mejor: ${data.best_result} enzimas`, 'success');
+                        } else {
+                            statusDiv.innerHTML = `
+                                Experimento configurado<br>
+                                Directorio: ${data.experiment_dir}<br>
+                                Estado: ${data.status}<br>
+                                <small>${data.message}</small>
+                            `;
+                            showMessage('Experimento configurado', 'info');
+                        }
+                    } else {
+                        statusDiv.innerHTML = `Error: ${data.error}`;
+                        showMessage('Error en experimento', 'error');
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error ejecutando experimento:', error);
+                showLoading(false);
+                showMessage('Error de conexión', 'error');
+            }
+        });
+
+        // Vista previa con múltiples enzimas
+        document.getElementById('preview-enzymes').addEventListener('click', async function() {
+            if (!selectedCapsid || !selectedEnzyme || !calculatedRadius) return;
+
+            try {
+                showLoading(true);
+
+                // Obtener número de enzimas del form
+                const isManual = document.getElementById('exp-manual').checked;
+                const nEnzymes = isManual ? parseInt(document.getElementById('n-enzymes').value) : 15; // Default para máximo
+
+                const response = await fetch('/api/preview/enzymes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        capsid: selectedCapsid,
+                        enzyme: selectedEnzyme,
+                        n_enzymes: nEnzymes,
+                        radius: calculatedRadius
+                    })
+                });
+
+                if (response.ok) {
+                    // Leer el contenido PDB generado
+                    const pdbContent = await response.text();
+
+                    // Limpiar componentes anteriores
+                    stage.removeAllComponents();
+                    capsideComponent = null;
+                    enzymeComponent = null;
+                    currentReps = {};
+
+                    // Cargar la estructura combinada
+                    const blob = new Blob([pdbContent], {type: 'text/plain'});
+                    const component = await stage.loadFile(blob, {
+                        ext: 'pdb',
+                        name: `${selectedCapsid}_${nEnzymes}enzymes_preview.pdb`
+                    });
+
+                    // Configurar representación para la vista previa
+                    // Cápside semi-transparente
+                    component.addRepresentation("surface", {
+                        opacity: 0.3,
+                        color: "chainid",
+                        side: "double",
+                        surfaceType: "sas",
+                        sele: "not model 1-99"  // Solo la cápside (no los modelos de enzimas)
+                    });
+
+                    // Enzimas como cartoon
+                    component.addRepresentation("cartoon", {
+                        color: "model",  // Color diferente por modelo/enzima
+                        opacity: 0.9,
+                        sele: "model 1-99"  // Solo las enzimas
+                    });
+
+                    stage.autoView();
+                    showLoading(false);
+                    showMessage(`Vista previa cargada: ${nEnzymes} enzimas`, 'success');
+
+                } else {
+                    const errorData = await response.json();
+                    showLoading(false);
+                    showMessage(`Error: ${errorData.error}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error generando vista previa:', error);
+                showLoading(false);
+                showMessage('Error de conexión', 'error');
+            }
+        });
+
+        // Descargar ZIP con resultados
+        document.getElementById('download-zip').addEventListener('click', async function() {
+            if (!selectedCapsid || !selectedEnzyme) return;
+
+            try {
+                showLoading(true);
+
+                // Determinar tipo de experimento
+                const isManual = document.getElementById('exp-manual').checked;
+                const experimentType = isManual ? 'manual' : 'maximum';
+
+                const response = await fetch('/api/download/experiment-zip', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        capsid: selectedCapsid,
+                        enzyme: selectedEnzyme,
+                        experiment_type: experimentType
+                    })
+                });
+
+                if (response.ok) {
+                    // Descargar archivo
+                    const blob = await response.blob();
+                    const filename = response.headers.get('Content-Disposition')
+                        ?.split('filename="')[1]?.split('"')[0] ||
+                        `${selectedCapsid}_${selectedEnzyme}_${experimentType}.zip`;
+
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    showLoading(false);
+                    showMessage(`ZIP descargado: ${filename}`, 'success');
+
+                } else {
+                    const errorData = await response.json();
+                    showLoading(false);
+                    showMessage(`Error: ${errorData.error}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error descargando ZIP:', error);
+                showLoading(false);
+                showMessage('Error de conexión', 'error');
+            }
+        });
+
+        // Gestión de archivos generados
+        document.getElementById('list-files').addEventListener('click', async function() {
+            try {
+                const response = await fetch('/api/files/generated');
+                const data = await response.json();
+
+                const filesList = document.getElementById('files-list');
+
+                if (data.files.length === 0) {
+                    filesList.innerHTML = 'No hay archivos generados';
+                } else {
+                    const filesHtml = data.files.map(file => `
+                        <div style="margin-bottom: 5px; padding: 3px; background: #f0f0f0; font-size: 9pt; cursor: pointer;"
+                             onclick="downloadSingleFile('${file.name}')">
+                            <strong>${file.name}</strong><br>
+                            ${file.size_mb} MB - ${file.modified}
+                            <div style="font-size: 8pt; color: #666;">Click para descargar</div>
+                        </div>
+                    `).join('');
+
+                    filesList.innerHTML = `
+                        <div style="margin-bottom: 8px; font-weight: bold;">
+                            ${data.count} archivos (${data.total_size_mb} MB total)
+                        </div>
+                        ${filesHtml}
+                    `;
+                }
+
+                filesList.style.display = 'block';
+                showMessage(`${data.count} archivos encontrados`, 'success');
+
+            } catch (error) {
+                console.error('Error listando archivos:', error);
+                showMessage('Error listando archivos', 'error');
+            }
+        });
+
+        // Función para descargar archivo individual
+        function downloadSingleFile(filename) {
+            const url = `/api/download/single/${filename}`;
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showMessage(`Descargando: ${filename}`, 'success');
+        }
+
+        // Limpiar archivos antiguos
+        document.getElementById('cleanup-files').addEventListener('click', async function() {
+            if (!confirm('¿Eliminar archivos PDB generados hace más de 7 días?')) return;
+
+            try {
+                const response = await fetch('/api/files/cleanup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        days_old: 7
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showMessage(`Limpieza completada: ${data.removed} archivos eliminados`, 'success');
+                    // Actualizar lista si está visible
+                    if (document.getElementById('files-list').style.display === 'block') {
+                        document.getElementById('list-files').click();
+                    }
+                } else {
+                    showMessage(`Error: ${data.error}`, 'error');
+                }
+
+            } catch (error) {
+                console.error('Error en limpieza:', error);
+                showMessage('Error en limpieza', 'error');
+            }
+        });
+
+        // Limpiar todo
+        document.getElementById('clear-all').addEventListener('click', function() {
+            clearAll();
+        });
+
+        // === Funciones NGL (copiadas de ngl-viewer.html) ===
+
+        // Configurar vista de cápside
+        function setupCapsideView(component) {
+            component.removeAllRepresentations();
+
+            const rep = component.addRepresentation("surface", {
+                opacity: 0.3,
+                color: "chainid",
+                side: "double",
+                surfaceType: "sas",
+                probeRadius: 1.4
+            });
+
+            currentReps.capside = rep;
+            document.getElementById('capsideOpacity').value = 30;
+            document.getElementById('capsideOpacityValue').textContent = '30%';
+        }
+
+        // Configurar vista de enzima
+        function setupEnzymeView(component) {
+            component.removeAllRepresentations();
+
+            const rep = component.addRepresentation("cartoon", {
+                color: "secondaryStructure",
+                opacity: 1.0
+            });
+
+            component.addRepresentation("ball+stick", {
+                sele: "hetero and not water",
+                color: "element"
+            });
+
+            currentReps.enzyme = rep;
+            document.getElementById('enzymeOpacity').value = 100;
+            document.getElementById('enzymeOpacityValue').textContent = '100%';
+        }
+
+        // Cargar archivos preset (compatibilidad)
+        function loadPresetFiles() {
+            showMessage('Use el selector de biblioteca para cargar estructuras', 'success');
+        }
+
+        // Actualizar opacidad
+        function updateOpacity(type, value) {
+            const opacity = value / 100;
+
+            if (type === 'capside' && currentReps.capside) {
+                currentReps.capside.setParameters({opacity: opacity});
+                document.getElementById('capsideOpacityValue').textContent = value + '%';
+            } else if (type === 'enzyme' && currentReps.enzyme) {
+                currentReps.enzyme.setParameters({opacity: opacity});
+                document.getElementById('enzymeOpacityValue').textContent = value + '%';
+            }
+        }
+
+        // Toggle visibilidad
+        function toggleVisibility(type) {
+            if (type === 'capside' && currentReps.capside) {
+                const visible = document.getElementById('showCapside').checked;
+                currentReps.capside.setVisibility(visible);
+            } else if (type === 'enzyme' && currentReps.enzyme) {
+                const visible = document.getElementById('showEnzyme').checked;
+                currentReps.enzyme.setVisibility(visible);
+            }
+        }
+
+        // Cambiar representación
+        function changeRepresentation() {
+            const repType = document.getElementById('mainRep').value;
+
+            if (capsideComponent) {
+                capsideComponent.removeAllRepresentations();
+                currentReps.capside = capsideComponent.addRepresentation(repType, {
+                    opacity: document.getElementById('capsideOpacity').value / 100,
+                    color: document.getElementById('colorScheme').value
+                });
+            }
+
+            if (enzymeComponent) {
+                enzymeComponent.removeAllRepresentations();
+                currentReps.enzyme = enzymeComponent.addRepresentation(repType, {
+                    opacity: document.getElementById('enzymeOpacity').value / 100,
+                    color: document.getElementById('colorScheme').value
+                });
+            }
+        }
+
+        // Cambiar esquema de color
+        function changeColorScheme() {
+            const scheme = document.getElementById('colorScheme').value;
+
+            if (currentReps.capside) {
+                currentReps.capside.setParameters({color: scheme});
+            }
+
+            if (currentReps.enzyme) {
+                currentReps.enzyme.setParameters({color: scheme});
+            }
+        }
+
+        // Centrar vista
+        function centerView() {
+            stage.autoView();
+        }
+
+        // Auto-rotar
+        function autoRotate() {
+            isRotating = !isRotating;
+
+            if (isRotating) {
+                stage.setSpin([0, 1, 0], 0.01);
+            } else {
+                stage.setSpin(null);
+            }
+        }
+
+        // Screenshot
+        function screenshot() {
+            stage.makeImage({
+                factor: 2,
+                antialias: true,
+                transparent: false
+            }).then(function(blob) {
+                NGL.download(blob, "nanocapsule_visualization.png");
+                showMessage('Imagen guardada', 'success');
+            });
+        }
+
+        // Pantalla completa
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Limpiar todo
+        function clearAll() {
+            stage.removeAllComponents();
+            capsideComponent = null;
+            enzymeComponent = null;
+            currentReps = {};
+            updateInfo();
+            showMessage('Vista limpiada', 'success');
+        }
+
+        // Actualizar información
+        function updateInfo() {
+            let totalAtoms = 0;
+            let structureCount = 0;
+
+            stage.eachComponent(function(component) {
+                structureCount++;
+                if (component.structure) {
+                    totalAtoms += component.structure.atomCount;
+                }
+            });
+
+            document.getElementById('atomCount').textContent = totalAtoms.toLocaleString();
+            document.getElementById('structureCount').textContent = structureCount;
+        }
+
+        // Mostrar loading
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            if (show) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Mostrar mensaje
+        function showMessage(text, type = 'success') {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message active ${type}`;
+
+            setTimeout(() => {
+                message.classList.remove('active');
+            }, 3000);
+        }
+
+        // Función para mostrar/ocultar panel de secuencias superior
+        function toggleSequencePanel() {
+            const sequencePanel = document.getElementById('sequence-panel');
+            const button = document.getElementById('show-chains');
+
+            if (sequencePanel.style.display === 'none') {
+                analyzeSequences();
+                sequencePanel.style.display = 'block';
+                button.textContent = 'Ocultar Secuencias';
+                // Ajustar el viewport para dejar espacio al panel
+                document.getElementById('viewport').style.marginTop = '155px';
+            } else {
+                sequencePanel.style.display = 'none';
+                button.textContent = 'Mostrar Secuencias (Superior)';
+                // Restaurar el viewport
+                document.getElementById('viewport').style.marginTop = '0';
+            }
+        }
+
+        // Analizar cadenas y secuencias para el panel superior estilo PyMOL
+        function analyzeSequences() {
+            const sequenceContent = document.getElementById('sequence-content');
+            let chainsInfo = '';
+
+            // Analizar todas las estructuras cargadas
+            stage.eachComponent(function(component) {
+                if (!component.structure) return;
+
+                const structure = component.structure;
+                const enzymeData = {}; // Agrupar por modelo (cada enzima es un modelo diferente)
+
+                // Recolectar información por modelo/enzima
+                structure.eachChain(function(chainProxy) {
+                    const chainId = chainProxy.chainname || chainProxy.chainid;
+                    const modelIndex = chainProxy.modelIndex;
+
+                    // Determinar si es cápside o enzima por el número de modelo
+                    const isEnzyme = modelIndex < 99; // Modelos 1-99 son enzimas
+
+                    if (isEnzyme) {
+                        // Cada modelo de enzima se trata como una entidad separada
+                        const enzymeKey = `Enzima_${modelIndex + 1}`;
+
+                        if (!enzymeData[enzymeKey]) {
+                            enzymeData[enzymeKey] = {
+                                chains: {},
+                                modelNumber: modelIndex + 1,
+                                chainId: chainId
+                            };
+                        }
+
+                        if (!enzymeData[enzymeKey].chains[chainId]) {
+                            enzymeData[enzymeKey].chains[chainId] = {
+                                residues: [],
+                                atomCount: 0,
+                                firstResidue: null,
+                                lastResidue: null
+                            };
+                        }
+
+                        // Contar átomos
+                        chainProxy.eachAtom(function(atomProxy) {
+                            enzymeData[enzymeKey].chains[chainId].atomCount++;
+                        });
+
+                        // Obtener información de residuos
+                        chainProxy.eachResidue(function(residueProxy) {
+                            const resName = residueProxy.resname;
+                            const resNo = residueProxy.resno;
+
+                            if (!enzymeData[enzymeKey].chains[chainId].firstResidue) {
+                                enzymeData[enzymeKey].chains[chainId].firstResidue = `${resName}${resNo}`;
+                            }
+                            enzymeData[enzymeKey].chains[chainId].lastResidue = `${resName}${resNo}`;
+
+                            // Obtener código de 1 letra para aminoácidos
+                            const oneLetterCode = getOneLetterCode(resName);
+                            if (oneLetterCode) {
+                                enzymeData[enzymeKey].chains[chainId].residues.push(oneLetterCode);
+                            }
+                        });
+                    }
+                });
+
+                // Mostrar título general si hay enzimas
+                if (Object.keys(enzymeData).length > 0) {
+                    chainsInfo += `<div style="background: #d0d0d0; padding: 3px 5px; margin: 2px 0; font-weight: bold; border-left: 3px solid #666;">`;
+                    chainsInfo += `${component.name} - ${Object.keys(enzymeData).length} Enzimas Empaquetadas</div>`;
+                }
+
+                // Color diferente para cada enzima
+                const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#FFA500', '#98D8C8', '#FFB6C1', '#87CEEB'];
+
+                // Mostrar cada enzima por separado
+                const sortedEnzymes = Object.keys(enzymeData).sort((a, b) => {
+                    return enzymeData[a].modelNumber - enzymeData[b].modelNumber;
+                });
+
+                sortedEnzymes.forEach((enzymeKey, enzymeIndex) => {
+                    const enzyme = enzymeData[enzymeKey];
+                    const enzymeColor = colors[enzymeIndex % colors.length];
+
+                    // Título de la enzima individual
+                    chainsInfo += `<div style="background: #f0f0f0; padding: 2px 5px; margin: 5px 0 2px 0; font-weight: bold; color: ${enzymeColor}; border-left: 3px solid ${enzymeColor};">`;
+                    chainsInfo += `${enzymeKey} (Chain ${enzyme.chainId})</div>`;
+
+                    // Mostrar secuencia de cada cadena de esta enzima
+                    Object.keys(enzyme.chains).forEach(chainId => {
+                        const chainInfo = enzyme.chains[chainId];
+                        const sequence = chainInfo.residues.join('');
+
+                        if (sequence.length > 0) {
+                            // Mostrar Chain ID y secuencia
+                            chainsInfo += `<div style="margin: 2px 0 2px 20px; white-space: nowrap; overflow-x: auto;">`;
+
+                            // Dividir secuencia en bloques de 10 residuos con números
+                            for (let i = 0; i < sequence.length; i += 10) {
+                                const block = sequence.substring(i, Math.min(i + 10, sequence.length));
+                                const blockNum = i + 1;
+
+                                // Número de posición cada 10 residuos
+                                if (i % 50 === 0) {
+                                    chainsInfo += `<span style="color: #999; font-size: 9px; vertical-align: top; margin-right: 2px;">${blockNum}</span>`;
+                                }
+
+                                // Bloque de secuencia
+                                chainsInfo += `<span style="color: ${enzymeColor}; margin: 0 2px; font-family: monospace;">${block}</span>`;
+                            }
+
+                            chainsInfo += `</div>`;
+
+                            // Info adicional de la cadena
+                            chainsInfo += `<div style="margin: 0 0 5px 20px; font-size: 10px; color: #666;">`;
+                            chainsInfo += `Residuos: ${sequence.length} | `;
+                            chainsInfo += `Átomos: ${chainInfo.atomCount} | `;
+                            chainsInfo += `Rango: ${chainInfo.firstResidue} - ${chainInfo.lastResidue}`;
+                            chainsInfo += `</div>`;
+                        }
+                    });
+                });
+
+                // Separador final
+                if (Object.keys(enzymeData).length > 0) {
+                    chainsInfo += '<div style="border-bottom: 2px solid #999; margin: 10px 0;"></div>';
+                }
+            });
+
+            if (chainsInfo === '') {
+                chainsInfo = '<div style="padding: 10px; color: #666;">No hay estructuras cargadas</div>';
+            }
+
+            sequenceContent.innerHTML = chainsInfo;
+        }
+
+        // Convertir código de 3 letras a 1 letra para aminoácidos
+        function getOneLetterCode(resname) {
+            const codes = {
+                'ALA': 'A', 'CYS': 'C', 'ASP': 'D', 'GLU': 'E', 'PHE': 'F',
+                'GLY': 'G', 'HIS': 'H', 'ILE': 'I', 'LYS': 'K', 'LEU': 'L',
+                'MET': 'M', 'ASN': 'N', 'PRO': 'P', 'GLN': 'Q', 'ARG': 'R',
+                'SER': 'S', 'THR': 'T', 'VAL': 'V', 'TRP': 'W', 'TYR': 'Y'
+            };
+            return codes[resname] || '';
+        }
+
+        // FPS counter
+        let fps = 60;
+        let lastTime = performance.now();
+        let frames = 0;
+
+        function updateFPS() {
+            frames++;
+            const currentTime = performance.now();
+
+            if (currentTime >= lastTime + 1000) {
+                fps = Math.round(frames * 1000 / (currentTime - lastTime));
+                document.getElementById('fps').textContent = fps;
+                frames = 0;
+                lastTime = currentTime;
+            }
+
+            requestAnimationFrame(updateFPS);
+        }
+
+        // ========= FUNCIONES DE VISUALIZACIÓN INTERIOR =========
+
+        // Variables globales para clipping
+        let clippingEnabled = false;
+        let currentClipDirection = 'front';
+        let animationIntervalId = null;
+
+        // Activar/desactivar vista interior
+        function toggleInteriorView() {
+            const enabled = document.getElementById('enable-clipping').checked;
+            const controls = document.getElementById('interior-controls');
+
+            clippingEnabled = enabled;
+            controls.style.display = enabled ? 'block' : 'none';
+
+            if (enabled) {
+                // Verificar que hay alguna estructura cargada (cápside O enzimas)
+                if (!capsideComponent && !enzymeComponent && stage.compList.length === 0) {
+                    showMessage('Carga una estructura primero', 'warning');
+                    document.getElementById('enable-clipping').checked = false;
+                    controls.style.display = 'none';
+                    clippingEnabled = false;
+                    return;
+                }
+                // Inicializar clipping con valor inicial
+                updateClipDepth(document.getElementById('clip-depth').value);
+            } else {
+                // Resetear clipping
+                stage.viewer.parameters.clipNear = 0.1;
+                stage.viewer.requestRender();
+            }
+        }
+
+        // Actualizar profundidad de corte (método simple que funciona)
+        function updateClipDepth(value) {
+            document.getElementById('clip-depth-value').textContent = value + '%';
+
+            if (!clippingEnabled) return;
+
+            // Usar el método del archivo original ngl-viewer.html
+            // Convertir porcentaje 0-100 a rango de clipping
+            const clipValue = (parseFloat(value) - 50) * 2; // -100 a +100
+            const clipNear = 50 + clipValue;
+
+            stage.viewer.parameters.clipNear = clipNear;
+            stage.viewer.requestRender();
+
+            console.log(`Clipping: value=${value}%, clipValue=${clipValue}, clipNear=${clipNear}`);
+        }
+
+        // Cambiar dirección de corte
+        function changeClipDirection() {
+            currentClipDirection = document.getElementById('clip-direction').value;
+            updateClipDepth(document.getElementById('clip-depth').value);
+        }
+
+        // Animación de escaneo automático
+        function animateInteriorScan() {
+            if (animationIntervalId) {
+                clearInterval(animationIntervalId);
+                animationIntervalId = null;
+                return;
+            }
+
+            if (!clippingEnabled) {
+                showMessage('Activa el corte interior primero', 'warning');
+                return;
+            }
+
+            let depth = 0;
+            let increasing = true;
+
+            animationIntervalId = setInterval(() => {
+                if (increasing) {
+                    depth += 2;
+                    if (depth >= 100) {
+                        increasing = false;
+                    }
+                } else {
+                    depth -= 2;
+                    if (depth <= 0) {
+                        increasing = true;
+                    }
+                }
+
+                document.getElementById('clip-depth').value = depth;
+                updateClipDepth(depth);
+            }, 100);
+
+            // Auto-detener después de 3 ciclos completos
+            setTimeout(() => {
+                if (animationIntervalId) {
+                    clearInterval(animationIntervalId);
+                    animationIntervalId = null;
+                }
+            }, 15000);
+        }
+
+        // Resetear vista interior
+        function resetInteriorView() {
+            document.getElementById('enable-clipping').checked = false;
+            document.getElementById('clip-depth').value = 50;
+            document.getElementById('clip-direction').value = 'front';
+
+            if (animationIntervalId) {
+                clearInterval(animationIntervalId);
+                animationIntervalId = null;
+            }
+
+            toggleInteriorView();
+        }
+
+        // Ultra-transparente para cápside
+        function toggleCapsideTransparency() {
+            if (!currentReps.capside) {
+                showMessage('No hay cápside cargada', 'warning');
+                return;
+            }
+
+            const currentOpacity = parseFloat(document.getElementById('capsideOpacity').value);
+
+            if (currentOpacity > 5) {
+                // Hacer ultra-transparente
+                document.getElementById('capsideOpacity').value = 5;
+                updateOpacity('capside', 5);
+            } else {
+                // Restaurar opacidad normal
+                document.getElementById('capsideOpacity').value = 30;
+                updateOpacity('capside', 30);
+            }
+        }
+
+        // Ocultar completamente la cápside
+        function hideCapside() {
+            if (!currentReps.capside) {
+                showMessage('No hay cápside cargada', 'warning');
+                return;
+            }
+
+            const isVisible = document.getElementById('showCapside').checked;
+            document.getElementById('showCapside').checked = !isVisible;
+            toggleVisibility('capside');
+        }
+
+        // ========= FIN FUNCIONES DE VISUALIZACIÓN INTERIOR =========
+
+        // Atajos de teclado
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'c':
+                    if (e.ctrlKey || e.metaKey) return;
+                    centerView();
+                    break;
+                case 'r':
+                    if (e.ctrlKey || e.metaKey) return;
+                    autoRotate();
+                    break;
+                case 's':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        screenshot();
+                    }
+                    break;
+                case 'Escape':
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    }
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>

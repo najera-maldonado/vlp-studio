@@ -1,0 +1,116 @@
+# Configuración por defecto - Nanocapsule Designer
+# Todas las constantes externalizadas del código original
+
+# Parámetros de empaquetamiento
+packing:
+  # Radio interno por defecto cuando no se puede calcular (Angstroms)
+  internal_radius_default: 90.0
+
+  # Margen de colisión - se resta del radio interno para el empaquetamiento
+  collision_margin: 2.0
+
+  # Radio de exclusión entre enzimas (Angstroms)
+  exclusion_radius: 5.0
+
+  # Tolerancia para Packmol
+  tolerance: 2.0
+
+  # Umbral máximo de violación de distancia (Angstroms)
+  # Si la violación supera este valor, se considera colisión
+  max_violation_threshold: 0.10
+
+  # Mínimo de líneas en output para considerarlo válido
+  # Usado como fallback cuando no hay info de violación
+  min_lines_threshold: 10000
+
+# Configuración de motores externos
+engines:
+  packmol:
+    # Ejecutable de Packmol
+    executable: "packmol"
+
+    # Timeout en segundos para ejecución
+    timeout: 300
+
+    # Semilla base para reproducibilidad
+    # Cada réplica usará seed_base + replica_number
+    seed_base: 1234567
+
+    # Si use_random_seeds es true, ignora seed_base y usa semillas aleatorias
+    use_random_seeds: false
+
+  pymol:
+    # Ejecutar en modo headless (sin GUI)
+    headless: true
+
+    # Modo silencioso
+    quiet: true
+
+# Configuración de I/O
+io:
+  # Directorio temporal para archivos intermedios
+  temp_dir: "./temp"
+
+  # Formatos de output soportados
+  output_formats: ["pdb"]
+
+  # Limpiar archivos temporales automáticamente
+  cleanup_temp: true
+
+  # Archivos de trabajo por defecto
+  default_capsid: "capside.pdb"
+  default_enzyme: "enzima.pdb"
+
+  # Archivos de ejemplo con nombres descriptivos
+  example_capsid: "capside_IJS9.pdb"
+  example_enzyme: "enzima_1OGS.pdb"
+
+# Configuración de logging
+logging:
+  # Nivel: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+
+  # Formato de mensajes de log
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+  # Archivo de log (null para no guardar)
+  file: "nanocapsule.log"
+
+# Configuración del servidor web
+web:
+  # Puerto para el servidor Flask
+  port: 5000
+
+  # Host
+  host: "0.0.0.0"
+
+  # Debug mode
+  debug: false
+
+  # CORS habilitado para el visualizador
+  cors_enabled: true
+
+# Configuración de experimentos
+experiments:
+  # Número de réplicas por experimento
+  n_replicas: 10
+
+  # Directorio base para output
+  output_base_dir: "../Output"
+
+  # Guardar todos los archivos temporales
+  keep_temp_files: false
+
+  # Generar reportes automáticamente
+  auto_generate_reports: true
+
+# Rutas de directorios de biblioteca
+library:
+  # Directorio de cápsides
+  capsides_dir: "../Input/Capsides"
+
+  # Directorio de enzimas
+  enzymes_dir: "../Input/Enzimas"
+
+  # Directorio de output
+  output_dir: "../Output"

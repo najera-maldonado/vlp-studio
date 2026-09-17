@@ -1,0 +1,5 @@
+Enzyme	Atoms	Chains	Rg(Å)	Volume(Å³)	Volume(nm³)
+Alkaline Phosphatase (1ED8)	6620	2	27.8	73797	73.797
+EGFP (4EUL)	1926	1	17.0	20980	20.980
+Glucocerebrosidase (1OGS)	3973	1	22.6	44056	44.056
+Luciferase (1LCI)	3967	1	24.7	44418	44.418

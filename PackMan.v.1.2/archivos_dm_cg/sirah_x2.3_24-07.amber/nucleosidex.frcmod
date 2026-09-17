@@ -1,0 +1,49 @@
+++ SIRAH Nucleoside-nPhos: ATP, ADP, AMP, cAMP, GTP, GDP, cGMP | Params from Nat Comm, (2017) 8:1503 [DOI: 10.1038/ncomms15031] | Klein et al. (2020)
+MASS
+K5                 50.                    C5' free      (ATP, ADP, AMP, GTP, GDP)
+KC                 50.                    C5' cyclic    (cAMP, cGMP)
+
+BOND
+PX-PX              50.       2.90         P-P           (ATP, ADP, GTP, GDP)
+PX-K5              50.       2.62         PA-C5'        (ATP, ADP, AMP, GTP, GDP) | same as Backbone
+PX-KC              50.       2.62         PA-C5'        (cAMP, cGMP)              | same as Backbone
+K5-KN              50.       3.28         C5'-C1'       (ATP, ADP, AMP, GTP, GDP) | same as Backbone
+KC-KN              50.       3.28         C5'-C1'       (cAMP, cGMP)              | same as Backbone
+
+ANGLE
+PX-PX-PX           75.     109.4          PG-PB-PA      (ATP, GTP)
+PX-PX-K5           75.     109.4          PB-PA-C5'     (ATP, ADP, GTP, GDP)
+PX-K5-KN           75.     111.5          PA-C5'-C1'    (ATP, ADP, AMP)           | same as Backbone
+PX-KC-KN           75.      99.3          PA-C5'-C1'    (cAMP, cGMP)
+K5-KN-D6           75.     115.           C5'-C1'-N6    (ATP, ADP, AMP)
+K5-KN-D2            0.       0.           C5'-C1'-C2    (ATP, ADP, AMP)
+K5-KN-J6           75.     125.           C5'-C1'-O6    (GTP, GDP)
+K5-KN-J2            0.       0.           C5'-C1'-N2    (GTP, GDP)
+KC-KN-D6           75.     115.           C5'-C1'-N6    (cAMP)
+KC-KN-D2            0.       0.           C5'-C1'-C2    (cAMP)
+KC-KN-J6           75.     116.           C5'-C1'-O6    (cGMP)
+KC-KN-J2            0.       0.           C5'-C1'-N2    (cGMP)
+
+DIHE
+PX-PX-PX-K5   1     0.0      0.0      1.  PG-PB-PA-C5'  (ATP, GTP)
+PX-PX-K5-KN   1     0.0      0.0      1.  PB-PA-C5'-C1' (ATP, ADP, GTP, GDP)
+PX-K5-KN-D6   1     0.0      0.0      1.  PA-C5'-C1'-N6 (ATP, ADP, AMP)
+PX-K5-KN-D2   1     0.0      0.0      1.  PA-C5'-C1'-C2 (ATP, ADP, AMP)
+K5-KN-D6-D1   1     0.0      0.0      1.  C5'-C1'-N6-N1 (ATP, ADP, AMP)           | same as Adenine
+K5-KN-D2-D1   1     0.0      0.0      1.  C5'-C1'-C2-N1 (ATP, ADP, AMP)           | same as Adenine
+PX-K5-KN-J6   1     0.0      0.0      1.  PA-C5'-C1'-N6 (GTP, GDP)
+PX-K5-KN-J2   1     0.0      0.0      1.  PA-C5'-C1'-C2 (GTP, GDP)
+K5-KN-J6-J1   1     0.0      0.0      1.  C5'-C1'-N6-N1 (GTP, GDP)                | same as Guanine
+K5-KN-J2-J1   1     0.0      0.0      1.  C5'-C1'-C2-N1 (GTP, GDP)                | same as Guanine
+PX-KC-KN-D6   1     0.0      0.0      1.  PA-C5'-C1'-N6 (cAMP)
+PX-KC-KN-D2   1     0.0      0.0      1.  PA-C5'-C1'-C2 (cAMP)
+KC-KN-D6-D1   1     0.0      0.0      1.  C5'-C1'-N6-N1 (cAMP)                    | same as Adenine
+KC-KN-D2-D1   1     0.0      0.0      1.  C5'-C1'-C2-N1 (cAMP)                    | same as Adenine
+PX-KC-KN-J6   1     0.0      0.0      1.  PA-C5'-C1'-O6 (cGMP)
+PX-KC-KN-J2   1     0.0      0.0      1.  PA-C5'-C1'-N2 (cGMP)
+KC-KN-J6-J1   1     0.0      0.0      1.  C5'-C1'-O6-N1 (cGMP)                    | same as Guanine
+KC-KN-J2-J1   1     0.0      0.0      1.  C5'-C1'-N2-N1 (cGMP)                    | same as Guanine
+
+NONBON
+K5                  2.4080   0.1094       C5' free      (ATP, ADP, AMP, GTP, GDP)
+KC                  2.4080   0.1094       C5' cyclic    (cAMP, cGMP)

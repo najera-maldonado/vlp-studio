@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  nanocapsule:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nanocapsule-mvp:latest
+    container_name: nanocapsule-designer
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount input/output directories for persistence
+      - ./Input:/app/Input
+      - ./Output:/app/Output
+      - ./config:/app/config
+    environment:
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - nanocapsule-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add nginx for production deployment
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: nanocapsule-nginx
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #     - nanocapsule
+  #   networks:
+  #     - nanocapsule-net
+
+networks:
+  nanocapsule-net:
+    driver: bridge
+
+# Volumes for persistent data (optional)
+volumes:
+  input_data:
+  output_data:

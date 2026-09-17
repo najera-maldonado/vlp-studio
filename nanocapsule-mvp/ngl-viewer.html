@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Cápside con Enzimas - NGL</title>
+    <script src="https://cdn.jsdelivr.net/npm/ngl@2.0.0-dev.37/dist/ngl.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Computer+Modern+Serif&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', 'Computer Modern Serif', serif;
+            background: #ffffff;
+            color: #000000;
+            font-size: 12pt;
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        #viewport {
+            width: 100vw;
+            height: 100vh;
+            background: #ffffff;
+            border: 0.5pt solid #000;
+        }
+
+        /* Panel de control - estilo científico */
+        .control-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 350px;
+            background: #f8f8f8;
+            border: 0.5pt solid #000;
+            padding: 15px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .control-panel h2 {
+            font-weight: bold;
+            font-size: 14pt;
+            margin-bottom: 10px;
+            border-bottom: 0.5pt solid #000;
+            padding-bottom: 5px;
+        }
+
+        .control-section {
+            margin-bottom: 15px;
+        }
+
+        .control-section h3 {
+            font-size: 11pt;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* Botones estilo científico */
+        button {
+            padding: 5px 8px;
+            background: white;
+            border: 0.5pt solid #000;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 9pt;
+            cursor: pointer;
+            margin: 2px 2px 2px 0;
+            transition: none;
+        }
+
+        button:hover {
+            background: #f0f0f0;
+        }
+
+        button.secondary {
+            background: #e8e8e8;
+        }
+
+        button.secondary:hover {
+            background: #ddd;
+        }
+
+        /* Inputs estilo paper */
+        input[type="file"],
+        input[type="number"],
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 4px;
+            border: 0.5pt solid #000;
+            background: white;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+            margin-bottom: 5px;
+            color: #000;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        option {
+            background: white;
+            color: #000;
+        }
+
+        /* Sliders estilo científico */
+        .slider-container {
+            margin: 8px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+            font-size: 10pt;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+
+        .slider-value {
+            color: #000;
+            font-weight: normal;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Checkboxes estilo paper */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-container label {
+            cursor: pointer;
+            font-size: 10pt;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+
+        /* Info panel estilo científico */
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: #f8f8f8;
+            border: 0.5pt solid #000;
+            padding: 10px;
+            font-size: 10pt;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+
+        .info-item {
+            margin: 3px 0;
+            font-size: 9pt;
+        }
+
+        .info-label {
+            color: #000;
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+        }
+
+        .info-value {
+            color: #000;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Loading estilo científico */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: none;
+            background: white;
+            border: 0.5pt solid #000;
+            padding: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 2px solid #ddd;
+            border-top: 2px solid #000;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Grupo de botones estilo científico */
+        .rep-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3px;
+        }
+
+        .rep-buttons button {
+            margin: 0;
+            font-size: 8pt;
+            padding: 4px;
+        }
+
+        /* Mensajes estilo paper */
+        .message {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border: 0.5pt solid #000;
+            padding: 8px 15px;
+            display: none;
+            animation: slideDown 0.3s ease;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 10pt;
+        }
+
+        .message.error {
+            background: #ffe6e6;
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* Separadores */
+        hr {
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 15px 0;
+        }
+
+        /* Panel del pipeline estilo científico */
+        .pipeline-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 300px;
+            background: #f8f8f8;
+            border: 0.5pt solid #000;
+            padding: 15px;
+        }
+
+        .pipeline-status {
+            padding: 8px;
+            background: white;
+            border: 0.5pt solid #000;
+            margin-top: 10px;
+            font-size: 10pt;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+        }
+
+        .pipeline-progress {
+            height: 3px;
+            background: #ddd;
+            margin: 8px 0;
+            overflow: hidden;
+            border: 0.5pt solid #000;
+        }
+
+        .pipeline-progress-bar {
+            height: 100%;
+            background: #333;
+            width: 0;
+            transition: width 0.3s;
+        }
+
+        button.running {
+            background: #ccc;
+            cursor: not-allowed;
+            border: 0.5pt solid #999;
+        }
+
+        .file-list {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 8px;
+            border: 0.5pt solid #000;
+            background: white;
+        }
+
+        .file-item {
+            padding: 4px;
+            margin: 0;
+            background: white;
+            cursor: pointer;
+            font-size: 9pt;
+            font-family: 'Courier New', monospace;
+            border-bottom: 0.5pt solid #eee;
+        }
+
+        .file-item:hover {
+            background: #f0f0f0;
+        }
+
+        /* Indicador de carga */
+        .load-indicator {
+            position: fixed;
+            bottom: 60px;
+            right: 20px;
+            background: #f8f8f8;
+            border: 0.5pt solid #000;
+            padding: 8px;
+            font-size: 9pt;
+            font-family: 'Courier New', monospace;
+            min-width: 120px;
+        }
+
+        .load-bar {
+            height: 8px;
+            background: #ddd;
+            border: 0.5pt solid #000;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+
+        .load-fill {
+            height: 100%;
+            background: #333;
+            width: 0;
+            transition: width 0.3s;
+        }
+
+        .load-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Viewport para NGL -->
+    <div id="viewport"></div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div>Cargando estructura...</div>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="message" id="message"></div>
+
+    <!-- Panel del Pipeline -->
+    <div class="pipeline-panel">
+        <h2>Pipeline de Empaquetamiento</h2>
+
+
+        <div class="control-section">
+            <h3>Ejecutar Pipeline</h3>
+            <button id="btnCalculateRadius" onclick="runPipeline('calculate_radius')">1. Calcular Radio Interno</button>
+            <button id="btnPackManual" onclick="showManualPackDialog()">2. Empaquetamiento Manual</button>
+            <button id="btnPackMaximum" onclick="runPipeline('pack_maximum')">3. Empaquetamiento Máximo</button>
+            <hr>
+            <button onclick="autoReloadFiles()" class="secondary">Auto-cargar Archivos</button>
+            <button onclick="cleanOutputs()" class="secondary">Limpiar Salidas</button>
+        </div>
+
+        <div class="pipeline-status" id="pipelineStatus">
+            <div style="display: flex; justify-content: space-between;">
+                <span>Estado:</span>
+                <span id="statusText">Inactivo</span>
+            </div>
+            <div class="pipeline-progress">
+                <div class="pipeline-progress-bar" id="progressBar"></div>
+            </div>
+            <div id="statusMessages" style="margin-top: 10px; max-height: 100px; overflow-y: auto;"></div>
+        </div>
+
+        <div class="control-section">
+            <h3>Archivos Generados</h3>
+            <div class="file-list" id="fileList"></div>
+        </div>
+    </div>
+
+    <!-- Dialog para empaquetamiento manual -->
+    <div id="manualPackDialog" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #2a2a2a; padding: 20px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); z-index: 1000;">
+        <h3 style="color: #4CAF50; margin-bottom: 15px;">Empaquetamiento Manual</h3>
+        <label style="display: block; margin-bottom: 10px;">Número de enzimas:</label>
+        <input type="number" id="nEnzymes" value="10" min="1" max="100" style="width: 100%; margin-bottom: 15px;">
+        <div style="display: flex; gap: 10px;">
+            <button onclick="runManualPack()">Ejecutar</button>
+            <button onclick="closeManualPackDialog()" class="secondary">Cancelar</button>
+        </div>
+    </div>
+
+
+    <!-- Panel de control -->
+    <div class="control-panel">
+        <h2>Control de Visualización</h2>
+
+        <!-- Carga de archivos -->
+        <div class="control-section">
+            <h3>Cargar Estructura</h3>
+            <input type="file" id="fileInput" accept=".pdb,.cif,.mmcif" multiple>
+            <button onclick="loadPresetFiles()">Cargar Cápside + Enzima</button>
+            <button onclick="clearAll()" class="secondary">Limpiar Todo</button>
+        </div>
+
+        <!-- Representaciones -->
+        <div class="control-section">
+            <h3>Representación</h3>
+            <select id="mainRep" onchange="changeRepresentation()">
+                <option value="cartoon">Cartoon (Cintas)</option>
+                <option value="surface">Superficie</option>
+                <option value="ball+stick">Bolas y Palos</option>
+                <option value="licorice">Licoricia</option>
+                <option value="spacefill">Esferas VDW</option>
+                <option value="line">Líneas</option>
+                <option value="point">Puntos</option>
+                <option value="backbone">Backbone</option>
+                <option value="ribbon">Ribbon</option>
+            </select>
+
+            <div class="rep-buttons">
+                <button onclick="addRepresentation('cartoon')">+ Cartoon</button>
+                <button onclick="addRepresentation('surface')">+ Superficie</button>
+                <button onclick="addRepresentation('ball+stick')">+ Bolas</button>
+                <button onclick="addRepresentation('licorice')">+ Sticks</button>
+            </div>
+        </div>
+
+        <!-- Transparencia -->
+        <div class="control-section">
+            <h3>Transparencia y Visibilidad</h3>
+
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Opacidad Cápside</span>
+                    <span class="slider-value" id="capsideOpacityValue">30%</span>
+                </div>
+                <input type="range" id="capsideOpacity" min="0" max="100" value="30"
+                       oninput="updateOpacity('capside', this.value)">
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Opacidad Enzima</span>
+                    <span class="slider-value" id="enzymeOpacityValue">100%</span>
+                </div>
+                <input type="range" id="enzymeOpacity" min="0" max="100" value="100"
+                       oninput="updateOpacity('enzyme', this.value)">
+            </div>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="showCapside" checked onchange="toggleVisibility('capside')">
+                <label for="showCapside">Mostrar Cápside</label>
+            </div>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="showEnzyme" checked onchange="toggleVisibility('enzyme')">
+                <label for="showEnzyme">Mostrar Enzimas</label>
+            </div>
+        </div>
+
+        <!-- Plano de corte -->
+        <div class="control-section">
+            <h3>Plano de Corte</h3>
+
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Posición Z</span>
+                    <span class="slider-value" id="clipValue">0</span>
+                </div>
+                <input type="range" id="clipSlider" min="-100" max="100" value="0"
+                       oninput="updateClipping(this.value)">
+            </div>
+
+            <select id="clipAxis" onchange="changeClipAxis()">
+                <option value="z">Eje Z (Frontal)</option>
+                <option value="y">Eje Y (Vertical)</option>
+                <option value="x">Eje X (Lateral)</option>
+            </select>
+
+            <div class="checkbox-container">
+                <input type="checkbox" id="enableClip" onchange="toggleClipping()">
+                <label for="enableClip">Activar corte</label>
+            </div>
+
+            <button onclick="animateClip()">Animar Corte</button>
+            <button onclick="resetClip()">Resetear</button>
+        </div>
+
+        <!-- Colores -->
+        <div class="control-section">
+            <h3>Esquema de Colores</h3>
+            <select id="colorScheme" onchange="changeColorScheme()">
+                <option value="chainid">Por Cadena</option>
+                <option value="residueindex">Por Residuo</option>
+                <option value="element">Por Elemento</option>
+                <option value="secondaryStructure">Estructura 2°</option>
+                <option value="hydrophobicity">Hidrofobicidad</option>
+                <option value="bfactor">Factor B</option>
+                <option value="charge">Por Carga</option>
+                <option value="uniform">Color Único</option>
+            </select>
+        </div>
+
+        <!-- Controles de cámara -->
+        <div class="control-section">
+            <h3>Cámara</h3>
+            <button onclick="centerView()">Centrar Vista</button>
+            <button onclick="autoRotate()">Auto-rotar</button>
+            <button onclick="screenshot()">Captura</button>
+            <button onclick="toggleFullscreen()">Pantalla Completa</button>
+        </div>
+
+        <!-- Performance -->
+        <div class="control-section">
+            <h3>Rendimiento</h3>
+            <select id="quality" onchange="changeQuality()">
+                <option value="auto">Automático</option>
+                <option value="low">Bajo</option>
+                <option value="medium">Medio</option>
+                <option value="high">Alto</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Panel de información -->
+    <div class="info-panel">
+        <div class="info-item">
+            <span class="info-label">Átomos totales:</span>
+            <span class="info-value" id="atomCount">0</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Estructuras:</span>
+            <span class="info-value" id="structureCount">0</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">FPS:</span>
+            <span class="info-value" id="fps">60</span>
+        </div>
+    </div>
+
+    <!-- Indicador de carga -->
+    <div class="load-indicator" id="loadIndicator" style="display: none;">
+        <div class="load-text">
+            <span>Cargando...</span>
+            <span id="loadPercent">0%</span>
+        </div>
+        <div class="load-bar">
+            <div class="load-fill" id="loadFill"></div>
+        </div>
+        <div id="loadStatus" style="font-size: 8pt; color: #666;">Procesando estructura</div>
+    </div>
+
+    <script>
+        // Variables globales
+        let stage;
+        let capsideComponent = null;
+        let enzymeComponent = null;
+        let currentReps = {};
+        let isRotating = false;
+        let clipPlane = null;
+
+        // Inicializar NGL
+        function initNGL() {
+            stage = new NGL.Stage("viewport", {
+                backgroundColor: "#1a1a1a",
+                ambientLight: 0.2,
+                cameraType: "perspective",
+                clipNear: 0.1,
+                clipFar: 10000,
+                fogNear: 100,
+                fogFar: 1000
+            });
+
+            // Handlers de eventos
+            stage.signals.componentAdded.add(function(component) {
+                updateInfo();
+            });
+
+            // Controles de mouse
+            stage.mouseControls.add("scroll", NGL.MouseActions.zoomScroll);
+            stage.mouseControls.add("drag-left", NGL.MouseActions.rotateDrag);
+            stage.mouseControls.add("drag-right", NGL.MouseActions.panDrag);
+            stage.mouseControls.add("drag-middle", NGL.MouseActions.panDrag);
+            stage.mouseControls.add("drag-shift-left", NGL.MouseActions.panDrag);
+
+            // Handle window resize
+            window.addEventListener("resize", function() {
+                stage.handleResize();
+            }, false);
+        }
+
+        // Cargar archivos locales con indicador de progreso
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+
+            for (let file of files) {
+                showLoadIndicator(true, `Leyendo ${file.name}...`);
+
+                const reader = new FileReader();
+
+                // Simular progreso de lectura
+                reader.onprogress = function(event) {
+                    if (event.lengthComputable) {
+                        const percent = (event.loaded / event.total) * 50; // 50% para lectura
+                        updateLoadProgress(percent, 'Leyendo archivo...');
+                    }
+                };
+
+                reader.onload = function(event) {
+                    updateLoadProgress(50, 'Procesando estructura...');
+
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    const blob = new Blob([event.target.result], {type: 'text/plain'});
+
+                    // Simular progreso de procesamiento
+                    setTimeout(() => {
+                        updateLoadProgress(75, 'Creando representación...');
+
+                        stage.loadFile(blob, {ext: ext, name: file.name}).then(function(component) {
+                            updateLoadProgress(90, 'Configurando vista...');
+
+                            // Detectar si es cápside o enzima por el nombre o tamaño
+                            if (file.name.toLowerCase().includes('capside')) {
+                                capsideComponent = component;
+                                setupCapsideView(component);
+                            } else if (file.name.toLowerCase().includes('enzima')) {
+                                enzymeComponent = component;
+                                setupEnzymeView(component);
+                            } else {
+                                // Usar tamaño como heurística
+                                if (file.size > 1000000) { // > 1MB probablemente cápside
+                                    capsideComponent = component;
+                                    setupCapsideView(component);
+                                } else {
+                                    enzymeComponent = component;
+                                    setupEnzymeView(component);
+                                }
+                            }
+
+                            component.autoView();
+                            updateLoadProgress(100, 'Completado');
+
+                            setTimeout(() => {
+                                showLoadIndicator(false);
+                                showMessage('Archivo cargado: ' + file.name, 'success');
+                            }, 500);
+
+                        }).catch(function(error) {
+                            console.error(error);
+                            showLoadIndicator(false);
+                            showMessage('Error cargando archivo: ' + file.name, 'error');
+                        });
+                    }, 100);
+                };
+
+                reader.readAsText(file);
+            }
+        });
+
+        // Configurar vista de cápside
+        function setupCapsideView(component) {
+            // Limpiar representaciones anteriores
+            component.removeAllRepresentations();
+
+            // Agregar superficie semi-transparente
+            const rep = component.addRepresentation("surface", {
+                opacity: 0.3,
+                color: "chainid",
+                side: "double", // Visible desde ambos lados
+                surfaceType: "sas",
+                probeRadius: 1.4
+            });
+
+            currentReps.capside = rep;
+
+            // Actualizar controles
+            document.getElementById('capsideOpacity').value = 30;
+            document.getElementById('capsideOpacityValue').textContent = '30%';
+        }
+
+        // Configurar vista de enzima
+        function setupEnzymeView(component) {
+            // Limpiar representaciones anteriores
+            component.removeAllRepresentations();
+
+            // Agregar representación cartoon
+            const rep = component.addRepresentation("cartoon", {
+                color: "secondaryStructure",
+                opacity: 1.0
+            });
+
+            // Agregar ligandos si existen
+            component.addRepresentation("ball+stick", {
+                sele: "hetero and not water",
+                color: "element"
+            });
+
+            currentReps.enzyme = rep;
+
+            // Actualizar controles
+            document.getElementById('enzymeOpacity').value = 100;
+            document.getElementById('enzymeOpacityValue').textContent = '100%';
+        }
+
+        // Cargar archivos preset
+        function loadPresetFiles() {
+            // Intentar cargar los archivos locales
+            const files = [
+                'capside_recentrada.pdb',
+                'enzima_recentrada.pdb'
+            ];
+
+            files.forEach(filename => {
+                fetch(filename)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Archivo no encontrado');
+                        return response.text();
+                    })
+                    .then(data => {
+                        const blob = new Blob([data], {type: 'text/plain'});
+                        return stage.loadFile(blob, {ext: 'pdb', name: filename});
+                    })
+                    .then(component => {
+                        if (filename.includes('capside')) {
+                            capsideComponent = component;
+                            setupCapsideView(component);
+                        } else {
+                            enzymeComponent = component;
+                            setupEnzymeView(component);
+                        }
+                        component.autoView();
+                        showMessage('Cargado: ' + filename, 'success');
+                    })
+                    .catch(error => {
+                        console.log('No se pudo cargar ' + filename + ' - use el selector de archivos');
+                    });
+            });
+        }
+
+        // Actualizar opacidad
+        function updateOpacity(type, value) {
+            const opacity = value / 100;
+
+            if (type === 'capside' && currentReps.capside) {
+                currentReps.capside.setParameters({opacity: opacity});
+                document.getElementById('capsideOpacityValue').textContent = value + '%';
+            } else if (type === 'enzyme' && currentReps.enzyme) {
+                currentReps.enzyme.setParameters({opacity: opacity});
+                document.getElementById('enzymeOpacityValue').textContent = value + '%';
+            }
+        }
+
+        // Toggle visibilidad
+        function toggleVisibility(type) {
+            if (type === 'capside' && currentReps.capside) {
+                const visible = document.getElementById('showCapside').checked;
+                currentReps.capside.setVisibility(visible);
+            } else if (type === 'enzyme' && currentReps.enzyme) {
+                const visible = document.getElementById('showEnzyme').checked;
+                currentReps.enzyme.setVisibility(visible);
+            }
+        }
+
+        // Actualizar clipping
+        function updateClipping(value) {
+            document.getElementById('clipValue').textContent = value;
+
+            if (!document.getElementById('enableClip').checked) return;
+
+            const axis = document.getElementById('clipAxis').value;
+            const normal = [0, 0, 0];
+
+            switch(axis) {
+                case 'x': normal[0] = 1; break;
+                case 'y': normal[1] = 1; break;
+                case 'z': normal[2] = 1; break;
+            }
+
+            stage.viewer.parameters.clipNear = 50 + parseFloat(value);
+            stage.viewer.requestRender();
+        }
+
+        // Toggle clipping
+        function toggleClipping() {
+            const enabled = document.getElementById('enableClip').checked;
+
+            if (enabled) {
+                stage.viewer.parameters.clipNear = 50;
+            } else {
+                stage.viewer.parameters.clipNear = 0.1;
+            }
+
+            stage.viewer.requestRender();
+        }
+
+        // Animar corte
+        function animateClip() {
+            const slider = document.getElementById('clipSlider');
+            let value = -100;
+            let direction = 1;
+
+            const animate = setInterval(() => {
+                value += direction * 2;
+
+                if (value >= 100) {
+                    direction = -1;
+                } else if (value <= -100) {
+                    clearInterval(animate);
+                    return;
+                }
+
+                slider.value = value;
+                updateClipping(value);
+            }, 50);
+        }
+
+        // Reset clip
+        function resetClip() {
+            document.getElementById('clipSlider').value = 0;
+            document.getElementById('enableClip').checked = false;
+            toggleClipping();
+        }
+
+        // Cambiar representación
+        function changeRepresentation() {
+            const repType = document.getElementById('mainRep').value;
+
+            if (capsideComponent) {
+                capsideComponent.removeAllRepresentations();
+                currentReps.capside = capsideComponent.addRepresentation(repType, {
+                    opacity: document.getElementById('capsideOpacity').value / 100,
+                    color: document.getElementById('colorScheme').value
+                });
+            }
+
+            if (enzymeComponent) {
+                enzymeComponent.removeAllRepresentations();
+                currentReps.enzyme = enzymeComponent.addRepresentation(repType, {
+                    opacity: document.getElementById('enzymeOpacity').value / 100,
+                    color: document.getElementById('colorScheme').value
+                });
+            }
+        }
+
+        // Agregar representación
+        function addRepresentation(type) {
+            if (capsideComponent) {
+                capsideComponent.addRepresentation(type, {
+                    opacity: 0.5,
+                    color: "chainid"
+                });
+            }
+
+            if (enzymeComponent) {
+                enzymeComponent.addRepresentation(type, {
+                    color: "secondaryStructure"
+                });
+            }
+        }
+
+        // Cambiar esquema de color
+        function changeColorScheme() {
+            const scheme = document.getElementById('colorScheme').value;
+
+            if (currentReps.capside) {
+                currentReps.capside.setParameters({color: scheme});
+            }
+
+            if (currentReps.enzyme) {
+                currentReps.enzyme.setParameters({color: scheme});
+            }
+        }
+
+        // Cambiar calidad
+        function changeQuality() {
+            const quality = document.getElementById('quality').value;
+
+            switch(quality) {
+                case 'low':
+                    stage.setParameters({sampleLevel: -1});
+                    break;
+                case 'medium':
+                    stage.setParameters({sampleLevel: 0});
+                    break;
+                case 'high':
+                    stage.setParameters({sampleLevel: 2});
+                    break;
+                default:
+                    stage.setParameters({sampleLevel: 0});
+            }
+        }
+
+        // Centrar vista
+        function centerView() {
+            stage.autoView();
+        }
+
+        // Auto-rotar
+        function autoRotate() {
+            isRotating = !isRotating;
+
+            if (isRotating) {
+                stage.setSpin([0, 1, 0], 0.01);
+            } else {
+                stage.setSpin(null);
+            }
+        }
+
+        // Screenshot
+        function screenshot() {
+            stage.makeImage({
+                factor: 2,
+                antialias: true,
+                transparent: false
+            }).then(function(blob) {
+                NGL.download(blob, "capside_visualization.png");
+                showMessage('Imagen guardada', 'success');
+            });
+        }
+
+        // Pantalla completa
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Limpiar todo
+        function clearAll() {
+            stage.removeAllComponents();
+            capsideComponent = null;
+            enzymeComponent = null;
+            currentReps = {};
+            updateInfo();
+            showMessage('Vista limpiada', 'success');
+        }
+
+        // Actualizar información
+        function updateInfo() {
+            let totalAtoms = 0;
+            let structureCount = 0;
+
+            stage.eachComponent(function(component) {
+                structureCount++;
+                if (component.structure) {
+                    totalAtoms += component.structure.atomCount;
+                }
+            });
+
+            document.getElementById('atomCount').textContent = totalAtoms.toLocaleString();
+            document.getElementById('structureCount').textContent = structureCount;
+        }
+
+        // Mostrar loading
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            if (show) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Sistema de indicador de carga mejorado
+        function showLoadIndicator(show, text = 'Cargando...') {
+            const indicator = document.getElementById('loadIndicator');
+            const status = document.getElementById('loadStatus');
+
+            if (show) {
+                indicator.style.display = 'block';
+                status.textContent = text;
+                updateLoadProgress(0);
+            } else {
+                indicator.style.display = 'none';
+            }
+        }
+
+        function updateLoadProgress(percent, status = '') {
+            const fill = document.getElementById('loadFill');
+            const percentText = document.getElementById('loadPercent');
+            const statusText = document.getElementById('loadStatus');
+
+            fill.style.width = percent + '%';
+            percentText.textContent = Math.round(percent) + '%';
+
+            if (status) {
+                statusText.textContent = status;
+            }
+        }
+
+        // Mostrar mensaje
+        function showMessage(text, type = 'success') {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = 'message active ' + (type === 'error' ? 'error' : '');
+
+            setTimeout(() => {
+                message.classList.remove('active');
+            }, 3000);
+        }
+
+        // FPS counter
+        let fps = 60;
+        let lastTime = performance.now();
+        let frames = 0;
+
+        function updateFPS() {
+            frames++;
+            const currentTime = performance.now();
+
+            if (currentTime >= lastTime + 1000) {
+                fps = Math.round(frames * 1000 / (currentTime - lastTime));
+                document.getElementById('fps').textContent = fps;
+                frames = 0;
+                lastTime = currentTime;
+            }
+
+            requestAnimationFrame(updateFPS);
+        }
+
+        // Variables para el pipeline
+        let pipelineInterval = null;
+        let autoReloadInterval = null;
+
+        // Funciones del pipeline
+        function checkPipelineStatus() {
+            fetch('http://localhost:5001/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    updatePipelineUI(data);
+                    if (data.available_files) {
+                        updateFileList(data.available_files);
+                    }
+                })
+                .catch(error => {
+                    console.log('Pipeline server not running');
+                });
+        }
+
+        function updatePipelineUI(data) {
+            const statusText = document.getElementById('statusText');
+            const progressBar = document.getElementById('progressBar');
+            const messages = document.getElementById('statusMessages');
+
+            if (data.running) {
+                statusText.textContent = data.current_step || 'Ejecutando...';
+                statusText.style.color = '#ff9800';
+                progressBar.style.width = data.progress + '%';
+            } else {
+                statusText.textContent = 'Inactivo';
+                statusText.style.color = '#4CAF50';
+                progressBar.style.width = '0%';
+            }
+
+            if (data.messages && data.messages.length > 0) {
+                const lastMessages = data.messages.slice(-5).join('<br>');
+                messages.innerHTML = lastMessages;
+            }
+
+            // Actualizar botones
+            document.querySelectorAll('.pipeline-panel button').forEach(btn => {
+                if (data.running) {
+                    btn.classList.add('running');
+                    btn.disabled = true;
+                } else {
+                    btn.classList.remove('running');
+                    btn.disabled = false;
+                }
+            });
+        }
+
+        function updateFileList(files) {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+
+            files.filter(f => f.name.includes('enzimas')).forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerHTML = `${file.name} <span style="color: #888; font-size: 10px;">(${(file.size / 1024 / 1024).toFixed(1)} MB)</span>`;
+                item.onclick = () => loadServerFile(file.name);
+                fileList.appendChild(item);
+            });
+        }
+
+        function runPipeline(action) {
+            let url = `http://localhost:5000/api/run/${action}`;
+
+            fetch(url, {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'started') {
+                        showMessage(`Pipeline iniciado: ${action}`, 'success');
+                        startStatusPolling();
+                    } else {
+                        showMessage('Error iniciando pipeline', 'error');
+                    }
+                })
+                .catch(error => {
+                    showMessage('Error: Servidor no disponible. Ejecute: python3 pipeline_server.py', 'error');
+                });
+        }
+
+        function showManualPackDialog() {
+            document.getElementById('manualPackDialog').style.display = 'block';
+        }
+
+        function closeManualPackDialog() {
+            document.getElementById('manualPackDialog').style.display = 'none';
+        }
+
+        function runManualPack() {
+            const nEnzymes = document.getElementById('nEnzymes').value;
+            closeManualPackDialog();
+
+            fetch('http://localhost:5001/api/run/pack_manual', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({n_enzymes: parseInt(nEnzymes)})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'started') {
+                    showMessage(`Empaquetando ${nEnzymes} enzimas...`, 'success');
+                    startStatusPolling();
+                }
+            })
+            .catch(error => {
+                showMessage('Error: Servidor no disponible', 'error');
+            });
+        }
+
+        function startStatusPolling() {
+            if (pipelineInterval) clearInterval(pipelineInterval);
+            pipelineInterval = setInterval(checkPipelineStatus, 1000);
+        }
+
+        function autoReloadFiles() {
+            if (autoReloadInterval) {
+                clearInterval(autoReloadInterval);
+                autoReloadInterval = null;
+                showMessage('Auto-recarga desactivada', 'success');
+            } else {
+                autoReloadInterval = setInterval(() => {
+                    checkPipelineStatus();
+                    // Auto-cargar el archivo más reciente si hay uno nuevo
+                    fetch('http://localhost:5001/api/files')
+                        .then(response => response.json())
+                        .then(data => {
+                            const outputFiles = data.files.filter(f => f.name.includes('enzimas'));
+                            if (outputFiles.length > 0) {
+                                const newest = outputFiles[0];
+                                if (!window.lastLoadedFile || window.lastLoadedFile !== newest.name) {
+                                    loadServerFile(newest.name);
+                                    window.lastLoadedFile = newest.name;
+                                }
+                            }
+                        });
+                }, 3000);
+                showMessage('Auto-recarga activada', 'success');
+            }
+        }
+
+        function loadServerFile(filename) {
+            showLoading(true);
+
+            fetch(`http://localhost:5001/api/file/${filename}`)
+                .then(response => response.text())
+                .then(data => {
+                    const blob = new Blob([data], {type: 'text/plain'});
+                    return stage.loadFile(blob, {ext: 'pdb', name: filename});
+                })
+                .then(component => {
+                    // Limpiar componentes anteriores si es un output
+                    if (filename.includes('enzimas')) {
+                        stage.removeAllComponents();
+
+                        component.addRepresentation('surface', {
+                            opacity: 0.3,
+                            color: 'chainid',
+                            surfaceType: 'sas'
+                        });
+
+                        component.addRepresentation('cartoon', {
+                            color: 'secondaryStructure'
+                        });
+                    }
+
+                    component.autoView();
+                    showLoading(false);
+                    showMessage(`Cargado: ${filename}`, 'success');
+                    updateInfo();
+                })
+                .catch(error => {
+                    showLoading(false);
+                    showMessage('Error cargando archivo', 'error');
+                });
+        }
+
+        function cleanOutputs() {
+            if (confirm('¿Eliminar todos los archivos de salida generados?')) {
+                fetch('http://localhost:5001/api/clean', {method: 'POST'})
+                    .then(response => response.json())
+                    .then(data => {
+                        showMessage(`Eliminados ${data.removed.length} archivos`, 'success');
+                        checkPipelineStatus();
+                    })
+                    .catch(error => {
+                        showMessage('Error limpiando archivos', 'error');
+                    });
+            }
+        }
+
+
+        function loadLocalFile(filename) {
+            showLoadIndicator(true, `Cargando ${filename}...`);
+
+            fetch(`http://localhost:5001/api/file/${filename}`)
+                .then(response => {
+                    if (!response.ok) throw new Error('File not found');
+                    updateLoadProgress(25, 'Descargando...');
+                    return response.text();
+                })
+                .then(data => {
+                    updateLoadProgress(50, 'Procesando estructura...');
+                    const blob = new Blob([data], {type: 'text/plain'});
+                    return stage.loadFile(blob, {ext: 'pdb', name: filename});
+                })
+                .then(component => {
+                    updateLoadProgress(75, 'Configurando vista...');
+
+                    if (filename.includes('capside')) {
+                        capsideComponent = component;
+                        setupCapsideView(component);
+                    } else if (filename.includes('enzima')) {
+                        enzymeComponent = component;
+                        setupEnzymeView(component);
+                    }
+
+                    component.autoView();
+                    updateLoadProgress(100, 'Completado');
+                    updateInfo();
+
+                    setTimeout(() => {
+                        showLoadIndicator(false);
+                        showMessage(`Cargado: ${filename}`, 'success');
+                    }, 500);
+                })
+                .catch(error => {
+                    showLoadIndicator(false);
+                    console.log(`Archivo ${filename} aún no disponible`);
+                });
+        }
+
+        // Inicializar al cargar
+        window.addEventListener('DOMContentLoaded', function() {
+            initNGL();
+            updateFPS();
+            showMessage('NGL Viewer listo - Cargue sus archivos PDB', 'success');
+
+            // Intentar conectar con el servidor del pipeline
+            checkPipelineStatus();
+            setInterval(checkPipelineStatus, 5000);
+        });
+
+        // Atajos de teclado
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'c':
+                    if (e.ctrlKey || e.metaKey) return;
+                    centerView();
+                    break;
+                case 'r':
+                    if (e.ctrlKey || e.metaKey) return;
+                    autoRotate();
+                    break;
+                case 's':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        screenshot();
+                    }
+                    break;
+                case 'Escape':
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    }
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>

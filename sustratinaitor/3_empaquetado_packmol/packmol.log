@@ -1,0 +1,85 @@
+
+################################################################################
+
+ PACKMOL - Packing optimization for the automated generation of
+ starting configurations for molecular dynamics simulations.
+ 
+                                                             Version 21.0.1 
+
+################################################################################
+
+  Packmol must be run with: packmol < inputfile.inp 
+
+  Userguide at: http://m3g.iqm.unicamp.br/packmol 
+
+  Reading input file... (Control-C aborts)
+  Types of coordinate files specified: pdb
+  Seed for random number generator:      1234567
+  Output file: 3J7L-GYE.pdb
+  Reading coordinate file: 3J7L_cg.pdb
+  Reading coordinate file: GYE.pdb
+  Number of independent structures:            2
+  The structures are: 
+  Structure            1 :3J7L_cg.pdb(      131820  atoms)
+  Structure            2 :GYE.pdb(         144  atoms)
+  Maximum number of GENCAN loops for all molecule packing:          400
+  Distance tolerance:    2.0000000000000000     
+  Warning: Type of residue numbering not set for structure            1
+  Residue numbering set for structure            1 :           1
+  Swap chains of molecules of structure            1 : F
+  Warning: Type of residue numbering not set for structure            2
+  Residue numbering set for structure            2 :           0
+  Swap chains of molecules of structure            2 : F
+  Number of molecules of type            1 :            1
+  Number of molecules of type            2 :          200
+  Total number of restrictions:            2
+  Total number of atoms:       160620
+  Molecule 3J7L_cg.pdb(           1 ) will be fixed.
+  Total number of molecules:          201
+  Number of fixed molecules:            1
+  Number of free molecules:          200
+  Number of variables:         1200
+  Total number of fixed atoms:       131820
+  Maximum internal distance of type            1 :    46.724569307806355     
+  All atoms must be within these coordinates: 
+   x: [   -1000.0000000000000      ,    1000.0000000000000       ] 
+   y: [   -1000.0000000000000      ,    1000.0000000000000       ] 
+   z: [   -1000.0000000000000      ,    1000.0000000000000       ] 
+  If the system is larger than this, increase the sidemax parameter. 
+
+################################################################################
+
+  Building initial approximation ... 
+
+################################################################################
+
+  Adjusting initial point to fit the constraints 
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+
+  Molecules of type:            2
+
+  Packing:|0                                                        100%|
+          |*************************************************************|
+  Fixing bad orientations ...      1 of     40
+  Moving worst molecules ... 
+  Function value before moving molecules:   61141.523942790074     
+  Type         1 molecules with non-zero contributions:   85.00%
+  Moving        10 molecules of type         1
+  New positions will be based on good molecules (movebadrandom is not set) 
+   Moving:|0                                                        100%|
+          |*************************************************************|
+  Function value after moving molecules:   36346.808639828319     
+  Packing:|0                                                        100%|
+          |*************************************************************|
+  Fixing bad orientations ...      2 of     40
+  Moving worst molecules ... 
+  Function value before moving molecules:   3387.4570174177984     
+  Type         1 molecules with non-zero contributions:   69.00%
+  Moving        10 molecules of type         1
+  New positions will be based on good molecules (movebadrandom is not set) 
+   Moving:|0                                                        100%|
+          |*************************************************************|
+  Function value after moving molecules:   1455.4857153709524     

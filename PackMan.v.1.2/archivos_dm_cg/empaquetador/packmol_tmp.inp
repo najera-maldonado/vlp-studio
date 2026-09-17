@@ -1,0 +1,14 @@
+tolerance 2.0
+filetype pdb
+output capside_1enzimas_20260324_212620.pdb
+
+structure capside_recentrada.pdb
+  number 1
+  fixed 0.0 0.0 0.0 0. 0. 0.
+end structure
+
+structure enzima_recentrada.pdb
+  number 1
+  inside sphere 0.0 0.0 0.0 88
+  radius 5.0
+end structure

@@ -1,0 +1,520 @@
+!!index array str
+ "AMX"
+ "ADX"
+ "ATX"
+ "CMX"
+ "GDX"
+ "GTX"
+ "GMX"
+!entry.AMX.unit.atoms table  str name  str type  int typex  int resx  int flags  int seq  int elmnt  dbl chg
+ "PX"  "PX" 0 1 131075 1 -1 -1.00
+ "C5X" "K5" 0 1 131075 2 -1  0.00
+ "C1X" "KN" 0 1 131075 3 -1  0.00
+ "N6A" "D6" 0 1 131075 4 -1  0.20
+ "N1A" "D1" 0 1 131075 5 -1 -0.20
+ "C2A" "D2" 0 1 131075 6 -1  0.00
+!entry.AMX.unit.atomspertinfo table  str pname  str ptype  int ptypex  int pelmnt  dbl pchg
+ "PX"  "PX" 0 -1 0.0
+ "C5X" "K5" 0 -1 0.0
+ "C1X" "KN" 0 -1 0.0
+ "N6A" "D6" 0 -1 0.0
+ "N1A" "D1" 0 -1 0.0
+ "C2A" "D2" 0 -1 0.0
+!entry.AMX.unit.boundbox array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.AMX.unit.childsequence single int
+ 2
+!entry.AMX.unit.connect array int
+ 0
+ 0
+!entry.AMX.unit.connectivity table  int atom1x  int atom2x  int flags
+ 1 2 1
+ 2 3 1
+ 3 4 1
+ 3 6 1
+ 4 5 1
+ 5 6 1
+!entry.AMX.unit.hierarchy table  str abovetype  int abovex  str belowtype  int belowx
+ "U" 0 "R" 1
+ "R" 1 "A" 1
+ "R" 1 "A" 2
+ "R" 1 "A" 3
+ "R" 1 "A" 4
+ "R" 1 "A" 5
+ "R" 1 "A" 6
+!entry.AMX.unit.name single str
+ "AMX"
+!entry.AMX.unit.positions table  dbl x  dbl y  dbl z
+ 10.800 49.745 18.246
+  9.581 47.969 16.870
+  6.879 48.708 14.664
+  3.717 53.902 15.532
+  3.653 52.644 13.575
+  4.032 51.589 12.851
+!entry.AMX.unit.residueconnect table  int c1x  int c2x  int c3x  int c4x  int c5x  int c6x
+ 0 0 0 0 0 0
+!entry.AMX.unit.residues table  str name  int seq  int childseq  int startatomx  str restype  int imagingx
+ "AMX" 1 7 1 "n" 0
+!entry.AMX.unit.residuesPdbSequenceNumber array int
+ 0
+!entry.AMX.unit.solventcap array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.AMX.unit.velocities table  dbl x  dbl y  dbl z
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+!entry.ADX.unit.atoms table  str name  str type  int typex  int resx  int flags  int seq  int elmnt  dbl chg
+ "PXB" "PX" 0 1 131075 1 -1 -1.00
+ "PXA" "PX" 0 1 131075 2 -1 -1.00
+ "C5X" "K5" 0 1 131075 3 -1  0.00
+ "C1X" "KN" 0 1 131075 4 -1  0.00
+ "N6A" "D6" 0 1 131075 5 -1  0.20
+ "N1A" "D1" 0 1 131075 6 -1 -0.20
+ "C2A" "D2" 0 1 131075 7 -1  0.00
+!entry.ADX.unit.atomspertinfo table  str pname  str ptype  int ptypex  int pelmnt  dbl pchg
+ "PXB" "PX" 0 -1 0.0
+ "PXA" "PX" 0 -1 0.0
+ "C5X" "K5" 0 -1 0.0
+ "C1X" "KN" 0 -1 0.0
+ "N6A" "D6" 0 -1 0.0
+ "N1A" "D1" 0 -1 0.0
+ "C2A" "D2" 0 -1 0.0
+!entry.ADX.unit.boundbox array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.ADX.unit.childsequence single int
+ 2
+!entry.ADX.unit.connect array int
+ 0
+ 0
+!entry.ADX.unit.connectivity table  int atom1x  int atom2x  int flags
+ 1 2 1
+ 2 3 1
+ 3 4 1
+ 4 5 1
+ 4 7 1
+ 5 6 1
+ 6 7 1
+!entry.ADX.unit.hierarchy table  str abovetype  int abovex  str belowtype  int belowx
+ "U" 0 "R" 1
+ "R" 1 "A" 1
+ "R" 1 "A" 2
+ "R" 1 "A" 3
+ "R" 1 "A" 4
+ "R" 1 "A" 5
+ "R" 1 "A" 6
+ "R" 1 "A" 7
+!entry.ADX.unit.name single str
+ "ADX"
+!entry.ADX.unit.positions table  dbl x  dbl y  dbl z
+ 12.756 50.339 16.188
+ 10.800 49.745 18.246
+  9.581 47.969 16.870
+  6.879 48.708 14.664
+  3.717 53.902 15.532
+  3.653 52.644 13.575
+  4.032 51.589 12.851
+!entry.ADX.unit.residueconnect table  int c1x  int c2x  int c3x  int c4x  int c5x  int c6x
+ 0 0 0 0 0 0
+!entry.ADX.unit.residues table  str name  int seq  int childseq  int startatomx  str restype  int imagingx
+ "ADX" 1 8 1 "n" 0
+!entry.ADX.unit.residuesPdbSequenceNumber array int
+ 0
+!entry.ADX.unit.solventcap array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.ADX.unit.velocities table  dbl x  dbl y  dbl z
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+!entry.ATX.unit.atoms table  str name  str type  int typex  int resx  int flags  int seq  int elmnt  dbl chg
+ "PXG" "PX" 0 1 131075 1 -1 -1.00
+ "PXB" "PX" 0 1 131075 2 -1 -1.00
+ "PXA" "PX" 0 1 131075 3 -1 -1.00
+ "C5X" "K5" 0 1 131075 4 -1  0.00
+ "C1X" "KN" 0 1 131075 5 -1  0.00
+ "N6A" "D6" 0 1 131075 6 -1  0.20
+ "N1A" "D1" 0 1 131075 7 -1 -0.20
+ "C2A" "D2" 0 1 131075 8 -1  0.00
+!entry.ATX.unit.atomspertinfo table  str pname  str ptype  int ptypex  int pelmnt  dbl pchg
+ "PXG" "PX" 0 -1 0.0
+ "PXB" "PX" 0 -1 0.0
+ "PXA" "PX" 0 -1 0.0
+ "C5X" "K5" 0 -1 0.0
+ "C1X" "KN" 0 -1 0.0
+ "N6A" "D6" 0 -1 0.0
+ "N1A" "D1" 0 -1 0.0
+ "C2A" "D2" 0 -1 0.0
+!entry.ATX.unit.boundbox array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.ATX.unit.childsequence single int
+ 2
+!entry.ATX.unit.connect array int
+ 0
+ 0
+!entry.ATX.unit.connectivity table  int atom1x  int atom2x  int flags
+ 1 2 1
+ 2 3 1
+ 3 4 1
+ 4 5 1
+ 5 6 1
+ 5 8 1
+ 6 7 1
+ 7 8 1
+!entry.ATX.unit.hierarchy table  str abovetype  int abovex  str belowtype  int belowx
+ "U" 0 "R" 1
+ "R" 1 "A" 1
+ "R" 1 "A" 2
+ "R" 1 "A" 3
+ "R" 1 "A" 4
+ "R" 1 "A" 5
+ "R" 1 "A" 6
+ "R" 1 "A" 7
+ "R" 1 "A" 8
+!entry.ATX.unit.name single str
+ "ATX"
+!entry.ATX.unit.positions table  dbl x  dbl y  dbl z
+ 24.768 50.879  9.474
+ 22.476 52.442 10.067
+ 20.680 51.372  8.061
+ 19.081 53.399  8.071
+ 16.509 53.718 10.538
+ 14.457 48.855 13.436
+ 13.961 50.994 14.090
+ 14.082 52.346 13.950
+!entry.ATX.unit.residueconnect table  int c1x  int c2x  int c3x  int c4x  int c5x  int c6x
+ 0 0 0 0 0 0
+!entry.ATX.unit.residues table  str name  int seq  int childseq  int startatomx  str restype  int imagingx
+ "ATX" 1 9 1 "n" 0
+!entry.ATX.unit.residuesPdbSequenceNumber array int
+ 0
+!entry.ATX.unit.solventcap array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.ATX.unit.velocities table  dbl x  dbl y  dbl z
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+!entry.CMX.unit.atoms table  str name  str type  int typex  int resx  int flags  int seq  int elmnt  dbl chg
+ "PX"  "PX" 0 1 131075 1 -1 -1.00
+ "C5X" "KC" 0 1 131075 2 -1  0.00
+ "C1X" "KN" 0 1 131075 3 -1  0.00
+ "N6A" "D6" 0 1 131075 4 -1  0.20
+ "N1A" "D1" 0 1 131075 5 -1 -0.20
+ "C2A" "D2" 0 1 131075 6 -1  0.00
+!entry.CMX.unit.atomspertinfo table  str pname  str ptype  int ptypex  int pelmnt  dbl pchg
+ "PX"  "PX" 0 -1 0.0
+ "C5X" "KC" 0 -1 0.0
+ "C1X" "KN" 0 -1 0.0
+ "N6A" "D6" 0 -1 0.0
+ "N1A" "D1" 0 -1 0.0
+ "C2A" "D2" 0 -1 0.0
+!entry.CMX.unit.boundbox array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.CMX.unit.childsequence single int
+ 2
+!entry.CMX.unit.connect array int
+ 0
+ 0
+!entry.CMX.unit.connectivity table  int atom1x  int atom2x  int flags
+ 1 2 1
+ 2 3 1
+ 3 4 1
+ 3 6 1
+ 4 5 1
+ 5 6 1
+!entry.CMX.unit.hierarchy table  str abovetype  int abovex  str belowtype  int belowx
+ "U" 0 "R" 1
+ "R" 1 "A" 1
+ "R" 1 "A" 2
+ "R" 1 "A" 3
+ "R" 1 "A" 4
+ "R" 1 "A" 5
+ "R" 1 "A" 6
+!entry.CMX.unit.name single str
+ "CMX"
+!entry.CMX.unit.positions table  dbl x  dbl y  dbl z
+ 2.314489  1.776673 -0.478436
+ 2.156035  2.551837  2.019887
+ 4.558614  1.150950  3.777548
+ 4.976786 -4.883494  3.345922
+ 5.265303 -3.689337  5.302150
+ 5.498276 -2.482153  6.993342
+!entry.CMX.unit.residueconnect table  int c1x  int c2x  int c3x  int c4x  int c5x  int c6x
+ 0 0 0 0 0 0
+!entry.CMX.unit.residues table  str name  int seq  int childseq  int startatomx  str restype  int imagingx
+ "CMX" 1 7 1 "n" 0
+!entry.CMX.unit.residuesPdbSequenceNumber array int
+ 0
+!entry.CMX.unit.solventcap array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.CMX.unit.velocities table  dbl x  dbl y  dbl z
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+!entry.GDX.unit.atoms table  str name  str type  int typex  int resx  int flags  int seq  int elmnt  dbl chg
+ "PXB" "PX" 0 1 131075 1 -1 -1.00
+ "PXA" "PX" 0 1 131075 2 -1 -1.00
+ "C5X" "K5" 0 1 131075 3 -1  0.00
+ "C1X" "KN" 0 1 131075 4 -1  0.00
+ "O6G" "J6" 0 1 131075 5 -1 -0.40
+ "N1G" "J1" 0 1 131075 6 -1  0.20
+ "N2G" "J2" 0 1 131075 7 -1  0.20
+!entry.GDX.unit.atomspertinfo table  str pname  str ptype  int ptypex  int pelmnt  dbl pchg
+ "PXB" "PX" 0 -1 0.0
+ "PXA" "PX" 0 -1 0.0
+ "C5X" "K5" 0 -1 0.0
+ "C1X" "KN" 0 -1 0.0
+ "O6G" "J6" 0 -1 0.0
+ "N1G" "J1" 0 -1 0.0
+ "N2G" "J2" 0 -1 0.0
+!entry.GDX.unit.boundbox array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.GDX.unit.childsequence single int
+ 2
+!entry.GDX.unit.connect array int
+ 0
+ 0
+!entry.GDX.unit.connectivity table  int atom1x  int atom2x  int flags
+ 1 2 1
+ 2 3 1
+ 3 4 1
+ 4 5 1
+ 4 7 1
+ 5 6 1
+ 6 7 1
+!entry.GDX.unit.hierarchy table  str abovetype  int abovex  str belowtype  int belowx
+ "U" 0 "R" 1
+ "R" 1 "A" 1
+ "R" 1 "A" 2
+ "R" 1 "A" 3
+ "R" 1 "A" 4
+ "R" 1 "A" 5
+ "R" 1 "A" 6
+ "R" 1 "A" 7
+!entry.GDX.unit.name single str
+ "GDX"
+!entry.GDX.unit.positions table  dbl x  dbl y  dbl z
+ 22.476 52.442 10.067
+ 20.680 51.372  8.061
+ 19.081 53.399  8.071
+ 16.509 53.718 10.538
+ 14.457 48.855 13.436
+ 13.961 50.994 14.090
+ 14.082 52.346 13.950
+!entry.GDX.unit.residueconnect table  int c1x  int c2x  int c3x  int c4x  int c5x  int c6x
+ 0 0 0 0 0 0
+!entry.GDX.unit.residues table  str name  int seq  int childseq  int startatomx  str restype  int imagingx
+ "GDX" 1 8 1 "n" 0
+!entry.GDX.unit.residuesPdbSequenceNumber array int
+ 0
+!entry.GDX.unit.solventcap array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.GDX.unit.velocities table  dbl x  dbl y  dbl z
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+!entry.GTX.unit.atoms table  str name  str type  int typex  int resx  int flags  int seq  int elmnt  dbl chg
+ "PXG" "PX" 0 1 131075 1 -1 -1.00
+ "PXB" "PX" 0 1 131075 2 -1 -1.00
+ "PXA" "PX" 0 1 131075 3 -1 -1.00
+ "C5X" "K5" 0 1 131075 4 -1  0.00
+ "C1X" "KN" 0 1 131075 5 -1  0.00
+ "O6G" "J6" 0 1 131075 6 -1 -0.40
+ "N1G" "J1" 0 1 131075 7 -1  0.20
+ "N2G" "J2" 0 1 131075 8 -1  0.20
+!entry.GTX.unit.atomspertinfo table  str pname  str ptype  int ptypex  int pelmnt  dbl pchg
+ "PXG" "PX" 0 -1 0.0
+ "PXB" "PX" 0 -1 0.0
+ "PXA" "PX" 0 -1 0.0
+ "C5X" "K5" 0 -1 0.0
+ "C1X" "KN" 0 -1 0.0
+ "O6G" "J6" 0 -1 0.0
+ "N1G" "J1" 0 -1 0.0
+ "N2G" "J2" 0 -1 0.0
+!entry.GTX.unit.boundbox array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.GTX.unit.childsequence single int
+ 2
+!entry.GTX.unit.connect array int
+ 0
+ 0
+!entry.GTX.unit.connectivity table  int atom1x  int atom2x  int flags
+ 1 2 1
+ 2 3 1
+ 3 4 1
+ 4 5 1
+ 5 6 1
+ 5 8 1
+ 6 7 1
+ 7 8 1
+!entry.GTX.unit.hierarchy table  str abovetype  int abovex  str belowtype  int belowx
+ "U" 0 "R" 1
+ "R" 1 "A" 1
+ "R" 1 "A" 2
+ "R" 1 "A" 3
+ "R" 1 "A" 4
+ "R" 1 "A" 5
+ "R" 1 "A" 6
+ "R" 1 "A" 7
+ "R" 1 "A" 8
+!entry.GTX.unit.name single str
+ "GTX"
+!entry.GTX.unit.positions table  dbl x  dbl y  dbl z
+ 24.768 50.879  9.474
+ 22.476 52.442 10.067
+ 20.680 51.372  8.061
+ 19.081 53.399  8.071
+ 16.509 53.718 10.538
+ 14.457 48.855 13.436
+ 13.961 50.994 14.090
+ 14.082 52.346 13.950
+!entry.GTX.unit.residueconnect table  int c1x  int c2x  int c3x  int c4x  int c5x  int c6x
+ 0 0 0 0 0 0
+!entry.GTX.unit.residues table  str name  int seq  int childseq  int startatomx  str restype  int imagingx
+ "GTX" 1 9 1 "n" 0
+!entry.GTX.unit.residuesPdbSequenceNumber array int
+ 0
+!entry.GTX.unit.solventcap array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.GTX.unit.velocities table  dbl x  dbl y  dbl z
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+!entry.GMX.unit.atoms table  str name  str type  int typex  int resx  int flags  int seq  int elmnt  dbl chg
+ "PX"  "PX" 0 1 196611 1 -1 -1.00
+ "C5X" "KC" 0 1 196611 2 -1  0.00
+ "C1X" "KN" 0 1 196611 3 -1  0.00
+ "O6G" "J6" 0 1 196611 4 -1 -0.40
+ "N1G" "J1" 0 1 196611 5 -1  0.20
+ "N2G" "J2" 0 1 196611 6 -1  0.20
+!entry.GMX.unit.atomspertinfo table  str pname  str ptype  int ptypex  int pelmnt  dbl pchg
+ "PX"  "PX" 0 -1 0.0
+ "C5X" "KC" 0 -1 0.0
+ "C1X" "KN" 0 -1 0.0
+ "O6G" "J6" 0 -1 0.0
+ "N1G" "J1" 0 -1 0.0
+ "N2G" "J2" 0 -1 0.0
+!entry.GMX.unit.boundbox array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.GMX.unit.childsequence single int
+ 2
+!entry.GMX.unit.connect array int
+ 0
+ 0
+!entry.GMX.unit.connectivity table  int atom1x  int atom2x  int flags
+ 1 2 1
+ 2 3 1
+ 3 4 1
+ 3 6 1
+ 4 5 1
+ 5 6 1
+!entry.GMX.unit.hierarchy table  str abovetype  int abovex  str belowtype  int belowx
+ "U" 0 "R" 1
+ "R" 1 "A" 1
+ "R" 1 "A" 2
+ "R" 1 "A" 3
+ "R" 1 "A" 4
+ "R" 1 "A" 5
+ "R" 1 "A" 6
+!entry.GMX.unit.name single str
+ "GMX"
+!entry.GMX.unit.positions table  dbl x  dbl y  dbl z
+ 2.314489  1.776673 -0.478436
+ 2.156035  2.551837  2.019887
+ 4.558614  1.150950  3.777548
+ 4.578059 -4.865457  3.315956
+ 4.925924 -3.709096  5.246587
+ 5.299265 -2.702442  7.288571
+!entry.GMX.unit.residueconnect table  int c1x  int c2x  int c3x  int c4x  int c5x  int c6x
+ 0 0 0 0 0 0
+!entry.GMX.unit.residues table  str name  int seq  int childseq  int startatomx  str restype  int imagingx
+ "GMX" 1 7 1 "n" 0
+!entry.GMX.unit.residuesPdbSequenceNumber array int
+ 0
+!entry.GMX.unit.solventcap array dbl
+ -1.000000
+ 0.0
+ 0.0
+ 0.0
+ 0.0
+!entry.GMX.unit.velocities table  dbl x  dbl y  dbl z
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0
+ 0.0 0.0 0.0

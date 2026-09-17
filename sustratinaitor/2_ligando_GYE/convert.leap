@@ -1,0 +1,6 @@
+source leaprc.gaff2
+GYE=loadmol2 GYE.mol2
+loadamberparams GYE.frcmod
+saveoff GYE GYE.off
+savepdb GYE GYE.pdb
+quit

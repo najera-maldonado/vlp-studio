@@ -1,0 +1,912 @@
+++ SIRAH Glycans: P. Garay et al. BioRxiv (2020) [https://doi.org/10.1101/2020.12.18.423446]
+MASS
+l2           50.   ; axia(L)       in/out  glycosidic  oxigen 2  (alpha-linked) [WT like]
+k3           50.   ; e(k)uatorial  in      glycosidic  oxigen 3  (alpha-glycan) [WT like] << workaround for AMQ/AMV <-> BMQ/BMV >>
+K3           50.   ; e(K)uatorial  in      glycosidic  oxigen 3                 [WT like]
+K4           50.   ; e(K)uatorial  in      glycosidic  oxigen 4                 [WT like]
+SX           50.   ; axial-like    in      glycosidic  oxygen 6                 [WN like] 
+SP           50.   ; ***           ***     hydroxyl    hydrogen                 [WH like]
+a2           50.   ; (A)xial       ***     hydroxyl    oxygen 2  (alpha-linked) [WN like]
+2a           50.   ; (A)xial       ***     hydroxyl    oxygen 2  (alpha-linked) [WN like] << mirror-type of a2 >>
+A2           50.   ; (A)xial       ***     hydroxyl    oxygen 2  (beta-linked)  [WN like]
+A4           50.   ; (A)xial       ***     hydroxyl    oxygen 4  (beta-linked)  [WN like]
+r2           50.   ; equato(R)ial  ***     hydroxyl    oxygen 2  (alpha-linked) [WN like]
+R2           50.   ; equato(R)ial  ***     hydroxyl    oxygen 2  (beta-linked)  [WN like]
+R3           50.   ; equato(R)ial  ***     hydroxyl    oxygen 3  (beta-linked)  [WN like]
+R4           50.   ; equato(R)ial  ***     hydroxyl    oxygen 4  (beta-linked)  [WN like]
+R6           50.   ; equato(R)ial  ***     hydroxyl    carbon 6  (beta-linked)  [WN like]
+R7           50.   ; equato(R)ial  ***     hydroxyl    oxygen 7      (AS0)      [WN like]
+R8           50.   ; equato(R)ial  ***     hydroxyl    oxygen 8      (AS0)      [WN like]
+
+BOND
+XE-W3        50.        4.76     ; GC1(A)-GNac(E)  [AS0]
+W3-R4        50.        3.00     ; GNac(E)-GO4(E)  [AS0]
+W3-R7        50.        3.49     ; GNac(E)-GO7(E)  [AS0]
+XE-R7        50.        5.31     ; GC1(A)-GO7(E)   [AS0]
+R7-R8        50.        3.75     ; GO7(E)-GO8(E)   [AS0]
+R7-SP        50.        1.00     ; GO7(E)-GHo7     [AS0]
+R8-SP        50.        1.00     ; GO8(E)-GHo8     [AS0]
+R4-R3        50.        2.87     ; GO4(E)-GO3(E)   [AM2][AMX]
+R4-K3        50.        2.87     ; GO4(E)-GO3(E)   [BM3]
+K4-R3        50.        2.87     ; GO4(E)-GO3(E)   [BY4][BM4][AMY]
+K4-K3        50.        2.87     ; GO4(E)-GO3(E)   [BMQ][BMV]
+K4-k3        50.        2.87     ; GO4(E)-GO3(E)   [AMQ][AMV]
+R3-W3        50.        2.87     ; GO3(E)-GNac(E)  [BY0][BY4][BYU]
+R3-R2        50.        2.87     ; GO3(E)-GO2(E)   [BG0][BG4][BL0][BL6]
+K3-R2        50.        2.87     ; GO3(E)-GO2(E)   [BL3]
+R3-r2        50.        2.87     ; GO3(E)-GO2(E)   [Af0]
+R3-A4        50.        2.77     ; GO3(E)-GO4(A)   [Af0][BL6]
+K3-A4        50.        2.77     ; GO3(E)-GO4(A)   [BL3]
+R3-l2        50.        2.77     ; GO3(E)-GO2(A)   [AM2][AMX][AMY]
+R3-a2        50.        2.77     ; GO3(E)-GO2(A)   [AM0]
+R3-A2        50.        2.77     ; GO3(E)-GO2(A)   [BM0][BM4]
+K3-A2        50.        2.77     ; GO3(E)-GO2(A)   [BMQ][BMV][BM3]
+k3-2a        50.        2.77     ; GO3(E)-GO2(A)   [AMQ][AMV]
+R3-R6        50.        4.95     ; GO3(E)-GC6(E)   [BY0][BY4][BYU][AM0][AM2][AMX][AMY][Af0][BM0][BM4][BL0][BL6]
+K3-R6        50.        4.95     ; GO3(E)-GC6(E)   [BMQ][BMV][BM3][BL3]
+k3-R6        50.        4.95     ; GO3(E)-GC6(E)   [AMQ][AMV]
+R6-W3        50.        5.65     ; GC6(E)-GNac(E)  [BY0][BY4][BYU]
+R6-R2        50.        5.65     ; GC6(E)-GO2(E)   [BG0][BG4][BL0][BL3][BL6]
+R6-r2        50.        5.65     ; GC6(E)-GO2(E)   [Af0]
+R6-a2        50.        4.60     ; GC6(E)-GO2(A)   [AM0]
+R6-2a        50.        4.60     ; GC6(E)-GO2(A)   [AMQ][AMV]
+R6-A2        50.        4.60     ; GC6(E)-GO2(A)   [BMQ][BMV][BM3][BM0][BM4]
+R6-l2        50.        4.60     ; GC6(E)-GO2(A)   [AM2][AMX][AMY]
+r2-SP        50.        1.00     ; GO2(E)-GHo2     [Af0]
+R2-SP        50.        1.00     ; GO2(E)-GHo2     [BG0][BG4][BL0][BL3][BL6]
+a2-SP        50.        1.00     ; GO2(A)-GHo2     [AM0]
+2a-SP        50.        1.00     ; GO2(A)-GHo2     [AMQ][AMV]
+A2-SP        50.        1.00     ; GO2(A)-GHo2     [BMQ][BMV][BM3]
+R3-SP        50.        1.00     ; GO3(E)-GHo3     [BY0][BY4][BYU][AM0][AM2][AMX][AMY][Af0][BM0][BM4][BL0][BL6]
+R4-SP        50.        1.00     ; GO4(E)-GHo4     [AM2][AMX][BM3][AS0]
+A4-SP        50         1.00     ; GO4(A)-GHo4     [Af0][BL3][BL6]
+R6-SP        50.        1.98     ; GC6(E)-GHo6     [BY0][BY4][AM0][AM2][AMY][BM3][BM0][BM4][BL0][BL3]
+R6-SX        50.        1.44     ; GC6(E)-GO6      [BYU][BY4][BMQ][BMV][AMQ][AMV][AMX][BL6]
+W3-QN        50.        2.98     ; +-<> N-glycosylation: [beta_2E]  GNac(E) <- BND       | BY0/BY4/BYU <- sN
+W3-K3        50.        2.87     ; +--< Ramifications:   [beta_2E]  GNac(E) <- GO3 (1-3) | BY0/BY4/BYU <- BM3/BMQ/BMV
+W3-SX        50.        2.87     ; |                                GNac(E) <- GO6 (1-6) | BY0/BY4/BYU <- AMQ/AMV/AMX/BMQ/BMV/BYU
+W3-K4        50.        2.87     ; |                                GNac(E) <- GO4 (1-4) | BY0/BY4/BYU <- AMQ/AMY/BYU/BMQ
+W3-l2        50.        2.87     ; |                                GNac(E) <- GO2 (1-2) | BY0/BYU <- AM2
+R2-K4        50.        2.87     ; |                                 GO2(E) <- GO4 (1-4) | BG0/BG4/BL0/BL3/BL6 <- AMQ/AMY/BG4/BM4/BMQ/BY4/BYU
+A2-l2        50.        2.77     ; | ------------------  [beta_2A]   GO2(A) <- GO2 (1-2) | BM0/BM3/BM4/BMQ/BMV <- AM2/AMX
+A2-SX        50.        2.77     ; |                                 GO2(A) <- GO6 (1-6) | AMQ/AMV/AMX/BMQ/BMV/BYU <- BM0/BM4/BM3/BMQ/BMV
+A2-K4        50.        2.77     ; |                                 GO2(A) <- GO4 (1-4) | BMQ/BMV <- AMQ/AMY/BYU/BMQ
+r2-SX        50.        2.87     ; | ------------------  [alpha_2E]  GO2(E) <- GO6 (1-6) | Af0 <- BYU
+a2-l2        50         3.67     ; | ------------------  [alpha_2A]  GO2(A) <- GO2 (1-2) | AM0 <- AM2
+2a-l2        50         3.67     ; |                                 GO2(A) <- GO2 (1-2) | AMQ/AMV <- AM2
+l2-l2        50.        3.67     ; |                                 GO2(A) <- GO2 (1-2) | AM2 <- AM2
+a2-SX        50         3.67     ; |                                 GO2(A) <- GO6 (1-6) | AM0 <- AMQ/AMV/AMX/BMQ/BMV/BYU
+2a-SX        50         3.67     ; |                                 GO2(A) <- GO6 (1-6) | AMQ/AMV <- AMQ/AMV/AMX/BMQ/BMV/BYU
+l2-SX        50.        3.67     ; |                                 GO2(A) <- GO6 (1-6) | AM2 <- AMQ/AMV/BMQ/BMV/BYU
+a2-K3        50.        3.67     ; |                                 GO2(A) <- GO3 (1-3) | AM0 <- BM3/BMQ/BMV
+a2-k3        50.        3.67     ; |                                 GO2(A) <- GO3 (1-3) | AM0 <- AMQ/AMV
+2a-K3        50.        3.67     ; |                                 GO2(A) <- GO3 (1-3) | AMQ/AMV <- BM3/BMQ/BMV
+l2-K3        50.        3.67     ; |                                 GO2(A) <- GO3 (1-3) | AM2 <- BM3/BMQ/BMV
+l2-k3        50.        3.67     ; |                                 GO2(A) <- GO3 (1-3) | AM2 <- AMQ/AMV
+XE-K3        50.        2.37     ; | ------------------  [alpha_1A]  GC1(A) <- GO3 (1-3) | AS0 <- BL3
+XE-SX        50.        2.37     ; |                                 GC1(A) <- GO6 (1-6) | AS0 <- BL6
+
+ANGLE
+W3-R7-R8     75.       84.       ; GNac(E)-GO7(E)-GO8(E) | preferential position O8: [AS0]
+XE-R7-R8     75.       45.2      ; GC1(A)-GO7(E)-GO8(E)  | preferential position O8: [AS0]
+R7-W3-R4     75.      110.2      ; GO7(E)-GNac(E)-GO4(E) | chiral angle O4: [AS0]
+XE-W3-R4     75.       67.8      ; GC1(A)-GNac(E)-GO4(E) | chiral angle O4: [AS0]
+XE-W3-W3     75.      155.5      ; GC1(A)-GNac(E)-GOac   | N-acetyl group: [AS0]
+W3-XE-X6     75.       99.       ; GNac(E)-GC1(A)-GOA/B  | carboxyl group: [AS0]
+X6-XE-R7     37.4      77.       ; GO7(E)-GC1(A)-GOA/B   | carboxyl group: [AS0]
+R3-R6-SP      5.       90.       ; GO3(E)-GC6(E)-GHo6    | outside ring restriction H6O: [AM0][AM2][AMY][BG0][BG4][BM0][BM4][BY0][BY4][BL0][BL3]
+K3-R6-SP      5.       90.       ;                                                       [BM3]
+R3-R6-SX     75.       90.       ; GO3(E)-GC6(E)-GO6     | outside ring restriction O6 (bond 1-6): [BYU][BL6]
+k3-R6-SX     75.       90.       ;                                                                 [AMQ][AMV]
+K3-R6-SX     75.       90.       ;                                                                 [BM3]
+K4-R3-R6     75.       33.       ; GO4(E)-GO3(E)-GC6(E)  | "anomeric" angle: [AMY][BY0][BY4][BYU][BM0][BM4][BG0][BG4]
+K4-k3-R6     75.       33.       ;                                           [AMQ][AMV]
+K4-K3-R6     75.       33.       ;                                           [BMQ][BMV]
+R4-R3-R6     75.       33.       ;                                           [AM2][BL6]
+R4-K3-R6     75.       33.       ;                                           [BM3]
+A4-R3-R6     75.       30.       ; GO4(A)-GO3(E)-GC6(E)  | "anomeric" angle: [Af0][BL6]
+A4-K3-R6     75.       30.       ;                                           [BL3]
+A4-R3-r2     75.      100.       ; GO4(A)-GO3(E)-GO2(E)  | "anomeric" angle: [Af0]
+A4-R3-R2     75.      100.       ;                                           [BL6]
+A4-K3-R2     75.      100.       ;                                           [BL3]
+K4-K3-A2     75.      100.       ; GO4(E)-GO3(E)-GO2(A)  | "anomeric" angle: [BMQ][BMV]  WARNING! also in ramification GO2 <- GO3 (e.g. BMQ/BMV <- BMQ/BMV)
+K4-R3-l2     75.      100.       ;                                           [AMY]
+R4-R3-l2     75.      100.       ;                                           [AM2]
+K4-R3-a2     75.      100.       ;                                           [AM0]
+K4-k3-2a     75.      100.       ;                                           [AMQ][AMV]
+K4-R3-A2     75.      100.       ;                                           [BM0][BM4]
+R4-K3-A2     75.      100.       ;                                           [BM3]
+K4-R3-W3     75.      114.       ; GO4(E)-GO3(E)-GNac(E) | "anomeric" angle: [BY4][BYU]
+K4-R3-R2     75.      114.       ;                                           [BG0][BG4] 
+R6-W3-W3     75.      175.3      ; GC6(E)-GNac(E)-GOac   | N-acetyl group:   [BY0][BY4][BYU]
+R6-W3-QN     75.       56.7      ; +--< N-glycosylation: [beta_2E]      GC6(E)-GNAc(E) <- BND       | BY0/BY4/BYU <- sN
+R3-W3-QN     75.      112.5      ; |                                    GO3(E)-GNAc(E) <- BND       | BY0/BY4/BYU <- sN
+R6-R2-K4     75.       56.7      ; +--< Ramifications:   [beta_2E]      GC6(E)-GO2(E)  <- GO4 (1-4) | BG0/BG4/BL0/BL3/BL6 <- AMQ/AMY/BG4/BM4/BMQ/BY4/BYU
+R6-W3-K4     75.       56.7      ; |                                    GC6(E)-GNAc(E) <- GO4 (1-4) | BY0/BY4/BYU <- AMQ/AMY/BM4/BY4/BYU
+R6-W3-K3     75.       56.7      ; |                                    GC6(E)-GNAc(E) <- GO3 (1-3) | BY0/BY4/BYU <- BM3/BMQ/BMV
+R6-W3-l2     75.       56.7      ; |                                    GC6(E)-GNAc(E) <- GO2 (1-2) | BY0/BY4/BYU <- AM2/AMX/AMY
+R6-W3-SX     75.       56.7      ; |                                    GC6(E)-GNAc(E) <- GO6 (1-6) | BY0/BY4/BYU <- AMQ/AMV/AMX/BMQ/BMV/BYU
+R3-R2-K4     75.      112.5      ; | ------                             GO3(E)-GO2(E)  <- GO4 (1-4) | BG0/BG4/BL0/BL6 <- AMQ/AMY/BG4/BM4/BMQ/BY4/BYU
+K3-R2-K4     75.      112.5      ; |                                    GO3(E)-GO2(E)  <- GO4 (1-4) | BL3 <- BY4/BYU | ¿BG3 <- BG4?
+R3-W3-K3     75.      112.5      ; |                                    GO3(E)-GNAc(E) <- GO3 (1-3) | BY0/BY4/BYU -> BM3/BMQ/BMV
+R3-W3-K4     75.      112.5      ; |                                    GO3(E)-GNAc(E) <- GO4 (1-4) | BY0/BY4/BYU -> BY4/BYU
+R3-W3-l2     75.      112.5      ; |                                    GO3(E)-GNAc(E) <- GO2 (1-2) | BY0/BY4/BYU -> AM2/AMX/AMY
+R3-W3-SX     75.      112.5      ; |                                    GO3(E)-GNAc(E) <- GO6 (1-6) | BY0/BY4/BYU -> AMQ/AMV/AMX/BMQ/BMV/BYU
+W3-l2-R6      5.      120.       ; | ------ (1-2) ------                GNac(E) <- GO2(A)-GC6(E)    | BY0/BY4/BYU <- AM2         | branch orientation
+W3-K3-A2      5.      120.       ; | ------ (1-3) ------                GNac(E) <- GO3(E)-GO2(A)    | BY0/BY4/BYU <- BM3/BMQ/BMV | branch orientation
+W3-K4-K3      5.      145.       ; | ------ (1-4) ------                GNac(E) <- GO4(E)-GO3(E)    | BY0/BY4/BYU <- BMQ/BMV     | branch orientation
+W3-K4-R3      5.      145.       ; |                                    GNac(E) <- GO4(E)-GO3(E)    | BY0/BY4/BYU <- BM4/BY4/BYU | branch orientation
+R2-K4-R3      5.      145.       ; |                                    GO2(E)  <- GO4(E)-GO3(E)    | BG0/BG4/BL0/BL3/BL6 <- BG4 | branch orientation
+W3-SX-R6      5.      140.       ; | ------ (1-6) ------                GNac(E) <- GO6-CG6(E)       | BY0 <- AMX                 | branch orientation
+R6-A2-l2     75.       77.3      ; | ------------------- [beta_2A]      GC6(E)-GO2(A) <- GO2 (1-2)  | BM0/BM3/BM4/BMQ/BMV <- AM2/AMX
+R6-A2-K4     75.       77.3      ; |                                    GC6(E)-GO2(A) <- GO4 (1-4)  | BM0/BM3/BM4/BMQ/BMV <- AMQ/AMY/BM4/BMQ/BY4/BYU
+R6-A2-SX     75.       77.3      ; |                                    GC6(E)-GO2(A) <- GO6 (1-6)  | BM0/BM3/BM4/BMQ/BMV <- AMQ/AMV/AMX/BMQ/BMV/BYU
+K3-A2-l2     75.      120.9      ; | ------                             GO3(E)-GO2(A) <- GO2 (1-2)  | BMQ/BMV <- AM2/AMX
+R3-A2-K4     75.      120.9      ; |                                    GO3(E)-GO2(A) <- GO4 (1-4)  | BM0/BM4 <- BY4/BYU
+K3-A2-K4     75.      120.9      ; |                                    GO3(E)-GO2(A) <- GO4 (1-4)  | BMQ/BMV/BM3 <- AMQ/AMY/BM4/BMQ/BY4/BYU
+K3-A2-SX     75.      120.9      ; |                                    GO3(E)-GO2(A) <- GO6 (1-6)  | BM3/BMQ/BMV <- AMQ/AMV/AMX/BMQ/BMV/BYU
+A2-l2-R6      5.      125.       ; | ------ (1-2) ------                GO2(A) <- GO2(A)-GC6(E)     | BM0/BM3/BM4/BMQ/BMV <- AM2/AMX | branch orientation
+A2-K4-R3      5.      120.       ; | ------ (1-4) ------                GO2(A) <- GO4(E)-GO3(E)     | BM0/BM4/BMQ/BMV <- BM4/BYU/BY4 | branch orientation
+A2-SX-R6      5.      160.       ; | ------ (1-6) ------                GO2(A) <- GO6-GC6(E)        | BMQ/BMV <- AMQ/AMV/AMX         | branch orientation
+R7-XE-K3     75.       75.9      ; | ------------------- [alpha_1A]     GO7(E)-GC1(A)  <- GO3 (1-3) | AS0 <- BL3
+R7-XE-SX     75.       68.       ; |                                    GO7(E)-GC1(A)  <- GO6 (1-6) | AS0 <- BL6
+W3-XE-K3     75.      101.6      ; | ------                             GNac(E)-GC1(A) <- GO3 (1-3) | AS0 <- BL3
+W3-XE-SX     75.       95.1      ; |                                    GNac(E)-GC1(A) <- GO6 (1-6) | AS0 <- BL6
+XE-K3-R2     10.      132.7      ; | ------ (1-3) ------                GC1(A) <- GO3(E)-GO2(E)     | AS0 <- BL3/¿BG3? | branch orientation 
+XE-SX-R6     10.       94.4      ; | ------ (1-6) ------                GC1(A) <- GO6-GC6(E)        | AS0 <- BL6/¿BG6? | branch orientation 
+R6-l2-K3     75.       60.2      ; | ------------------- [alpha_2A]     GC6(E)-GO2(A) <- GO3 (1-3)  | AM2/AMX/AMY <- BMQ/BMV
+R6-l2-k3     75.       60.2      ; |                                    GC6(E)-GO2(A) <- GO3 (1-3)  | AM2/AMX/AMY <- AMQ/AMV
+R6-a2-k3     75.       60.2      ; |                                    GC6(E)-GO2(A) <- GO3 (1-3)  | AM0 <- AMQ/AMV
+R6-a2-K3     75.       60.2      ; |                                    GC6(E)-GO2(A) <- GO3 (1-3)  | AM0 <- BMQ/BMV
+R6-2a-K3     75.       60.2      ; |                                    GC6(E)-GO2(A) <- GO3 (1-3)  | AMQ/AMV <- BMQ/BMV
+R6-l2-SX     75.       60.2      ; |                                    GC6(E)-GO2(A) <- GO6 (1-6)  | AM2/AMX/AMY <- AMQ/AMV/AMX/BMQ/BMV/BYU
+R6-a2-SX     75.       60.2      ; |                                    GC6(E)-GO2(A) <- GO6 (1-6)  | AM0 <- AMQ/AMV/AMX/BMQ/BMV/BYU
+R6-2a-SX     75.       60.2      ; |                                    GC6(E)-GO2(A) <- GO6 (1-6)  | AMQ/AMV <- AMQ/AMV/AMX/BMQ/BMV/BYU
+R6-a2-l2     75.       60.2      ; |                                    GC6(E)-GO2(A) <- GO2 (1-2)  | AM0 <- AM2/AMX/AMY
+R6-2a-l2     75.       60.2      ; |                                    GC6(E)-GO2(A) <- GO2 (1-2)  | AMQ/AMV <- AM2/AMX/AMY
+R3-a2-k3     75.       82.5      ; | ------                             GO3(E)-GO2(A) <- GO3 (1-3)  | AM0 <- AMQ/AMV
+R3-a2-K3     75.       82.5      ; |                                    GO3(E)-GO2(A) <- GO3 (1-3)  | AM0 <- BMQ/BMV
+k3-2a-K3     75.       82.5      ; |                                    GO3(E)-GO2(A) <- GO3 (1-3)  | AMQ/AMV <- BMQ/BMV
+R3-l2-K3     75.       82.5      ; |                                    GO3(E)-GO2(A) <- GO3 (1-3)  | AM2/AMX/AMY <- BMQ/BMV
+R3-l2-k3     75.       82.5      ; |                                    GO3(E)-GO2(A) <- GO3 (1-3)  | AM2/AMX/AMY <- AMQ/AMV
+R3-l2-SX     75.       82.5      ; |                                    GO3(E)-GO2(A) <- GO6 (1-6)  | AM2/AMX/AMY <- AMQ/AMV/AMX/BMQ/BMV/BYU
+R3-a2-SX     75.       82.5      ; |                                    GO3(E)-GO2(A) <- GO6 (1-6)  | AM0 <- AMQ/AMV/BMQ/BMV/BYU
+k3-2a-SX     75.       82.5      ; |                                    GO3(E)-GO2(A) <- GO6 (1-6)  | AMQ/AMV <- AMQ/AMV/AMX/BMQ/BMV/BYU
+R3-a2-l2     75.       82.5      ; |                                    GO3(E)-GO2(A) <- GO2 (1-2)  | AM0 <- AM2/AMX/AMY
+k3-2a-l2     75.       82.5      ; |                                    GO3(E)-GO2(A) <- GO2 (1-2)  | AMQ/AMV <- AM2/AMX/AMY
+R3-l2-l2     75.       90.       ; | ((!)): symmetry issue              GO3(E)-GO2(A) <- GO2 (1-2)  | AM2/AMX/AMY <- AM2/AMX/AMY  << WARNING >> dual state angle (82º,100º)
+a2-l2-R3      5.      100.       ; | ------ (1-2) ------                GO2(A) <- GO2(A)-GO3(E)     | AM0 <- AM2  | branch orientation (geometrical variation  75-120º)
+a2-l2-R6      5.      155.       ; |                                    GO2(A) <- GO2(A)-GC6(E)     | AM0 <- AM2  | branch orientation (geometrical variation 150-160º)
+l2-k3-2a     25.      160.       ; | ------ (1-3) ------                GO2(A) <- GO3(E)-GO2(A)     | AM2/AMX/AMY <- AMQ/AMV         | branch orientation 
+a2-k3-2a     25.      160.       ; |                                    GO2(A) <- GO3(E)-GO2(A)     | AM0 <- AMQ/AMV                 | branch orientation
+a2-K3-A2     25.      160.       ; |                                    GO2(A) <- GO3(E)-GO2(A)     | AM0 <- BMQ/BMV                 | branch orientation
+2a-K3-A2     25.      160.       ; |                                    GO2(A) <- GO3(E)-GO2(A)     | AMQ/AMV <- BMQ/BMV             | branch orientation
+l2-K3-A2     25.      160.       ; |                                    GO2(A) <- GO3(E)-GO2(A)     | AM2/AMX/AMY <- BMQ/BMV         | branch orientation
+a2-k3-R6      5.      130.       ; | ------                             GO2(A) <- GO3(E)-GC6(E)     | AM0 <- AMQ/AMV                 | branch orientation
+a2-K3-R6      5.      130.       ; |                                    GO2(A) <- GO3(E)-GC6(E)     | AM0 <- BMQ/BMV                 | branch orientation
+2a-K3-R6      5.      130.       ; |                                    GO2(A) <- GO3(E)-GC6(E)     | AMQ/AMV <- BMQ/BMV             | branch orientation
+l2-K3-R6      5.      130.       ; |                                    GO2(A) <- GO3(E)-GC6(E)     | AM2/AMX/AMY <- BMQ/BMV         | branch orientation
+l2-k3-R6      5.      130.       ; |                                    GO2(A) <- GO3(E)-GC6(E)     | AM2/AMX/AMY <- AMQ/AMV         | branch orientation
+l2-SX-R6      5.      140.       ; | ------ (1-6) ------                GO2(A) <- GO6-GC6(E)        | AM2 <- AMQ/AMV/BMQ/BMV/BYU     | branch orientation 
+a2-SX-R6      5.      140.       ; |                                    GO2(A) <- GO6-GC6(E)        | AM0 <- AMQ/AMV/BMQ/BMV/BYU     | branch orientation 
+2a-SX-R6      5.      140.       ; |                                    GO2(A) <- GO6-GC6(E)        | AMQ/AMV <- AMQ/AMV/BMQ/BMV/BYU | branch orientation 
+R6-r2-SX     75.       45.9      ; | ------------------- [alpha_2E]     GC6(E)-GO2(E) <- GO6 (1-6)  | Af0 <- BYU
+R3-r2-SX     75.       93.6      ; |                                    GO3(E)-GO2(E) <- GO6 (1-6)  | Af0 <- BYU
+r2-SX-R6      5.      110.       ; | ------ (1-6) ------                GO2(E) <- GO6-CG6(E)        | Af0 <- BYU/BMQ/BMV | branch orientation
+a2-l2-l2     25.      145.       ; |< trisaccharides:    [alpha_2A](1-2)[alpha_2A] <- * GO2(A) <- GO2(A) <- GO2  | AM0 <- AM2 <- AM2
+l2-l2-l2     25.      145.       ; |                                                    GO2(A) <- GO2(A) <- GO2  | AM2 <- AM2 <- AM2
+a2-l2-K3     25.      145.       ; |                                                    GO2(A) <- GO2(A) <- GO3  | AM0 <- AM2 <- BMQ/BMV
+2a-l2-K3     25.      145.       ; |                                                    GO2(A) <- GO2(A) <- GO3  | AMQ/AMV <- AM2 <- BMQ/BMV
+a2-l2-k3     25.      145.       ; |                                                    GO2(A) <- GO2(A) <- GO3  | AM0 <- AM2 <- AMQ/AMV
+2a-l2-k3     25.      145.       ; |                                                    GO2(A) <- GO2(A) <- GO3  | AMQ/AMV <- AM2 <- AMQ/AMV
+l2-l2-K3     25.      145.       ; |                                                    GO2(A) <- GO2(A) <- GO3  | AM2 <- AM2 <- BMQ/BMV
+l2-l2-k3     25.      145.       ; |                                                    GO2(A) <- GO2(A) <- GO3  | AM2 <- AM2 <- AMQ/AMV
+a2-l2-SX     25.      145.       ; |                                                    GO2(A) <- GO2(A) <- GO6  | AM0 <- AM2 <- AMQ/AMV/AMX/BMQ/BMV/BYU
+2a-l2-SX     25.      145.       ; +-------->                                           GO2(A) <- GO2(A) <- GO6  | AMQ/AMV <- AM2/AMX/AMY <- AMQ/AMV/AMX/BMQ/BMV/BYU
+R7-W3-W3      0.        0.       ; +--< complete topology: [AS0] /////////////////////////////////////////////////////////////////////////////////////////
+R7-R8-SP      0.        0.       ; |
+SP-R7-R8      0.        0.       ; |
+W4-W3-R7      0.        0.       ; |
+W3-R7-SP      0.        0.       ; |
+SP-R4-W3      0.        0.       ; |
+R4-W3-W4      0.        0.       ; |
+R4-W3-W3      0.        0.       ; |
+XE-W3-W4      0.        0.       ; |
+XE-W3-R7      0.        0.       ; |
+W3-XE-R7      0.        0.       ; |
+XE-R7-W3      0.        0.       ; |
+XE-R7-SP      0.        0.       ; +-------->
+R3-R6-R2      0.        0.       ; +--< complete topology: [BL0]
+R3-R2-R6      0.        0.       ; | +[BL6]
+SP-R3-R2      0.        0.       ; | +[BL6]
+R6-R3-R2      0.        0.       ; | +[BL6]
+SP-R6-R2      0.        0.       ; | +[BL3]
+SP-R2-R3      0.        0.       ; | +[BL6]
+SP-R2-R6      0.        0.       ; | +[BL3][BL6]
+K4-R3-SP      0.        0.       ; +--< complete topology: [BY0][BY4][BYU]
+R3-R6-W3      0.        0.       ; |
+R3-W3-R6      0.        0.       ; |
+R3-W3-W4      0.        0.       ; |
+R3-W3-W3      0.        0.       ; |
+SP-R3-R6      0.        0.       ; |
+SP-R3-W3      0.        0.       ; |
+SP-R6-W3      0.        0.       ; | +[BY0][BY4]
+SX-R6-W3      0.        0.       ; | +[BYU]
+R6-R3-W3      0.        0.       ; |
+R6-W3-W4      0.        0.       ; +-------->
+K3-A2-R6      0.        0.       ; +--< complete topology: [BMQ][BMV]
+K3-A2-SP      0.        0.       ; |  WARNING! also in self-ramification GO2 <- GO3
+K3-R6-A2      0.        0.       ; |  WARNING! also in self-ramification GO2 <- GO3
+R6-K3-A2      0.        0.       ; |  WARNING! also in self-ramification GO2 <- GO3
+R6-A2-SP      0.        0.       ; |  [BM0][BM3][BM4]
+SX-R6-A2      0.        0.       ; +-------->
+R4-R3-SP      0.        0.       ; +--< complete topology: [AM2]
+SP-R6-l2      0.        0.       ; | +[AMY]
+R3-R6-l2      0.        0.       ; | +[AMY]
+SP-R3-l2      0.        0.       ; | +[AMY]
+R6-R3-l2      0.        0.       ; | +[AMY]
+R3-l2-R6      0.        0.       ; | +[AMY]
+SP-R4-R3      0.        0.       ; +-------->
+A4-R3-SP      0.        0.       ; +--< complete topology: [Af0]
+SP-A4-R3      0.        0.       ; | +[BL6]
+R3-R6-r2      0.        0.       ; |
+R3-r2-R6      0.        0.       ; |
+R3-r2-SP      0.        0.       ; |
+SP-R3-r2      0.        0.       ; |
+R6-R3-r2      0.        0.       ; |
+R6-r2-SP      0.        0.       ; +-------->
+SX-R6-R2      0.        0.       ; +-<> complete topology: [BL6]
+SP-A4-K3      0.        0.       ; +--< complete topology: [BL3]
+K3-R6-R2      0.        0.       ; |
+K3-R2-R6      0.        0.       ; |
+K3-R2-SP      0.        0.       ; |
+R6-K3-R2      0.        0.       ; +-------->
+SP-R4-K3      0.        0.       ; +--< complete topology: [BM3]
+SP-R6-A2      0.        0.       ; +-------->
+R3-R6-a2      0.        0.       ; +--< complete topology: [AM0]
+R3-a2-R6      0.        0.       ; |
+R3-a2-SP      0.        0.       ; |
+SP-R3-a2      0.        0.       ; |
+R6-R3-a2      0.        0.       ; |
+R6-a2-SP      0.        0.       ; |
+SP-R6-a2      0.        0.       ; +-------->
+k3-R6-2a      0.        0.       ; +--< complete topology: [AMQ][AMV]
+k3-2a-R6      0.        0.       ; |  WARNING! also in self-ramification GO2 <- GO3
+k3-2a-SP      0.        0.       ; |
+R6-2a-SP      0.        0.       ; |
+R6-k3-2a      0.        0.       ; |
+SX-R6-2a      0.        0.       ; +-------->
+SX-R6-l2      0.        0.       ; +-<> complete topology: [AMX]
+R3-R6-A2      0.        0.       ; +--< complete topology: [BM0][BM4]
+R3-A2-R6      0.        0.       ; |
+R3-A2-SP      0.        0.       ; |
+SP-R3-A2      0.        0.       ; |
+R6-R3-A2      0.        0.       ; +-------->
+QC-QN-W3      0.        0.       ; +--< complete topology: N-glycosylation
+QX-QN-W3      0.        0.       ; |
+QN-W3-W4      0.        0.       ; |
+QN-W3-W3      0.        0.       ; +--------> /// Ramifications:
+XE-K3-R6      0.        0.       ; |< complete topology: [alpha_1A] (1-3) AS0 <- BL3                     | branch orientation set by XE-K3-R2
+XE-K3-A4      0.        0.       ; |                                      AS0 <- BL3                     | branch orientation set by XE-K3-R2
+X6-XE-K3      0.        0.       ; |                                      AS0 <- BL3                     | carboxyl group
+X6-XE-SX      0.        0.       ; |                                (1-6) AS0 <- BL6                     | carboxyl group
+W3-l2-R3      0.        0.       ; | ----------------    [beta_2E]  (1-2) BY0/BY4/BYU <- AM2             | branch orientation set by W3-l2-R6
+W3-K3-R4      0.        0.       ; |                                (1-4) BY0/BY4/BYU <- BM3             | branch orientation set by W3-K3-A2
+W3-K3-R6      0.        0.       ; |                                (1-6) BY0/BY4/BYU <- BM3/BMQ/BMV     | branch orientation set by W3-K3-A2
+A2-l2-R3      0.        0.       ; |                     [beta_2A]  (1-2) BM0/BM3/BM4/BMQ/BMV <- AM2/AMX | branch orientation set by A2-l2-R6
+l2-l2-R6      0.        0.       ; |                     [alpha_2A] (1-2) AM2 <- AM2                     | Dual state angle (60º,150º), using dihedral R6-R3-l2-l2 to set it.
+r2-K3-R6      0.        0.       ; |                     [alpha_2E] (1-3) Af0 <- BMQ/BMV                 | add parameters??
+a2-k3-K4      0.        0.       ; | ----------------    [alpha_2A] (1-3) AM0 <- AMQ/AMV                 | branch orientation set by a2-k3-2a and a2-k3-R6
+a2-K3-K4      0.        0.       ; |                                (1-3) AM0 <- BMQ/BMV                 | branch orientation set by a2-K3-A2 and a2-K3-R6
+2a-K3-K4      0.        0.       ; |                                (1-3) AMQ/AMV <- BMQ/BMV             | branch orientation set by 2a-K3-A2 and 2a-K3-R6
+l2-K3-K4      0.        0.       ; |                                (1-3) AM2/AMX/AMY <- BMQ/BMV         | branch orientation set by l2-K3-A2 and l2-K3-R6
+l2-k3-K4      0.        0.       ; |                                (1-3) AM2/AMX/AMY <- AMQ/AMV         | branch orientation set by l2-k3-2a and l2-k3-R6
+W3-W3-l2      0.        0.       ; |< N-acetyl group:     *******   (1-2) BY0/BY4/BYU <- AM2
+W4-W3-l2      0.        0.       ; |                                (1-2) BY0/BY4/BYU <- AM2
+W3-W3-K3      0.        0.       ; |                                (1-3) BY0/BY4/BYU <- BM3/BMQ/BMV
+W4-W3-K3      0.        0.       ; |                                (1-3) BY0/BY4/BYU <- BM3/BMQ/BMV
+W3-W3-K4      0.        0.       ; |                                (1-4) BY0/BY4/BYU <- BY4/BYU
+W4-W3-K4      0.        0.       ; |                                (1-4) BY0/BY4/BYU <- BY4/BYU
+W3-W3-SX      0.        0.       ; |                                (1-6) BY0/BY4/BYU <- AMQ/AMV/AMX/BMQ/BMV/BYU
+W4-W3-SX      0.        0.       ; |                                (1-6) BY0/BY4/BYU <- AMQ/AMV/AMX/BMQ/BMV/BYU
+SP-A2-K4      0.        0.       ; |< Hydrogen GHo2:     [beta_2A]  (1-4) BMQ/BMV <- BYU/BY4
+SP-A2-SX      0.        0.       ; |                                (1-6) BMQ/BMV <- AMX
+SP-A2-l2      0.        0.       ; |                                (1-2) BM0/BM3/BM4/BMQ/BMV <- AM2/AMX
+SP-a2-l2      0.        0.       ; | ----------------    [alpha_2A] (1-2) AM0 <- AM2
+SP-2a-l2      0.        0.       ; |                                (1-2) AMQ/AMV <- AM2
+SP-a2-SX      0.        0.       ; |                                (1-6) AM0 <- AMQ/AMV/BMQ/BMV/BYU
+SP-2a-SX      0.        0.       ; |                                (1-6) AMQ/AMV <- AMQ/AMV/BMQ/BMV/BYU
+SP-a2-k3      0.        0.       ; |                                (1-3) AM0 <- AMQ/AMV
+SP-a2-K3      0.        0.       ; |                                (1-3) AM0 <- BMQ/BMV
+SP-2a-K3      0.        0.       ; |                                (1-3) AMQ/AMV <- BMQ/BMV
+SP-R2-K4      0.        0.       ; | ----------------    [beta_2E]  (1-4) BG0/BG4/BL0/BL3/BL6 <- AMQ/AMY/BG4/BM4/BMQ/BY4/BYU
+SP-r2-K3      0.        0.       ; | ----------------    [alpha_2E] (1-3) Af0 <- BMQ/BMV
+SP-r2-SX      0.        0.       ; |                                (1-6) Af0 <- BYU/BMQ/BMV
+A2-l2-l2      0.        0.       ; |< trisaccharide:     [beta_2A](1-2)[alpha_2A] <- * GO2(A)  <- GO2(A) <- GO2 | BMQ/BMV <- AM2/AMX <- AM2/AMX
+W3-l2-K3      0.        0.       ; |                     [beta_2E](1-2)[alpha_2A] <- * GNac(E) <- GO2(A) <- GO3 | BY0/BY4/BYU <- AM2 <- BM3/BMQ/BMV
+W3-l2-SX      0.        0.       ; |                                                   GNac(E) <- GO2(A) <- GO6 | BY0/BY4/BYU <- AM2/AMX/AMY <- BYU/BMQ/BMV
+
+DIHEDRAL
+W3-XE-R7-R8   1  143.4         -68.2            1. ; GNac(E)-GC1(A)-GO7(E)-GO8    | C8 preferential orientation: [AS0]
+R7-XE-W3-R4   1  143.4         -62.3            1. ; GO7(E)-GC1(A)-GNac(E)-GO4(E) | O4 dihedral: [AS0]
+X6-XE-W3-R4   1   71.7         123.5            1. ; GOA/B-GC1(A)-GNAc(E)-GO4(E)  | carboxyl group orientation: [AS0]
+K4-k3-R6-2a   1  143.4           0.             1. ; +--< GO4 D-isomer: GO4(E)-GO3(E)-GC6(E)-GO2(A)     [AMQ][AMV]
+K4-R3-R6-a2   1  143.4           0.             1. ; |                                                  [AM4]
+K4-R3-R6-l2   1  143.4           0.             1. ; |                                                  [AMY]
+R4-R3-R6-l2   1  143.4           0.             1. ; |                                                  [AM2][AMX]
+R4-K3-R6-A2   1  143.4           0.             1. ; |                                                  [BM3]
+K4-R3-R6-A2   1  143.4           0.             1. ; |                                                  [BM0][BM4]
+K4-K3-R6-A2   1  143.4           0.             1. ; |                                                  [BMQ][BMV]
+K4-R3-R6-W3   1  143.4          32.             1. ; |             ---- GO4(E)-GO3(E)-GC6(E)-GNac(E)    [BY4][BYU]
+K4-R3-R6-R2   1  143.4          32.             1. ; |             ---- GO4(E)-GO3(E)-GC6(E)-GO2(E)     [BG0][BG4]
+A4-K3-R6-R2   1  143.4         -75.             1. ; |             ---- GO4(A)-GO3(E)-GC6(E)-GO2(E)     [BL3]
+A4-R3-R6-R2   1  143.4         -75.             1. ; |                                                  [BL6]
+A4-R3-R6-r2   1  143.4          75.             1. ; +--< GO4 L-isomer: GO4(A)-GO3(E)-GC6(E)-GO2(E)     [Af0]        << using r2 to set isomer, otherwise use a4, r4, k4 ... >>
+K3-A2-R6-SX   1   15.0         -60.             1. ; +--< GO6 glyco-rotation: GO3(E)-GO2(A)-GC6(E)-GO6  [BMQ][BMV]
+k3-2a-R6-SX   1   15.0         -60.             1. ; |                                                  [AMQ][AMV]
+R3-l2-R6-SX   1   15.0         -60.             1. ; |                                                  [AMX]
+R3-W3-R6-SX   1   15.0        -120.             1. ; |             ---- GO3(E)-GNac(E)-GC6(E)-GO6       [BYU]
+K4-R3-W3-QN   1  143.4        -140.             1. ; +--< N-glycosylation: [beta_2E]   GO4(E)-GO3(E)-GNAc(E) <- BND       | BY4/BYU <- sN  | required for MD stability
+R3-R6-W3-QN   1  143.4          25.             1. ; |                                 GO3(E)-GC6(E)-GNAc(E) <- BND       | BY4/BYU <- sN
+K4-R3-W3-l2   1  143.4        -140.             1. ; +--< Ramifications:   [beta_2E]   GO4(E)-GO3(E)-GNAc(E) <- GO2 (1-2) | BY4/BYU <- AM2/AMX/AMY
+K4-R3-W3-K3   1  143.4        -140.             1. ; | | required for MD stability     GO4(E)-GO3(E)-GNAc(E) <- GO3 (1-3) | BY4/BYU <- BM3/BMQ/BMV
+K4-R3-W3-K4   1  143.4        -140.             1. ; | |                               GO4(E)-GO3(E)-GNAc(E) <- GO4 (1-4) | BY4/BYU <- AMQ/AMY/BM4/BMQ/BY4/BYU
+K4-R3-W3-SX   1  143.4        -140.             1. ; | |                               GO4(E)-GO3(E)-GNAc(E) <- GO6 (1-6) | BY4/BYU <- AMQ/AMV/AMX/BMQ/BMV/BYU
+K4-R3-R2-K4   1  143.4        -140.             1. ; | +--->                           GO4(E)-GO3(E)-GO2(E)  <- GO4 (1-4) | BG0/BG4 <- BG4
+R3-R6-W3-SX   1  143.4          25.             1. ; |                                 GO3(E)-GC6(E)-GNAc(E) <- GO6 (1-6) | BY0/BY4/BYU <- AMQ/AMV/AMXBMQ/BMV/BYU
+R3-R6-W3-l2   1  143.4          25.             1. ; |                                 GO3(E)-GC6(E)-GNAc(E) <- GO2 (1-2) | BY0/BY4/BYU <- AM2/AMX/AMY
+R3-R6-W3-K3   1  143.4          25.             1. ; |                                 GO3(E)-GC6(E)-GNAc(E) <- GO3 (1-3) | BY0/BY4/BYU <- BM3/BMQ/BMV
+R3-R6-W3-K4   1  143.4          25.             1. ; |                                 GO3(E)-GC6(E)-GNAc(E) <- GO4 (1-4) | BY0/BY4/BYU <- BYU/BY4/BMQ
+R3-R6-R2-K4   1  143.4          25.             1. ; |                                 GO3(E)-GC6(E)-GO2(E)  <- GO4 (1-4) | BG0/BG4/BL0/BL6 <- AMQ/AMY/BG4/BM4/BMQ/BY4/BYU
+K3-R6-R2-K4   1  143.4          25.             1. ; |                                 GO3(E)-GC6(E)-GO2(E)  <- GO4 (1-4) | BL3 <- AMQ/AMY/BG4/BM4/BMQ/BY4/BYU
+K4-R3-A2-K4   1  143.4         110.             1. ; |-----------------    [beta_2A]   GO4(E)-GO3(E)-GO2(A)  <- GO4 (1-4) | BM4 <- AMQ/AMY/BM4/BMQ/BY4/BYU
+R4-K3-A2-K4   1  143.4         110.             1. ; | | required for MD stability     GO4(E)-GO3(E)-GO2(A)  <- GO4 (1-4) | BM3 <- AMQ/AMY/BM4/BMQ/BY4/BYU
+K4-K3-A2-K4   1  143.4         110.             1. ; | |                               GO4(E)-GO3(E)-GO2(A)  <- GO4 (1-4) | BMQ/BMV/BM3 <- AMQ/AMY/BM4/BMQ/BY4/BYU
+K4-K3-A2-l2   1  143.4         110.             1. ; | +--->                           GO4(E)-GO3(E)-GO2(A)  <- GO2 (1-2) | BMQ/BMV/BM3 <- AM2/AMX/AMY
+R3-R6-A2-K4   1  143.4         -54.4            1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO4 (1-4) | BM0/BM4 <- BM4/BMQ/BY4/BYU
+K3-R6-A2-K4   1  143.4         -54.4            1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO4 (1-4) | BMQ/BMV/BM3 <- BY4/BYU
+K3-R6-A2-l2   1  143.4         -54.4            1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO2 (1-2) | BMQ/BMV/BM3 <- AM2/AMX/AMY
+K3-R6-A2-SX   1  143.4         -54.4            1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO6 (1-6) | BMQ/BMV/BM3 <- AMQ/AMV/AMX/BMQ/BMV/BYU
+A2-K4-R3-R6   1   21.7           0.             1. ; | ----- (1-4) ----                GO2(A) <- GO4(E)-GO3(E)-GO6(E)     | BMQ/BMV <- BY4 | branch orientation
+R7-W3-XE-K3   1  143.4         127.3            1. ; |-----------------    [alpha_1A]  GO7(E)-GNac(E)-GC1(A) <- GO3 (1-3) | AS0 <- BL3
+R7-W3-XE-SX   1  143.4         135.2            1. ; |                                 GO7(E)-GNac(E)-GC1(A) <- GO6 (1-6) | AS0 <- BL6
+W3-XE-K3-R2   1    5.          -11.             2. ; | ----- (1-3) ----                GNac(E)-GC1(A) <- GO3(E)-GO2(E)    | AS0 <- BL3 | branch orientation
+W3-XE-SX-R6   1   71.7         -44.6            1. ; | ----- (1-6) ----                GNac(E)-GC1(A) <- GO6-GC6(E)       | AS0 <- BL6 | branch orientation
+R4-R3-l2-K3   1  143.4         115.             1. ; |-----------------    [alpha_2A]  GO4(E)-GO3(E)-GO2(A)  <- GO3 (1-3) | AM2/AMX <- BMQ/BMV/BM3
+K4-R3-l2-K3   1  143.4         115.             1. ; | | required for MD stability     GO4(E)-GO3(E)-GO2(A)  <- GO3 (1-3) | AMY <- BMQ/BMV/BM3
+R4-R3-l2-k3   1  143.4         115.             1. ; | |                               GO4(E)-GO3(E)-GO2(A)  <- GO3 (1-3) | AM2/AMX <- AMQ/AMV
+R4-R3-l2-SX   1  143.4         115.             1. ; | |                               GO4(E)-GO3(E)-GO2(A)  <- GO6 (1-6) | AM2/AMX <- AMQ/AMV/AMX/BMQ/BMV/BYU
+K4-k3-2a-SX   1  143.4         115.             1. ; | +--->                           GO4(E)-GO3(E)-GO2(A)  <- GO6 (1-6) | AMQ/AMV <- AMQ/AMV/AMX/BMQ/BMV/BYU
+R3-R6-a2-k3   1  143.4         -95.             1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO3 (1-3) | AM0 <- AMQ/AMV
+R3-R6-a2-K3   1  143.4         -95.             1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO3 (1-3) | AM0 <- BMQ/BMV/BM3
+k3-R6-2a-K3   1  143.4         -95.             1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO3 (1-3) | AMQ/AMV <- BMQ/BMV/BM3
+R3-R6-l2-K3   1  143.4         -95.             1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO3 (1-3) | AM2/AMX/AMY <- BMQ/BMV/BM3
+R3-R6-l2-k3   1  143.4         -95.             1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO3 (1-3) | AM2/AMX/AMY <- AMQ/AMV
+R3-R6-l2-SX   1  143.4         -95.             1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO6 (1-6) | AM2/AMX/AMY <- AMQ/AMV/AMX/BMQ/BMV/BYU
+R3-R6-a2-SX   1  143.4         -95.             1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO6 (1-6) | AM0 <- AMQ/AMV/AMX/BMQ/BMV/BYU
+k3-R6-2a-SX   1  143.4         -95.             1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO6 (1-6) | AMQ/AMV <- AMQ/AMV/AMX/BMQ/BMV/BYU
+R3-R6-a2-l2   1  143.4         -95.             1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO2 (1-2) | AM0 <- AM2/AMX/AMY
+k3-R6-2a-l2   1  143.4         -95.             1. ; |                                 GO3(E)-GC6(E)-GO2(A)  <- GO2 (1-2) | AMQ/AMV <- AM2/AMX/AMY
+R3-a2-l2-R3   1    5.0          35.             1. ; | ----- (1-2)                     GO3(E)-GO2(A) <- GO2(A)-GO3(E)     | AM0 <- AM2 | branch orientation
+R3-l2-l2-R3   1    5.0          35.             1. ; |                                                                      AM2 <- AM2 | branch orientation
+R3-R6-l2-l2   1  143.4           0.             2. ; | ((!)): symmetry issue           AM2 <- AM2/AMX | model dual state angle: GO3(6)-GO2(A) <- GO2(A); GO2(A) <- GO2(A)-GO6(E)
+R6-R3-l2-l2   1  220.0          45.            -1. ; | ((!)): symmetry issue           AM2 <- AM2/AMX | model dual state angle: GO3(E)-GO2(A) <- GO2(A); GO2(A) <- GO2(A)-GO3(E)
+R6-R3-l2-l2   1  240.0          90.             2. ; |
+A4-R3-r2-SX   1  143.4        -120.8            1. ; |-----------------    [alpha_2E]  GO4(A)-GO3(E)-GO2(E) <- GO6   | Af0 <- BMQ/BMV/BYU  << L-isomer >> 
+R3-R6-r2-SX   1  143.4          52.3            1. ; |                                 GO3(E)-GC6(E)-GO2(E) <- GO3   | Af0 <- BMQ/BMV/BYU
+X6-XE-R7-SP   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 +--< exclude 1-4 interactions: Residues      [AS0]
+SX-R6-A2-SP   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                            [BMQ][BMV]
+SX-R6-2a-SP   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                            [AMQ][AMV]
+SX-R6-R2-SP   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                            [BL6]
+X6-XE-SX-R6   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 +--< exclude 1-4 interactions: Ramifications  GOA/B-GC1(A) <- GO6-GC6(E)   | AS0 <- BL6
+SP-R3-r2-SX   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                             GHo3-GO3(E)-GO2(E) <- GO6    | Af0 <- BYU (1-6)
+SP-A2-K4-R3   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                             GHo2-GO2(A) <- GO4(E)-GO3(E) | BM4/BMQ/BMV <- BY4 (1-4)
+A2-K4-R3-SP   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                             GO2(A) <- GO4(E)-GO3(E)-GHo3 | BM4/BMQ/BMV <- BY4 (1-4)
+SP-a2-l2-R3   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                             GHo2-GO2(A) <- GO2(A)-GO3(E) | AM0 <- AM2/AMX/AMY (1-2)
+a2-l2-R3-SP   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                             GO2(A) <- GO2(A)-GO3(E)-GHo3 | AM0 <- AM2/AMX/AMY (1-2)
+SP-A2-l2-R3   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                             GHo2-GO2(A) <- GO2(A)-GO3(E) | BMQ/BMV <- AM2/AMX/AMY (1-2)
+A2-l2-R3-SP   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                             GO2(A) <- GO2(A)-GO3(E)-GHo3 | BMQ/BMV <- AM2/AMX/AMY (1-2)
+SP-R2-K4-R3   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 |                                             GHo2-GO2(E) <- GO4(E)-GO3(E) | BG0/BG4/BL0 <- BG4 (1-4)
+R2-K4-R3-SP   1    0.            0.             1. ; | SCEE=0.0 SCNB=0.0 +--------->                                   GO2(E) <- GO4(E)-GO3(E)-GHo3 | BG0/BG4/BL0 <- BG4 (1-4)
+SP-R7-R8-SP   1    0.            0.             1. ; +--< complete topology: [AS0] /////////////////////////////////////////////////////////////////////////
+W3-W3-R7-SP   1    0.            0.             1. ; |
+W3-W3-R7-R8   1    0.            0.             1. ; |
+W3-W4-W3-R7   1    0.            0.             1. ; |
+W4-W3-R7-SP   1    0.            0.             1. ; |
+W4-W3-R7-R8   1    0.            0.             1. ; |
+W4-W3-W3-R7   1    0.            0.             1. ; |
+W3-R7-R8-SP   1    0.            0.             1. ; |
+SP-R4-W3-W4   1    0.            0.             1. ; |
+SP-R4-W3-W3   1    0.            0.             1. ; |
+SP-R4-W3-R7   1    0.            0.             1. ; |
+R4-W3-W4-W3   1    0.            0.             1. ; |
+R4-W3-W3-W4   1    0.            0.             1. ; |
+R4-W3-R7-SP   1    0.            0.             1. ; |
+R4-W3-R7-R8   1    0.            0.             1. ; |
+X6-XE-W3-W4   1    0.            0.             1. ; |
+X6-XE-W3-W3   1    0.            0.             1. ; |
+X6-XE-W3-R7   1    0.            0.             1. ; |
+X6-X6-XE-W3   1    0.            0.             1. ; |
+XE-W3-R4-SP   1    0.            0.             1. ; |
+XE-W3-W4-W3   1    0.            0.             1. ; |
+XE-W3-W3-W4   1    0.            0.             1. ; |
+XE-W3-R7-SP   1    0.            0.             1. ; |
+XE-W3-R7-R8   1    0.            0.             1. ; |
+W3-W3-XE-R7   1    0.            0.             1. ; |
+W4-W3-XE-R7   1    0.            0.             1. ; |
+W3-XE-R7-SP   1    0.            0.             1. ; |
+X6-XE-R7-W3   1    0.            0.             1. ; |
+X6-XE-R7-R8   1    0.            0.             1. ; |
+X6-X6-XE-R7   1    0.            0.             1. ; |
+XE-R7-W3-R4   1    0.            0.             1. ; |
+XE-R7-W3-W4   1    0.            0.             1. ; |
+XE-R7-W3-W3   1    0.            0.             1. ; |
+XE-R7-R8-SP   1    0.            0.             1. ; +-------->
+K4-R3-R2-R6   1    0.            0.             1. ; +--< complete topology: [BG0][BG4]
+K4-R3-R2-SP   1    0.            0.             1. ; |
+R3-R6-R2-SP   1    0.            0.             1. ; | +[BL0]
+R3-R2-R6-SP   1    0.            0.             1. ; | +[BL0]
+SP-R3-R6-R2   1    0.            0.             1. ; | +[BL0]
+SP-R3-R2-R6   1    0.            0.             1. ; | +[BL0]
+SP-R3-R2-SP   1    0.            0.             1. ; | +[BL0]
+R6-R3-R2-SP   1    0.            0.             1. ; | +[BL0]
+SP-R6-R3-R2   1    0.            0.             1. ; | +[BL0]
+SP-R6-R2-SP   1    0.            0.             1. ; | +[BL0][BL3]
+K4-R3-R6-SP   1    0.            0.             1. ; +--< complete topology: [BY0][BY4][BYU]
+K4-R3-W3-R6   1    0.            0.             1. ; |
+K4-R3-W3-W4   1    0.            0.             1. ; |
+K4-R3-W3-W3   1    0.            0.             1. ; |
+R3-R6-W3-W4   1    0.            0.             1. ; |
+R3-R6-W3-W3   1    0.            0.             1. ; |
+R3-W3-R6-SP   1    0.            0.             1. ; |
+R3-W3-W4-W3   1    0.            0.             1. ; |
+R3-W3-W3-W4   1    0.            0.             1. ; |
+SP-R3-R6-SP   1    0.            0.             1. ; |
+SP-R3-R6-W3   1    0.            0.             1. ; |
+SP-R3-W3-R6   1    0.            0.             1. ; |
+SP-R3-W3-W4   1    0.            0.             1. ; |
+SP-R3-W3-W3   1    0.            0.             1. ; |
+R6-R3-W3-W4   1    0.            0.             1. ; |
+R6-R3-W3-W3   1    0.            0.             1. ; |
+R6-W3-W4-W3   1    0.            0.             1. ; |
+R6-W3-W3-W4   1    0.            0.             1. ; |
+SP-R6-R3-W3   1    0.            0.             1. ; |
+SP-R6-W3-W4   1    0.            0.             1. ; |
+SP-R6-W3-W3   1    0.            0.             1. ; +-------->
+K4-R3-R6-SX   1    0.            0.             1. ; +--< complete topology: [BYU]
+SP-R3-R6-SX   1    0.            0.             1. ; | +[AMX] add 1-4 exclusion??
+SX-R6-R3-W3   1    0.            0.             1. ; |
+SX-R6-W3-W4   1    0.            0.             1. ; |
+SX-R6-W3-W3   1    0.            0.             1. ; +-------->
+K4-K3-R6-SX   1    0.            0.             1. ; +--< complete topology: [BMQ][BMV]
+K4-K3-A2-R6   1    0.            0.             1. ; |  WARNING! also in self-ramification GO2 <- GO3
+K4-K3-A2-SP   1    0.            0.             1. ; |  WARNING! also in self-ramification GO2 <- GO3
+K3-R6-A2-SP   1    0.            0.             1. ; |
+R6-K3-A2-SP   1    0.            0.             1. ; |
+SX-R6-K3-A2   1    0.            0.             1. ; |  WARNING! also in ramification GO2 <- GO3
+K4-R3-a2-R6   1    0.            0.             1. ; +--< complete topology: [AM4]
+K4-R3-a2-SP   1    0.            0.             1. ; |                                 
+R3-R6-a2-SP   1    0.            0.             1. ; +--< [AM0] : complete topology
+R3-a2-R6-SP   1    0.            0.             1. ; |
+SP-R3-R6-a2   1    0.            0.             1. ; |
+SP-R3-a2-R6   1    0.            0.             1. ; |
+SP-R3-a2-SP   1    0.            0.             1. ; |
+R6-R3-a2-SP   1    0.            0.             1. ; |
+SP-R6-R3-a2   1    0.            0.             1. ; |
+SP-R6-a2-SP   1    0.            0.             1. ; +-------->
+K4-k3-R6-SX   1    0.            0.             1. ; +--< complete topology: [AMQ][AMV]
+R6-k3-2a-SP   1    0.            0.             1. ; |
+K4-k3-2a-R6   1    0.            0.             1. ; |  WARNING! also in self-ramification GO2 <- GO3
+K4-k3-2a-SP   1    0.            0.             1. ; |  WARNING! also in self-ramification GO2 <- GO3
+k3-R6-2a-SP   1    0.            0.             1. ; |
+SX-R6-k3-2a   1    0.            0.             1. ; |  WARNING! also in self-ramification GO2 <- GO3
+R4-R3-R6-SX   1    0.            0.             1. ; +--< complete topology: [AMX]
+SX-R6-R3-l2   1    0.            0.             1. ; +-------->
+K4-R3-l2-R6   1    0.            0.             1. ; +-<> complete topology: [AMY]
+R4-R3-R6-SP   1    0.            0.             1. ; +--< complete topology: [AM2][AMX]
+R4-R3-l2-R6   1    0.            0.             1. ; |
+SP-R4-R3-SP   1    0.            0.             1. ; |
+SP-R4-R3-R6   1    0.            0.             1. ; |
+SP-R4-R3-l2   1    0.            0.             1. ; |
+R3-l2-R6-SP   1    0.            0.             1. ; |
+SP-R3-R6-l2   1    0.            0.             1. ; |
+SP-R3-l2-R6   1    0.            0.             1. ; |
+SP-R6-R3-l2   1    0.            0.             1. ; +-------->
+A4-R3-r2-R6   1    0.            0.             1. ; +--< complete topology: [Af0]
+A4-R3-r2-SP   1    0.            0.             1. ; |  add 1-4 exclusion??
+SP-A4-R3-SP   1    0.            0.             1. ; |
+SP-A4-R3-R6   1    0.            0.             1. ; |
+SP-A4-R3-r2   1    0.            0.             1. ; |  add 1-4 exclusion??
+R3-R6-r2-SP   1    0.            0.             1. ; |
+SP-R3-R6-r2   1    0.            0.             1. ; |
+SP-R3-r2-R6   1    0.            0.             1. ; |
+SP-R3-r2-SP   1    0.            0.             1. ; |
+R6-R3-r2-SP   1    0.            0.             1. ; +-------->
+A4-K3-R2-R6   1    0.            0.             1. ; +--< complete topology: [BL3]
+A4-K3-R6-SP   1    0.            0.             1. ; | 
+A4-K3-R2-SP   1    0.            0.             1. ; |  add 1-4 exclusion??
+K3-R6-R2-SP   1    0.            0.             1. ; |
+K3-R2-R6-SP   1    0.            0.             1. ; |
+R2-K3-R6-SP   1    0.            0.             1. ; |
+R2-K3-A4-SP   1    0.            0.             1. ; |  add 1-4 exclusion??
+R6-K3-R2-SP   1    0.            0.             1. ; |
+R6-K3-A4-SP   1    0.            0.             1. ; +-------->
+A4-R3-R2-R6   1    0.            0.             1. ; +--< complete topology: [BL6]
+A4-R3-R6-SX   1    0.            0.             1. ; |
+A4-R3-R2-SP   1    0.            0.             1. ; |
+R2-R3-A4-SP   1    0.            0.             1. ; |
+R3-R2-R6-SX   1    0.            0.             1. ; |
+R2-R3-R6-SX   1    0.            0.             1. ; +-------->
+R4-K3-R6-SP   1    0.            0.             1. ; +--< complete topology: [BM3]
+R4-K3-A2-R6   1    0.            0.             1. ; |
+R4-K3-A2-SP   1    0.            0.             1. ; |
+SP-R4-K3-R6   1    0.            0.             1. ; |
+SP-R4-K3-A2   1    0.            0.             1. ; |
+K3-A2-R6-SP   1    0.            0.             1. ; |
+SP-R6-K3-A2   1    0.            0.             1. ; |
+SP-R6-A2-SP   1    0.            0.             1. ; +-------->
+K4-R3-A2-R6   1    0.            0.             1. ; +--< complete topology: [BM0][BM4]
+K4-R3-A2-SP   1    0.            0.             1. ; |
+R3-R6-A2-SP   1    0.            0.             1. ; |
+R3-A2-R6-SP   1    0.            0.             1. ; |
+SP-R3-R6-A2   1    0.            0.             1. ; |
+SP-R3-A2-R6   1    0.            0.             1. ; |
+SP-R3-A2-SP   1    0.            0.             1. ; |
+R6-R3-A2-SP   1    0.            0.             1. ; |
+SP-R6-R3-A2   1    0.            0.             1. ; +-------->
+QN-W3-R3-R6   1    0.            0.             1. ; +--< complete topology: N-glycosylation
+QN-W3-R3-SP   1    0.            0.             1. ; |
+QN-W3-R6-SP   1    0.            0.             1. ; |
+QN-W3-R6-SX   1    0.            0.             1. ; |
+QN-W3-W4-W3   1    0.            0.             1. ; |
+QN-W3-W3-W4   1    0.            0.             1. ; |
+QX-QN-W3-R6   1    0.            0.             1. ; |
+QX-QN-W3-R3   1    0.            0.             1. ; |
+QX-QN-W3-W4   1    0.            0.             1. ; |
+QX-QN-W3-W3   1    0.            0.             1. ; |
+QX-QC-QN-W3   1    0.            0.             1. ; |
+QC-QN-W3-R6   1    0.            0.             1. ; |
+QC-QN-W3-R3   1    0.            0.             1. ; |
+QC-QN-W3-W4   1    0.            0.             1. ; |
+QC-QN-W3-W3   1    0.            0.             1. ; |
+QC-QX-QN-W3   1    0.            0.             1. ; |
+GC-QC-QN-W3   1    0.            0.             1. ; +--------> /// complete topology: Ramifications
+SP-R2-K3-XE   1    0.            0.             1. ; |<  AS0:(GC1) <- (GO3):BL3
+R2-K3-XE-X6   1    0.            0.             1. ; |
+R2-R6-K3-XE   1    0.            0.             1. ; |
+SP-R6-K3-XE   1    0.            0.             1. ; |
+R6-K3-XE-X6   1    0.            0.             1. ; |
+R6-K3-XE-W3   1    0.            0.             1. ; |
+R6-R2-K3-XE   1    0.            0.             1. ; |
+K3-XE-X6-X6   1    0.            0.             1. ; |
+K3-XE-W3-R4   1    0.            0.             1. ; |
+K3-XE-W3-W4   1    0.            0.             1. ; |
+K3-XE-W3-W3   1    0.            0.             1. ; |
+SP-A4-K3-XE   1    0.            0.             1. ; |
+A4-K3-XE-X6   1    0.            0.             1. ; |
+A4-K3-XE-W3   1    0.            0.             1. ; |
+R2-K3-XE-R7   1    0.            0.             1. ; |
+R6-K3-XE-R7   1    0.            0.             1. ; |
+K3-XE-R7-W3   1    0.            0.             1. ; |
+K3-XE-R7-SP   1    0.            0.             1. ; |
+K3-XE-R7-R8   1    0.            0.             1. ; |
+A4-K3-XE-R7   1    0.            0.             1. ; |
+XE-K3-R2-K4   1    0.            0.             1. ; |< AS0:(GC1) <- (GO3):BL3:(GO2) <- (GO4):BY4
+R2-R6-SX-XE   1    0.            0.             1. ; |< AS0:(GC1) <- (GO6):BL6
+SX-XE-X6-X6   1    0.            0.             1. ; |
+SX-XE-X6-X6   1    0.            0.             1. ; |
+SX-XE-W3-R4   1    0.            0.             1. ; |
+SX-XE-W3-W4   1    0.            0.             1. ; |
+SX-XE-W3-W3   1    0.            0.             1. ; |
+SX-XE-R7-W3   1    0.            0.             1. ; |
+SX-XE-R7-SP   1    0.            0.             1. ; |
+SX-XE-R7-R8   1    0.            0.             1. ; |
+R6-SX-XE-R7   1    0.            0.             1. ; |
+R3-R6-SX-XE   1    0.            0.             1. ; |
+K4-R2-R6-SX   1    0.            0.             1. ; |< BL6:(GO2) <- (GO4):BY4
+K4-R2-R3-A4   1    0.            0.             1. ; |  required for MD stability???
+W3-R3-K4-R2   1    0.            0.             1. ; |< BL3:(GO2) <- (GO4):BY4
+R3-K4-R2-K3   1    0.            0.             1. ; |
+K4-R2-K3-A4   1    0.            0.             1. ; |  required for MD stability???
+R6-K3-R2-K4   1    0.            0.             1. ; |< BG4 <- BY4/BYU
+W3-R3-K4-W3   1    0.            0.             1. ; |< [BY0/BY4]:(GNac) <- (GO4):[BY4/BYU]
+R6-R3-K4-W3   1    0.            0.             1. ; |
+SP-R3-K4-W3   1    0.            0.             1. ; |
+R3-K4-W3-R3   1    0.            0.             1. ; |
+R3-K4-W3-R6   1    0.            0.             1. ; |
+R3-K4-W3-W4   1    0.            0.             1. ; |
+R3-K4-W3-W3   1    0.            0.             1. ; |
+K4-W3-R3-SP   1    0.            0.             1. ; |
+K4-W3-R3-R6   1    0.            0.             1. ; |
+K4-W3-R6-SP   1    0.            0.             1. ; |
+K4-W3-W4-W3   1    0.            0.             1. ; |
+K4-W3-W3-W4   1    0.            0.             1. ; |
+W3-R6-SX-r2   1    0.            0.             1. ; |< Af0:(GO2) <- (GO6):BYU
+SX-r2-R3-R6   1    0.            0.             1. ; |
+R6-SX-r2-R3   1    0.            0.             1. ; |
+R6-SX-r2-R6   1    0.            0.             1. ; |
+R6-SX-r2-SP   1    0.            0.             1. ; |
+R3-R6-SX-r2   1    0.            0.             1. ; |
+W3-R3-K4-A2   1    0.            0.             1. ; |< [BMQ/BMV]:(GO2) <- (GO4):BY4
+R3-K4-A2-K3   1    0.            0.             1. ; |
+R3-K4-A2-R6   1    0.            0.             1. ; |
+K4-A2-K3-R6   1    0.            0.             1. ; |
+K4-A2-R6-SX   1    0.            0.             1. ; |
+A2-R6-SX-A2   1    0.            0.             1. ; |< [BMQ/BMV]:(GO2) <- (GO6):[BMQ/BMV]
+K3-R6-SX-A2   1    0.            0.             1. ; |
+A2-K3-K4-W3   1    0.            0.             1. ; |< [BY0/BY4/BYU]:(GNac) <- (GO4):[BMQ/BMV]
+R6-K3-K4-W3   1    0.            0.             1. ; |
+K3-K4-W3-R3   1    0.            0.             1. ; |
+K3-K4-W3-R6   1    0.            0.             1. ; |
+K3-K4-W3-W4   1    0.            0.             1. ; |
+K3-K4-W3-W3   1    0.            0.             1. ; |
+R6-A2-K3-W3   1    0.            0.             1. ; |< [BY0/BY4/BYU]:(GNac) <- (GO3):[BM3/BMQ/BMV]
+l2-K3-K4-W3   1    0.            0.             1. ; |< [BY0/BY4]:(GNac) <- (GO4):[BMQ/BMV]:(GO3) -> (GO2):AM2
+l2-W3-R3-SP   1    0.            0.             1. ; |< [BY0/BY4]:(GNac) <- (GO2):AM2
+l2-W3-R3-R6   1    0.            0.             1. ; |
+l2-W3-R6-SP   1    0.            0.             1. ; |
+l2-W3-W4-W3   1    0.            0.             1. ; |
+l2-W3-W3-W4   1    0.            0.             1. ; |
+SP-R6-l2-W3   1    0.            0.             1. ; |
+R6-R3-l2-W3   1    0.            0.             1. ; |
+R6-l2-W3-R3   1    0.            0.             1. ; |
+R6-l2-W3-R6   1    0.            0.             1. ; |
+R6-l2-W3-W4   1    0.            0.             1. ; |
+R6-l2-W3-W3   1    0.            0.             1. ; |
+SP-R3-l2-W3   1    0.            0.             1. ; |
+R3-R6-l2-W3   1    0.            0.             1. ; |
+R3-l2-W3-R3   1    0.            0.             1. ; |
+R3-l2-W3-R6   1    0.            0.             1. ; |
+R3-l2-W3-W4   1    0.            0.             1. ; |
+R3-l2-W3-W3   1    0.            0.             1. ; |
+R4-R3-l2-W3   1    0.            0.             1. ; |
+A2-K3-l2-W3   1    0.            0.             1. ; |< [BY0/BY4]:(GNac) <- (GO2):AM2:(GO2) <- (GO3):[BMQ/BMV]
+R6-K3-l2-W3   1    0.            0.             1. ; |
+K3-l2-W3-R3   1    0.            0.             1. ; |
+K3-l2-W3-R6   1    0.            0.             1. ; |
+K3-l2-W3-W4   1    0.            0.             1. ; |
+K3-l2-W3-W3   1    0.            0.             1. ; |
+K4-K3-l2-W3   1    0.            0.             1. ; |
+l2-R6-SX-W3   1    0.            0.             1. ; |< [BY0/BY4]:(GNac) <- (GO6):AMX
+R3-R6-SX-W3   1    0.            0.             1. ; |
+R6-SX-W3-R3   1    0.            0.             1. ; |
+R6-SX-W3-R6   1    0.            0.             1. ; |
+R6-SX-W3-W3   1    0.            0.             1. ; |
+R6-SX-W3-W4   1    0.            0.             1. ; |
+SX-W3-R3-R6   1    0.            0.             1. ; |
+SX-W3-R3-SP   1    0.            0.             1. ; |
+SX-W3-R6-SP   1    0.            0.             1. ; |
+SX-W3-W3-W4   1    0.            0.             1. ; |
+SX-W3-W4-W3   1    0.            0.             1. ; |
+SX-R6-l2-W3   1    0.            0.             1. ; |< [BY0/BY4]:(GNac) <- (GO2):AMX
+K4-R3-l2-W3   1    0.            0.             1. ; |< [BY0/BY4]:(GNac) <- (GO2):AMY
+l2-R3-K4-W3   1    0.            0.             1. ; |< [BY0/BY4]:(GNac) <- (GO4):AMY
+SX-a2-R3-SP   1    0.            0.             1. ; |< AM0:(GO2) <- (GO6):[AMQ/AMV/AMX/BMQ/BMV/BYU]
+SX-a2-R3-R6   1    0.            0.             1. ; |
+SX-a2-R6-SP   1    0.            0.             1. ; |
+R6-SX-a2-R3   1    0.            0.             1. ; |
+R6-SX-a2-R6   1    0.            0.             1. ; |
+R6-SX-a2-SP   1    0.            0.             1. ; |
+A2-R6-SX-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO6):[BMQ/BMV]
+K3-R6-SX-a2   1    0.            0.             1. ; |
+2a-R6-SX-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO6):[AMQ/AMV]
+k3-R6-SX-a2   1    0.            0.             1. ; |
+SP-A2-K3-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO3):[BMQ/BMV]
+A2-K3-a2-R3   1    0.            0.             1. ; |
+A2-K3-a2-R6   1    0.            0.             1. ; |
+A2-K3-a2-SP   1    0.            0.             1. ; |
+A2-R6-K3-a2   1    0.            0.             1. ; |
+SX-R6-K3-a2   1    0.            0.             1. ; |
+R6-A2-K3-a2   1    0.            0.             1. ; |
+R6-K3-a2-R3   1    0.            0.             1. ; |
+R6-K3-a2-R6   1    0.            0.             1. ; |
+R6-K3-a2-SP   1    0.            0.             1. ; |
+K3-a2-R3-R6   1    0.            0.             1. ; |
+K3-a2-R3-SP   1    0.            0.             1. ; |
+K3-a2-R6-SP   1    0.            0.             1. ; |
+K4-K3-a2-R3   1    0.            0.             1. ; |
+K4-K3-a2-R6   1    0.            0.             1. ; |
+K4-K3-a2-SP   1    0.            0.             1. ; |
+K4-A2-K3-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO3):[BMQ/BMV]:(GO2) <- (GO4):[AMQ/BM4/BMQ/BY4/BYU]
+SX-A2-K3-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO3):[BMQ/BMV]:(GO2) <- (GO6):[AMQ/AMV/AMX/BMQ/BMV/BYU]
+l2-A2-K3-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO3):[BMQ/BMV]:(GO2) <- (GO2):[AM2/AMX/AMY]
+SP-2a-k3-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO3):[AMQ/AMV]
+2a-k3-a2-R3   1    0.            0.             1. ; |
+2a-k3-a2-R6   1    0.            0.             1. ; |
+2a-k3-a2-SP   1    0.            0.             1. ; |
+2a-R6-k3-a2   1    0.            0.             1. ; |
+SX-R6-k3-a2   1    0.            0.             1. ; |
+R6-2a-k3-a2   1    0.            0.             1. ; |
+R6-k3-a2-R3   1    0.            0.             1. ; |
+R6-k3-a2-R6   1    0.            0.             1. ; |
+R6-k3-a2-SP   1    0.            0.             1. ; |
+k3-a2-R3-R6   1    0.            0.             1. ; |
+k3-a2-R3-SP   1    0.            0.             1. ; |
+k3-a2-R6-SP   1    0.            0.             1. ; |
+K4-k3-a2-R3   1    0.            0.             1. ; |
+K4-k3-a2-R6   1    0.            0.             1. ; |
+K4-k3-a2-SP   1    0.            0.             1. ; |
+SX-2a-k3-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO3):[AMQ/AMV]:(GO2) <- (GO6):[AMQ/AMV/AMX/BMQ/BMV/BYU]
+l2-2a-k3-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO3):[AMQ/AMV]:(GO2) <- (GO2):[AM2/AMX]
+l2-R6-SX-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO6):AMX
+R3-R6-SX-a2   1    0.            0.             1. ; |
+l2-a2-R3-R6   1    0.            0.             1. ; |< AM0:(GO2) <- (GO2):AM2
+l2-a2-R3-SP   1    0.            0.             1. ; |
+l2-a2-R6-SP   1    0.            0.             1. ; |
+SP-R6-l2-a2   1    0.            0.             1. ; |
+R6-R3-l2-a2   1    0.            0.             1. ; |
+R6-l2-a2-R3   1    0.            0.             1. ; |
+R6-l2-a2-R6   1    0.            0.             1. ; |
+R6-l2-a2-SP   1    0.            0.             1. ; |
+R3-R6-l2-a2   1    0.            0.             1. ; |
+R3-l2-a2-R6   1    0.            0.             1. ; |
+R4-R3-l2-a2   1    0.            0.             1. ; |
+A2-K3-l2-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO2):AM2:(GO2) <- (GO3):[BMQ/BMV]
+R6-K3-l2-a2   1    0.            0.             1. ; |
+K3-l2-a2-R3   1    0.            0.             1. ; |
+K3-l2-a2-R6   1    0.            0.             1. ; |
+K3-l2-a2-SP   1    0.            0.             1. ; |
+K4-K3-l2-a2   1    0.            0.             1. ; |
+2a-k3-l2-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO2):AM2:(GO2) <- (GO3):[AMQ/AMV]
+R6-k3-l2-a2   1    0.            0.             1. ; |
+k3-l2-a2-R3   1    0.            0.             1. ; |
+k3-l2-a2-R6   1    0.            0.             1. ; |
+k3-l2-a2-SP   1    0.            0.             1. ; |
+K4-k3-l2-a2   1    0.            0.             1. ; |
+SX-l2-a2-R3   1    0.            0.             1. ; |< AM0:(GO2) <- (GO2):AM2:(GO2) <> (GO6):[AMQ/AMV/AMX/BMV/BMQ/BYU]
+SX-l2-a2-R6   1    0.            0.             1. ; |
+SX-l2-a2-SP   1    0.            0.             1. ; |
+R6-SX-l2-a2   1    0.            0.             1. ; | +[AMQ/AMV]:(GO2)
+l2-l2-a2-R3   1    0.            0.             1. ; |< AM0:(GO2) <- (GO2):[AM2/AMX]:(GO2) <> (GO2):AM2
+l2-l2-a2-R6   1    0.            0.             1. ; | +[AMQ/AMV]:(GO2)
+l2-l2-a2-SP   1    0.            0.             1. ; | +[AMQ/AMV]:(GO2)
+R6-l2-l2-a2   1    0.            0.             1. ; | +[AMQ/AMV]:(GO2)
+R3-l2-l2-a2   1    0.            0.             1. ; | +[AMQ/AMV]:(GO2)
+K3-l2-l2-a2   1    0.            0.             1. ; |< AM0:(GO2) <- (GO2):[AM2/AMX]:(GO2) <- (GO2):[AM2/AMX]:(GO2) <- (GO3):[BMQ/BMV]
+l2-l2-R6-SX   1    0.            0.             1. ; |< AMX:(GO2) <- (GO2):AM2
+SX-R6-l2-a2   1    0.            0.             1. ; |< AMX:(GO2) <- (GO2):AM0
+SX-l2-R6-SX   1    0.            0.             1. ; |< AMX:(GO2) <- (GO6):[AMQ/AMV/AMX/BMQ/BMV/BYU]
+l2-l2-R3-SP   1    0.            0.             1. ; |< AM2:(GO2) <- (GO2):AM2
+R4-R3-l2-l2   1    0.            0.             1. ; |  WARNING! same two states as R6-R3-l2-l2 
+l2-l2-R6-SP   1    0.            0.             1. ; |
+R6-l2-l2-R6   1    0.            0.             1. ; |
+R3-l2-l2-R6   1    0.            0.             1. ; |
+A2-K3-l2-l2   1    0.            0.             1. ; |< AM2:(GO2) <- (GO2):AM2:(GO2) <- (GO3):[BMQ/BMV]
+R6-K3-l2-l2   1    0.            0.             1. ; |
+K3-l2-l2-R3   1    0.            0.             1. ; |
+K3-l2-l2-R6   1    0.            0.             1. ; |
+K4-K3-l2-l2   1    0.            0.             1. ; |
+2a-k3-l2-l2   1    0.            0.             1. ; |< AM2:(GO2) <- (GO2):AM2:(GO2) <- (GO3):[AMQ/AMV]
+R6-k3-l2-l2   1    0.            0.             1. ; |
+k3-l2-l2-R3   1    0.            0.             1. ; |
+k3-l2-l2-R6   1    0.            0.             1. ; |
+K4-k3-l2-l2   1    0.            0.             1. ; |
+SP-A2-K3-l2   1    0.            0.             1. ; |< AM2:(GO2) <- (GO3):[BMQ/BMV]
+A2-K3-l2-R3   1    0.            0.             1. ; |
+A2-K3-l2-R6   1    0.            0.             1. ; |
+A2-R6-K3-l2   1    0.            0.             1. ; |
+SX-R6-K3-l2   1    0.            0.             1. ; |
+R6-K3-l2-R3   1    0.            0.             1. ; |
+R6-K3-l2-R6   1    0.            0.             1. ; |
+K3-l2-R3-SP   1    0.            0.             1. ; |
+K3-l2-R3-R6   1    0.            0.             1. ; |
+K3-l2-R6-SP   1    0.            0.             1. ; |
+K4-K3-l2-R3   1    0.            0.             1. ; |
+K4-K3-l2-R6   1    0.            0.             1. ; |
+R6-A2-K3-l2   1    0.            0.             1. ; |< [AM2/AMX/AMY]:(GO2) <- (GO3):[BM3/BMQ/BMV]
+l2-A2-K3-l2   1    0.            0.             1. ; |< [AM2/AMX/AMY]:(GO2) <- (GO3):[BMQ/BMV]:(GO2) <- (GO2):[AM2/AMX/AMY]
+K4-A2-K3-l2   1    0.            0.             1. ; |< [AM2/AMX/AMY]:(GO2) <- (GO3):[BMQ/BMV]:(GO2) <- (GO4):[AMQ/AMY/BM4/BMQ/BY4/BYU]
+SX-A2-K3-l2   1    0.            0.             1. ; |< AM2:(GO2) <- (GO3):[BMQ/BMV]:(GO2) <- (GO6):[AMQ/AMV/AMX/BMQ/BMV/BYU]
+A2-R6-SX-l2   1    0.            0.             1. ; |< AM2:(GO2) <- (GO6):[BMQ/BMV]
+K3-R6-SX-l2   1    0.            0.             1. ; |
+2a-R6-SX-l2   1    0.            0.             1. ; |< AM2:(GO2) <- (GO6):[AMQ/AMV]
+k3-R6-SX-l2   1    0.            0.             1. ; |
+SX-l2-R3-SP   1    0.            0.             1. ; |< AM2:(GO2) <- (GO6):[AMQ/AMV/BMQ/BMV]
+SX-l2-R3-R6   1    0.            0.             1. ; |
+SX-l2-R6-SP   1    0.            0.             1. ; |
+R6-SX-l2-R3   1    0.            0.             1. ; |
+R6-SX-l2-R6   1    0.            0.             1. ; |
+SP-2a-k3-l2   1    0.            0.             1. ; |< AM2:(GO2) <- (GO3):[AMQ/AMV]
+2a-k3-l2-R3   1    0.            0.             1. ; |
+2a-k3-l2-R6   1    0.            0.             1. ; |
+2a-R6-k3-l2   1    0.            0.             1. ; |
+SX-R6-k3-l2   1    0.            0.             1. ; |
+R6-k3-l2-R3   1    0.            0.             1. ; |
+R6-k3-l2-R6   1    0.            0.             1. ; |
+k3-l2-R3-SP   1    0.            0.             1. ; |
+k3-l2-R3-R6   1    0.            0.             1. ; |
+k3-l2-R6-SP   1    0.            0.             1. ; |
+K4-k3-l2-R3   1    0.            0.             1. ; |
+K4-k3-l2-R6   1    0.            0.             1. ; |
+R6-2a-k3-l2   1    0.            0.             1. ; |  using angles to separate adjacent branches 1-3 and 1-4
+SX-2a-k3-l2   1    0.            0.             1. ; |< [AM2/AMX]:(GO2) <- (GO3):[AMQ/AMV]:(GO2) <- (GO6):[AMQ/AMV/AMX/BMQ/BMV/BYU]
+R6-A2-K3-2a   1    0.            0.             1. ; |< [AMQ/AMV]:(GO2) <- (GO3):[BM3/BMQ/BMV]
+A2-R6-SX-2a   1    0.            0.             1. ; |< [AMQ/AMV]:(GO2) <- (GO6):[BMQ/BMV]
+K3-R6-SX-2a   1    0.            0.             1. ; |
+SX-2a-k3-R6   1    0.            0.             1. ; |
+SX-2a-R6-SX   1    0.            0.             1. ; |
+R6-SX-2a-k3   1    0.            0.             1. ; |
+R6-SX-2a-R6   1    0.            0.             1. ; |
+R6-SX-2a-SP   1    0.            0.             1. ; |
+l2-A2-K3-R6   1    0.            0.             1. ; |< [BMQ/BMV]:(GO2) <- (GO2):AMX
+l2-A2-R6-SX   1    0.            0.             1. ; |
+SX-R6-l2-A2   1    0.            0.             1. ; |
+R6-R3-l2-A2   1    0.            0.             1. ; |
+R6-l2-A2-K3   1    0.            0.             1. ; |
+R6-l2-A2-R6   1    0.            0.             1. ; |
+R6-l2-A2-SP   1    0.            0.             1. ; |
+R3-R6-l2-A2   1    0.            0.             1. ; |
+R3-l2-A2-K3   1    0.            0.             1. ; |
+R3-l2-A2-R6   1    0.            0.             1. ; |
+R4-R3-l2-A2   1    0.            0.             1. ; |
+l2-l2-A2-K3   1    0.            0.             1. ; |< [BMQ/BMV]:(GO2) <- (GO2):[AM2/AMX]:(GO2) <- (GO2):[AM2/AMX]
+l2-l2-A2-R6   1    0.            0.             1. ; |
+l2-l2-A2-SP   1    0.            0.             1. ; |
+R6-l2-l2-A2   1    0.            0.             1. ; |
+R3-l2-l2-A2   1    0.            0.             1. ; |
+l2-R6-SX-A2   1    0.            0.             1. ; |< [BMQ/BMV]:(GO2) <- (GO6):AMX
+SX-A2-K3-K4   1    0.            0.             1. ; |
+SX-A2-K3-R6   1    0.            0.             1. ; |
+SX-A2-R6-SX   1    0.            0.             1. ; |
+R6-SX-A2-K3   1    0.            0.             1. ; |
+R6-SX-A2-R6   1    0.            0.             1. ; |
+R6-SX-A2-SP   1    0.            0.             1. ; |
+R3-R6-SX-A2   1    0.            0.             1. ; |
+SX-l2-W3-R3   1    0.            0.             1. ; |< BYU:(GNac) <- (GO2):AM2:(GO2) <- (GO6):BMQ
+SX-l2-W3-R6   1    0.            0.             1. ; |
+SX-l2-W3-W4   1    0.            0.             1. ; |
+SX-l2-W3-W3   1    0.            0.             1. ; |
+R6-SX-l2-W3   1    0.            0.             1. ; |
+R3-K4-A2-R3   1    0.            0.             1. ; |< BM0:(GO2) <- (GO4):BY4
+K4-A2-R3-SP   1    0.            0.             1. ; |
+K4-A2-R3-R6   1    0.            0.             1. ; |
+K4-A2-R6-SP   1    0.            0.             1. ; |
+K4-A2-K3-W3   1    0.            0.             1. ; |< BY0:(GNac) <- (GO3):BM3
+SP-A2-K3-W3   1    0.            0.             1. ; |
+A2-K3-W3-R3   1    0.            0.             1. ; |
+A2-K3-W3-R6   1    0.            0.             1. ; |
+A2-K3-W3-W4   1    0.            0.             1. ; |
+A2-K3-W3-W3   1    0.            0.             1. ; |
+A2-R6-K3-W3   1    0.            0.             1. ; |
+SP-R6-K3-W3   1    0.            0.             1. ; |
+R6-K3-W3-R3   1    0.            0.             1. ; |
+R6-K3-W3-R6   1    0.            0.             1. ; |
+R6-K3-W3-W4   1    0.            0.             1. ; |
+R6-K3-W3-W3   1    0.            0.             1. ; |
+K3-W3-R3-SP   1    0.            0.             1. ; |
+K3-W3-R3-R6   1    0.            0.             1. ; |
+K3-W3-R6-SP   1    0.            0.             1. ; |
+K3-W3-W4-W3   1    0.            0.             1. ; |
+K3-W3-W3-W4   1    0.            0.             1. ; |
+SP-R4-K3-W3   1    0.            0.             1. ; |
+R4-K3-W3-R3   1    0.            0.             1. ; |
+R4-K3-W3-R6   1    0.            0.             1. ; |
+R4-K3-W3-W4   1    0.            0.             1. ; |
+R4-K3-W3-W3   1    0.            0.             1. ; |
+R2-R3-K4-R2   1    0.            0.             1. ; |< [BG0/BG4/BL0]:(GO2) <- (GO4):[BG4]
+R6-R3-K4-R2   1    0.            0.             1. ; |
+R3-K4-R2-R3   1    0.            0.             1. ; |
+R3-K4-R2-R6   1    0.            0.             1. ; |
+K4-R2-R3-SP   1    0.            0.             1. ; |
+K4-R2-R3-R6   1    0.            0.             1. ; |
+K4-R2-R6-SP   1    0.            0.             1. ; |
+
+NONBON
+l2            2.3572    0.1315   ; axia(L)       in/out  glycosidic  oxigen 2  (alpha-linked) [WT like]
+k3            2.3572    0.1315   ; e(k)uatorial  in      glycosidic  oxigen 3  (alpha-glycan) [WT like] << workaround for AMQ/AMV <-> BMQ/BMV >>
+K3            2.3572    0.1315   ; e(K)uatorial  in      glycosidic  oxigen 3                 [WT like]
+K4            2.3572    0.1315   ; e(K)uatorial  in      glycosidic  oxigen 4                 [WT like]
+SX            1.9643    0.4063   ; axial-like    in      glycosidic  oxygen 6                 [WN like]
+SP            1.9643    0.1315   ; ***           ***     hydroxyl    hydrogen                 [WH like]
+a2            1.9643    0.4063   ; (A)xial       ***     hydroxyl    oxygen 2  (alpha-linked) [WN like]
+2a            1.9643    0.4063   ; (A)xial       ***     hydroxyl    oxygen 2  (alpha-linked) [WN like] << mirror-type of a2 >>
+A2            1.9643    0.4063   ; (A)xial       ***     hydroxyl    oxygen 2  (beta-linked)  [WN like]
+A4            1.9643    0.4063   ; (A)xial       ***     hydroxyl    oxygen 4  (beta-linked)  [WN like]
+r2            1.9643    0.4063   ; equato(R)ial  ***     hydroxyl    oxygen 2  (alpha-linked) [WN like]
+R2            1.9643    0.4063   ; equato(R)ial  ***     hydroxyl    oxygen 2  (beta-linked)  [WN like]
+R3            1.9643    0.4063   ; equato(R)ial  ***     hydroxyl    oxygen 3  (beta-linked)  [WN like]
+R4            1.9643    0.4063   ; equato(R)ial  ***     hydroxyl    oxygen 4  (beta-linked)  [WN like]
+R6            1.9643    0.4063   ; equato(R)ial  ***     hydroxyl    carbon 6  (beta-linked)  [WN like]
+R7            1.9643    0.4063   ; equato(R)ial  ***     hydroxyl    carbon 7      (AS0)      [WN like]
+R8            1.9643    0.4063   ; equato(R)ial  ***     hydroxyl    carbon 8      (AS0)      [WN like]
+

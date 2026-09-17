@@ -1,0 +1,16 @@
+INFORMACIÓN DEL LIGANDO
+==================================================
+SMILES: CCCCCCCCCCCCCCC(C(=O)N[C@@H](CO[C@H]1[C@@H]([C@H]([C@@H]([C@H](O1)CO)O)O)O)[C@@H](/C=C/CC/C=C/CCCCCCCCC)O)O
+Fórmula molecular: C40H75NO9
+Peso molecular: 714.04 Da
+LogP: 6.13
+Donadores H: 7
+Aceptores H: 9
+Enlaces rotables: 40
+TPSA: 168.94 Ų
+
+Regla de Lipinski:
+  MW ≤ 500: ✗ (714.0)
+  LogP ≤ 5: ✗ (6.1)
+  HBD ≤ 5: ✗ (7)
+  HBA ≤ 10: ✓ (9)

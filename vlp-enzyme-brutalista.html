@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VLP · Enzyme Packing Platform — Brutalista</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #f5f5f0;
+    --bg2:      #ffffff;
+    --bg3:      #e8e8e3;
+    --border:   rgba(0,0,0,0.85);
+    --border2:  rgba(0,0,0,0.9);
+    --text:     #000000;
+    --text2:    #333333;
+    --text3:    #666666;
+    --accent:   #FF2600;
+    --accent2:  #cc1f00;
+    --purple:   #7F77DD;
+    --blue:     #378ADD;
+    --coral:    #D85A30;
+    --amber:    #BA7517;
+    --mono:     'Courier New', 'Lucida Console', monospace;
+    --sans:     'Arial Black', 'Impact', 'Helvetica Neue', sans-serif;
+    --radius:   0px;
+    --radius-sm: 0px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* ── Header ── */
+  .hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border: 0.5px solid var(--border2);
+    border-radius: var(--radius);
+    background: var(--bg2);
+    margin-bottom: 1rem;
+  }
+  .hdr-title { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -.01em; }
+  .hdr-sub   { font-size: 11px; color: var(--text2); margin-top: 1px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-family: var(--mono);
+    padding: 3px 9px; border-radius: 20px;
+    border: 0.5px solid var(--border2);
+    color: var(--accent); background: rgba(29,158,117,0.1);
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* ── Nav ── */
+  .nav { display: flex; gap: 4px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .nb {
+    font-size: 12px; font-family: var(--mono); padding: 5px 14px;
+    border: 0.5px solid var(--border); border-radius: 20px;
+    cursor: pointer; background: transparent; color: var(--text2);
+    transition: all .15s;
+  }
+  .nb:hover { border-color: var(--border2); color: var(--text); }
+  .nb.on {
+    background: rgba(29,158,117,0.12); border-color: var(--accent);
+    color: var(--accent); font-weight: 500;
+  }
+
+  /* ── Cards ── */
+  .card {
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg2);
+    padding: 1.25rem;
+    margin-bottom: .85rem;
+  }
+  .card-label {
+    font-size: 9.5px; font-family: var(--mono);
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text3); margin-bottom: .2rem;
+  }
+  .card-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: .9rem; }
+
+  /* ── Metric cards ── */
+  .mc {
+    background: var(--bg3); border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm); padding: .6rem .75rem;
+  }
+  .mc .ml { font-size: 10px; color: var(--text2); margin-bottom: 2px; }
+  .mc .mv { font-size: 19px; font-weight: 500; font-family: var(--mono); color: var(--text); line-height: 1.2; }
+  .mc .mu { font-size: 9.5px; color: var(--text3); }
+  .mg { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; margin-top: .85rem; }
+
+  /* ── Controls ── */
+  .cr { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .cl { font-size: 12px; color: var(--text2); min-width: 86px; }
+  .cv { font-size: 12px; font-family: var(--mono); min-width: 54px; text-align: right; color: var(--text); }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    flex: 1; height: 4px; border-radius: 2px;
+    background: var(--bg3); outline: none; cursor: pointer;
+    border: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--accent); cursor: pointer;
+    border: 2px solid var(--bg2);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; border: 2px solid var(--bg2);
+  }
+
+  select {
+    width: 100%; padding: 6px 10px; border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border2); background: var(--bg3);
+    color: var(--text); font-size: 12px; font-family: var(--mono);
+    outline: none; cursor: pointer; margin-bottom: .55rem;
+  }
+  select:focus { border-color: var(--accent); }
+
+  button {
+    padding: 6px 14px; border-radius: var(--radius-sm);
+    border: 0.5px solid var(--border2);
+    background: var(--bg3); color: var(--text2);
+    font-size: 12px; font-family: var(--mono);
+    cursor: pointer; transition: all .15s;
+  }
+  button:hover { border-color: var(--accent); color: var(--accent); background: rgba(29,158,117,0.08); }
+  button.primary { background: rgba(29,158,117,0.15); border-color: var(--accent); color: var(--accent); }
+
+  /* ── Grid layouts ── */
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; align-items: start; }
+  .g2-fixed { display: grid; grid-template-columns: 210px 1fr; gap: 1.1rem; align-items: start; }
+
+  /* ── Info box ── */
+  .info-box {
+    padding: .6rem .75rem; background: var(--bg3);
+    border: 0.5px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 11px; line-height: 1.75; color: var(--text2);
+    margin-top: .6rem;
+  }
+  .info-box strong { color: var(--text); }
+
+  /* ── Simulation metrics ── */
+  .sm { font-size: 11px; font-family: var(--mono); color: var(--text2); line-height: 2; }
+  .sm span { color: var(--text); }
+
+  /* ── Method box ── */
+  .method {
+    margin-top: .65rem; padding: .55rem .75rem;
+    background: var(--bg3); border: 0.5px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .method p { font-size: 10px; color: var(--text3); line-height: 1.7; }
+
+  /* ── Canvas ── */
+  canvas { display: block; border-radius: var(--radius-sm); }
+  .canvas-wrap { position: relative; }
+  .canvas-caption { font-size: 9.5px; color: var(--text3); text-align: center; margin-top: .3rem; }
+
+  /* ── Chart container ── */
+  .chart-wrap { position: relative; height: 185px; margin-top: .35rem; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 700px) {
+    .g2, .g2-fixed { grid-template-columns: 1fr; }
+    body { padding: .75rem; }
+  }
+
+  /* ── BRUTALISTA OVERRIDES ── */
+  * { border-radius: 0 !important; }
+
+  body {
+    background: #f5f5f0;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .hdr {
+    border: 2px solid #000 !important;
+    border-radius: 0 !important;
+    box-shadow: 4px 4px 0 #000;
+  }
+  .hdr-title {
+    font-size: 17px !important;
+    text-transform: uppercase;
+    letter-spacing: -.01em;
+    color: #000 !important;
+  }
+  .hdr-sub { color: #444 !important; font-family: 'Courier New', monospace; font-size: 11px !important; }
+
+  .badge {
+    border-radius: 0 !important;
+    border-width: 2px !important;
+    border-color: #000 !important;
+    font-weight: 700;
+  }
+
+  .nb {
+    border: 2px solid #000 !important;
+    border-radius: 0 !important;
+    font-weight: 700;
+    font-size: 11px !important;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    padding: 5px 14px !important;
+  }
+  .nb.on {
+    background: #FF2600 !important;
+    color: #fff !important;
+    border-color: #FF2600 !important;
+    box-shadow: 3px 3px 0 #000;
+  }
+  .nb:hover:not(.on) {
+    background: #000 !important;
+    color: #fff !important;
+  }
+
+  .card {
+    border: 2px solid #000 !important;
+    border-radius: 0 !important;
+    box-shadow: 5px 5px 0 #000;
+    margin-bottom: 1.2rem;
+  }
+  .card-label {
+    font-family: 'Courier New', monospace !important;
+    font-weight: 700;
+    color: #999 !important;
+    font-size: 10px !important;
+    letter-spacing: .12em;
+  }
+  .card-title {
+    font-size: 13px !important;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    font-weight: 900 !important;
+    color: #000 !important;
+  }
+
+  .mc {
+    border: 2px solid #000 !important;
+    border-radius: 0 !important;
+  }
+  .mc .ml { font-family: 'Courier New', monospace !important; font-size: 9px !important; }
+  .mc .mv { font-size: 22px !important; font-weight: 900 !important; color: #000 !important; }
+  .mc .mv span { color: #FF2600 !important; }
+
+  select {
+    border: 2px solid #000 !important;
+    border-radius: 0 !important;
+    font-family: 'Courier New', monospace !important;
+    font-weight: 700;
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 12px !important;
+  }
+  select:focus { box-shadow: 3px 3px 0 #000 !important; outline: none; }
+
+  input[type="range"] {
+    height: 6px !important;
+    background: #000 !important;
+    border-radius: 0 !important;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 0 !important;
+    background: #FF2600 !important;
+    border: 2px solid #000 !important;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px !important; height: 18px !important;
+    border-radius: 0 !important;
+    background: #FF2600 !important; border: 2px solid #000 !important;
+  }
+
+  button {
+    border: 2px solid #000 !important;
+    border-radius: 0 !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: 11px !important;
+    background: #fff !important;
+    color: #000 !important;
+    transition: all .1s !important;
+  }
+  button:hover {
+    background: #000 !important;
+    color: #fff !important;
+    box-shadow: none !important;
+    transform: translate(2px, 2px) !important;
+  }
+  button.primary {
+    background: #FF2600 !important;
+    color: #fff !important;
+    border-color: #FF2600 !important;
+    box-shadow: 3px 3px 0 #000 !important;
+  }
+  button.primary:hover {
+    background: #000 !important;
+    color: #fff !important;
+    box-shadow: none !important;
+  }
+
+  .info-box {
+    border: 2px solid #000 !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    font-family: 'Courier New', monospace !important;
+    font-size: 11px !important;
+  }
+  .info-box strong { color: #FF2600 !important; }
+
+  .method {
+    border: 2px solid #000 !important;
+    border-left: 5px solid #FF2600 !important;
+    background: #fff !important;
+  }
+  .method p { font-family: 'Courier New', monospace !important; font-size: 10px !important; }
+
+  .sm { font-family: 'Courier New', monospace !important; font-size: 12px !important; font-weight: 700; }
+  .sm span { color: #FF2600 !important; font-weight: 900; }
+
+  .cl { font-family: 'Courier New', monospace !important; font-size: 11px !important; font-weight: 700; }
+  .cv { font-family: 'Courier New', monospace !important; font-weight: 900 !important; color: #FF2600 !important; }
+
+  .chart-wrap canvas { border: 2px solid #000 !important; }
+
+  #pkst .mg .mc { box-shadow: 3px 3px 0 #000; }
+
+  /* Canvas borders */
+  canvas { border: 2px solid #000 !important; }
+  .canvas-caption { font-family: 'Courier New', monospace !important; font-size: 10px !important; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: .08em; }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="hdr">
+    <div>
+      <div class="hdr-title">VLP · Enzyme Packing Platform</div>
+      <div class="hdr-sub">Predicción estérica 3D · Dinámica molecular Langevin WCA · Análisis g(r) RMSD MSD</div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <span class="badge"><span class="dot"></span>v2.0 · CG-MD</span>
+      <span class="badge" style="color:var(--purple);background:rgba(127,119,221,0.1);border-color:rgba(127,119,221,0.3)">WCA + Langevin</span>
+      <span class="badge" style="color:var(--blue);background:rgba(55,138,221,0.1);border-color:rgba(55,138,221,0.3)">3D interactive</span>
+    </div>
+  </div>
+
+  <!-- NAV TABS -->
+  <div class="nav">
+    <button class="nb on" id="p0" onclick="sw(0)">01 · Predictor estérico 3D</button>
+    <button class="nb" id="p1" onclick="sw(1)">02 · CG-MD Simulation</button>
+    <button class="nb" id="p2" onclick="sw(2)">03 · Análisis</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- MODULE 0 — STERIC PREDICTOR                    -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="m0" class="card">
+    <p class="card-label">Módulo 01 · Predictor estérico</p>
+    <p class="card-title">Predicción estérica de empaquetamiento enzimático en VLPs</p>
+    <div class="g2">
+      <!-- Controls -->
+      <div>
+        <p class="card-label" style="margin-bottom:4px">Enzima cargo</p>
+        <select id="esel" onchange="recalc()"></select>
+        <p class="card-label" style="margin-bottom:4px">VLP / Cápside viral</p>
+        <select id="vsel" onchange="recalc()"></select>
+        <div class="cr">
+          <span class="cl">Eficiencia φ</span>
+          <input type="range" id="phisl" min="0.1" max="0.65" step="0.01" value="0.35" oninput="recalc()">
+          <span class="cv" id="phivl">0.35</span>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <button class="primary" onclick="recalc()" style="flex:1">Calcular empaquetamiento →</button>
+          <button onclick="cpReport()" id="cpbtn">Copiar reporte</button>
+        </div>
+        <div class="info-box" id="enzinfo">Selecciona una enzima y VLP para iniciar el cálculo.</div>
+      </div>
+      <!-- 3D Canvas -->
+      <div>
+        <div class="canvas-wrap">
+          <canvas id="sc" width="320" height="320" style="width:100%;background:var(--bg3);cursor:grab"></canvas>
+        </div>
+        <p class="canvas-caption">Vista 3D ortográfica · arrastra para rotar · escala proporcional</p>
+      </div>
+    </div>
+    <!-- Metrics -->
+    <div class="mg" id="smets"></div>
+    <!-- Phase diagram note -->
+    <div style="margin-top:.75rem;padding:.5rem .75rem;border-left:2px solid var(--accent);background:rgba(29,158,117,0.06);border-radius:0 var(--radius-sm) var(--radius-sm) 0">
+      <p style="font-size:10.5px;color:var(--text2)"><strong style="color:var(--accent)">Modelo:</strong> esfera equivalente de radio R<sub>g</sub> · empaquetamiento aleatorio en 3D · la eficiencia φ depende del sistema experimental (típico: 0.30–0.45)</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- MODULE 1 — CG-MD SIMULATION                    -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="m1" class="card">
+    <p class="card-label">Módulo 02 · Dinámica molecular</p>
+    <p class="card-title">Simulación CG-MD — Termostato Langevin / Potencial WCA</p>
+    <div class="g2-fixed">
+      <!-- Controls + metrics -->
+      <div>
+        <div class="cr">
+          <span class="cl">Temperatura</span>
+          <input type="range" id="Tsl" min="0.1" max="6" step="0.1" value="1" oninput="updP()">
+          <span class="cv" id="Tvl">1.0 kT</span>
+        </div>
+        <div class="cr">
+          <span class="cl">N partículas</span>
+          <input type="range" id="Nsl" min="2" max="20" step="1" value="8" oninput="updP()">
+          <span class="cv" id="Nvl">8</span>
+        </div>
+        <div class="cr">
+          <span class="cl">Radio bead</span>
+          <input type="range" id="Rsl" min="7" max="24" step="1" value="13" oninput="updP()">
+          <span class="cv" id="Rvl">13 px</span>
+        </div>
+        <div style="display:flex;gap:6px;margin:6px 0 10px">
+          <button class="primary" id="runbtn" onclick="togSim()" style="flex:1">▶ Iniciar</button>
+          <button onclick="rstSim()">↺ Reset</button>
+        </div>
+
+        <!-- Live metrics -->
+        <p class="sm">Paso:         <span id="sd-s">0</span></p>
+        <p class="sm">RMSD:         <span id="sd-r">—</span> u</p>
+        <p class="sm">MSD:          <span id="sd-m">—</span> u²</p>
+        <p class="sm">E<sub>cin</sub>:  <span id="sd-ek">—</span></p>
+        <p class="sm">E<sub>pot</sub>:  <span id="sd-ep">—</span></p>
+        <p class="sm">Solapam.:     <span id="sd-ov">—</span></p>
+        <p class="sm">Fase:         <span id="sd-ph">—</span></p>
+
+        <div class="method">
+          <p><strong style="color:var(--text2)">Campo de fuerza:</strong> Weeks-Chandler-Andersen (WCA) — repulsión pura soft-sphere</p>
+          <p><strong style="color:var(--text2)">Termostato:</strong> Langevin, γ = 0.5, integrador Euler-Maruyama</p>
+          <p><strong style="color:var(--text2)">Confinamiento:</strong> pared armónica κ = 10 (cápside)</p>
+          <p><strong style="color:var(--text2)">Ruido:</strong> F<sub>rand</sub> = √(2γkT/dt) · η(t)</p>
+        </div>
+      </div>
+
+      <!-- Simulation canvas -->
+      <div>
+        <canvas id="simc" width="380" height="380" style="width:100%;background:var(--bg3)"></canvas>
+        <p class="canvas-caption">Proyección XY · color por E<sub>cin</sub>: frío (teal) → caliente (coral) · trails de velocidad</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- MODULE 2 — ANALYSIS                            -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div id="m2" class="card">
+    <p class="card-label">Módulo 03 · Análisis y caracterización dinámica</p>
+    <p class="card-title">Análisis cuantitativo del complejo enzima-VLP</p>
+    <div class="g2">
+      <div>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:4px">RMSD y √MSD temporal</p>
+        <div class="chart-wrap">
+          <canvas id="rc" role="img" aria-label="RMSD y raíz de MSD vs pasos de simulación">RMSD y MSD en tiempo real de la simulación CG-MD.</canvas>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:4px">Energía del sistema</p>
+        <div class="chart-wrap">
+          <canvas id="ec" role="img" aria-label="Energía cinética y potencial del sistema">Energía cinética (azul) y potencial (coral) en tiempo real.</canvas>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:4px">Función de distribución radial g(r)</p>
+        <div class="chart-wrap">
+          <canvas id="rdf" role="img" aria-label="Función de distribución radial g(r)">g(r) calculada desde posiciones actuales de partículas.</canvas>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:4px">Estadísticas de empaquetamiento</p>
+        <div id="pkst">
+          <p style="font-size:11px;color:var(--text3);padding:.5rem 0">Ejecuta la simulación y presiona "Actualizar análisis".</p>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:.85rem">
+      <button class="primary" onclick="updAn()">Actualizar análisis →</button>
+      <button onclick="exportCSV()">Exportar historial CSV</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div style="padding:.75rem 0;text-align:center;font-size:10px;color:var(--text3);font-family:var(--mono)">
+    VLP-Enzyme Packing Platform v2.0 · WCA Langevin MD · 3D Orthographic Renderer · Chart.js
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const ENZ = [
+  {n:'GFP',rg:2.2,mw:27,pdb:'1EMA',desc:'β-barril fluorescente, monómero globular compacto'},
+  {n:'sfGFP (superfolder)',rg:2.1,mw:27,pdb:'2B3P',desc:'GFP de mayor termoestabilidad y plegamiento'},
+  {n:'HRP',rg:2.8,mw:44,pdb:'1ATJ',desc:'Peroxidasa de rábano, monómero glicosilado, hem'},
+  {n:'SOD1',rg:2.5,mw:32,pdb:'2SOD',desc:'Superóxido dismutasa, homodímero Cu/Zn'},
+  {n:'Luciferase',rg:3.0,mw:61,pdb:'2D1S',desc:'Luciferasa Photinus pyralis, monómero globular'},
+  {n:'ADH (tetrámero)',rg:3.8,mw:140,pdb:'2OHX',desc:'Alcohol deshidrogenasa, simetría D2, tetrámero'},
+  {n:'GOx (dímero)',rg:4.0,mw:160,pdb:'1CF3',desc:'Glucosa oxidasa, homodímero FAD-dependiente'},
+  {n:'Cas9',rg:4.5,mw:160,pdb:'4ZT0',desc:'Nucleasa CRISPR-Cas9, monómero bilobulado'},
+  {n:'Catalasa',rg:5.8,mw:240,pdb:'1DGB',desc:'Catalasa bovina, homotetrámero hem, D2'},
+  {n:'β-galactosidasa',rg:7.1,mw:465,pdb:'1DP0',desc:'β-galactosidasa E. coli, homotetrámero C4'},
+];
+
+const VLP = [
+  {n:'PhiX174 (T=1)', T:1, r:7.0,  sub:60},
+  {n:'MS2 (T=3)',     T:3, r:8.5,  sub:180},
+  {n:'CCMV (T=3)',    T:3, r:9.5,  sub:180},
+  {n:'BMV (T=3)',     T:3, r:9.0,  sub:180},
+  {n:'Qβ (T=3)',      T:3, r:11.0, sub:180},
+  {n:'HBc (T=4)',     T:4, r:11.0, sub:240},
+  {n:'P22 (T=7)',     T:7, r:22.0, sub:420},
+  {n:'HSP (T=1)',     T:1, r:8.0,  sub:24},
+];
+
+// Populate selects
+const esel = document.getElementById('esel');
+const vsel = document.getElementById('vsel');
+ENZ.forEach((e,i) => esel.innerHTML += `<option value="${i}">${e.n}  ·  Rg=${e.rg} nm  ·  ${e.mw} kDa</option>`);
+VLP.forEach((v,i) => vsel.innerHTML += `<option value="${i}">${v.n}  ·  r_in=${v.r} nm</option>`);
+vsel.value = 6; // P22 default
+
+// ═══════════════════════════════════════════
+// MODULE NAVIGATION
+// ═══════════════════════════════════════════
+function sw(idx) {
+  [0,1,2].forEach(j => {
+    document.getElementById('m'+j).style.display = j===idx ? 'block' : 'none';
+    document.getElementById('p'+j).className = 'nb' + (j===idx ? ' on' : '');
+  });
+  if (idx === 0) startAutoRot();
+  else stopAutoRot();
+  if (idx === 2) updAn();
+}
+
+// ═══════════════════════════════════════════
+// 3D STERIC PREDICTOR
+// ═══════════════════════════════════════════
+let rx3 = 0.35, ry3 = 0.5;
+let dragging3 = false, lmx3 = 0, lmy3 = 0;
+let placed3 = [], curNm = 0, curE = ENZ[0], curV = VLP[6];
+let autoRot = true, autoRafId = null;
+
+// 3D Fibonacci-shell sphere packing with overlap detection
+function place3D(N, r, maxR) {
+  const pts = [];
+  if (N <= 0 || maxR < r) return pts;
+  pts.push({x:0, y:0, z:0});
+  if (pts.length >= N) return pts;
+  const PHI = Math.PI * (3 - Math.sqrt(5)); // golden angle
+  let shellR = 2.1 * r;
+  while (pts.length < N && shellR <= maxR) {
+    const nCand = Math.max(6, Math.round(4 * Math.PI * (shellR / r) ** 2 * 0.9));
+    const s2 = (2 * r) * (2 * r);
+    for (let i = 0; i < nCand && pts.length < N; i++) {
+      const yy  = 1 - (i / Math.max(1, nCand - 1)) * 2;
+      const rad = Math.sqrt(Math.max(0, 1 - yy * yy));
+      const th  = PHI * i;
+      const px = shellR * rad * Math.cos(th);
+      const py = shellR * yy;
+      const pz = shellR * rad * Math.sin(th);
+      if (Math.sqrt(px*px + py*py + pz*pz) + r > maxR) continue;
+      let ok = true;
+      for (const q of pts) {
+        const dx=px-q.x, dy=py-q.y, dz=pz-q.z;
+        if (dx*dx + dy*dy + dz*dz < s2) { ok = false; break; }
+      }
+      if (ok) pts.push({x:px, y:py, z:pz});
+    }
+    shellR += 2.1 * r;
+  }
+  return pts;
+}
+
+// Orthographic projection with rotation
+function proj3(p) {
+  const cy = Math.cos(ry3), sy = Math.sin(ry3);
+  const x1 = p.x*cy + p.z*sy;
+  const z1 = -p.x*sy + p.z*cy;
+  const cx = Math.cos(rx3), sx = Math.sin(rx3);
+  return { sx: x1, sy: p.y*cx - z1*sx, d: p.y*sx + z1*cx };
+}
+
+// Draw capsid wireframe sphere
+function drawWire(ctx, cx, cy, Rp) {
+  ctx.strokeStyle = 'rgba(29,158,117,0.18)';
+  ctx.lineWidth = 0.7;
+  const N = 48;
+  // Latitude circles
+  [-60, -30, 0, 30, 60].forEach(latDeg => {
+    const phi = latDeg * Math.PI / 180;
+    const yr = Rp * Math.sin(phi), lr = Rp * Math.cos(phi);
+    ctx.beginPath();
+    for (let j = 0; j <= N; j++) {
+      const lon = 2 * Math.PI * j / N;
+      const pr = proj3({x: lr*Math.cos(lon), y: yr, z: lr*Math.sin(lon)});
+      j === 0 ? ctx.moveTo(cx+pr.sx, cy+pr.sy) : ctx.lineTo(cx+pr.sx, cy+pr.sy);
+    }
+    ctx.stroke();
+  });
+  // Meridians
+  for (let m = 0; m < 8; m++) {
+    const lon = Math.PI * m / 8;
+    ctx.beginPath();
+    for (let j = 0; j <= N; j++) {
+      const phi = Math.PI * j / N - Math.PI / 2;
+      const pr = proj3({
+        x: Rp*Math.cos(phi)*Math.cos(lon),
+        y: Rp*Math.sin(phi),
+        z: Rp*Math.cos(phi)*Math.sin(lon)
+      });
+      j === 0 ? ctx.moveTo(cx+pr.sx, cy+pr.sy) : ctx.lineTo(cx+pr.sx, cy+pr.sy);
+    }
+    ctx.stroke();
+  }
+  // Outer boundary (always a circle in orthographic projection)
+  ctx.beginPath();
+  ctx.arc(cx, cy, Rp, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(29,158,117,0.5)';
+  ctx.lineWidth = 1.8;
+  ctx.stroke();
+  // Shell thickness
+  ctx.beginPath();
+  ctx.arc(cx, cy, Rp + 9, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(29,158,117,0.12)';
+  ctx.lineWidth = 12;
+  ctx.stroke();
+}
+
+// Main 3D draw
+function draw3D() {
+  const cv = document.getElementById('sc');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height, cx = W/2, cy = H/2;
+  ctx.clearRect(0, 0, W, H);
+  const Rp = 130;
+  const Rgp = Math.max(2.5, curE.rg * (Rp / curV.r));
+  drawWire(ctx, cx, cy, Rp);
+  // Project and sort molecules
+  const sorted = placed3.map(p => { const pr = proj3(p); return {sx:pr.sx, sy:pr.sy, d:pr.d}; });
+  sorted.sort((a, b) => a.d - b.d);
+  sorted.forEach(p => {
+    const t = (p.d + Rp) / (2 * Rp);
+    const a = (0.16 + t * 0.65).toFixed(2);
+    const sz = Math.max(1.5, Rgp * (0.8 + t * 0.2));
+    ctx.beginPath();
+    ctx.arc(cx + p.sx, cy + p.sy, sz, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(29,158,117,${a})`;
+    ctx.fill();
+    if (t > 0.3) {
+      ctx.strokeStyle = `rgba(15,110,86,${(parseFloat(a)+0.2).toFixed(2)})`;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+  });
+  // Info overlay
+  ctx.fillStyle = 'rgba(138,143,168,0.5)';
+  ctx.font = '10px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText(`${placed3.length} mol · N_max=${curNm} · arrastra para rotar`, cx, H - 10);
+}
+
+function recalc() {
+  const ei  = parseInt(esel.value);
+  const vi  = parseInt(vsel.value);
+  const phi = parseFloat(document.getElementById('phisl').value);
+  document.getElementById('phivl').textContent = phi.toFixed(2);
+  const e = ENZ[ei], v = VLP[vi];
+  curE = e; curV = v;
+  const Vc  = (4/3) * Math.PI * v.r ** 3;
+  const Ve  = (4/3) * Math.PI * e.rg ** 3;
+  const Nm  = Math.max(0, Math.floor(phi * Vc / Ve));
+  curNm = Nm;
+  const vocc = (Nm * Ve / Vc * 100).toFixed(1);
+  const Vf   = ((1 - Math.min(1, Nm*Ve/Vc)) * Vc / 1000).toFixed(2);
+  document.getElementById('enzinfo').innerHTML =
+    `<strong>${e.n}</strong> &nbsp;·&nbsp; PDB: <code style="color:var(--accent)">${e.pdb}</code><br>
+    ${e.desc}<br>
+    Masa: ${e.mw} kDa &nbsp;·&nbsp; R<sub>g</sub>: ${e.rg} nm &nbsp;·&nbsp; V<sub>e</sub> ≈ ${Ve.toFixed(0)} nm³<br>
+    <span style="color:var(--text3);font-size:10px">Modelo: esfera equivalente radio R<sub>g</sub></span>`;
+  document.getElementById('smets').innerHTML =
+    `<div class="mc"><p class="ml">N máximo</p><p class="mv">${Nm}</p><p class="mu">mol · cápside⁻¹</p></div>
+     <div class="mc"><p class="ml">Ocupación vol.</p><p class="mv">${vocc}<span class="mu"> %</span></p></div>
+     <div class="mc"><p class="ml">V libre</p><p class="mv">${Vf}</p><p class="mu">×10³ nm³</p></div>
+     <div class="mc"><p class="ml">R interior</p><p class="mv">${v.r}</p><p class="mu">nm</p></div>
+     <div class="mc"><p class="ml">V cápside</p><p class="mv">${(Vc/1000).toFixed(1)}</p><p class="mu">×10³ nm³</p></div>
+     <div class="mc"><p class="ml">Subunidades</p><p class="mv">${v.sub}</p><p class="mu">T = ${v.T}</p></div>`;
+  const Rp  = 130;
+  const Rgp = Math.max(2.5, e.rg * (Rp / v.r));
+  placed3 = place3D(Nm, Rgp, Rp - Rgp - 2);
+  draw3D();
+}
+
+// Copy text report
+function cpReport() {
+  const e = curE, v = curV, phi = parseFloat(document.getElementById('phisl').value);
+  const Vc = (4/3)*Math.PI*v.r**3, Ve = (4/3)*Math.PI*e.rg**3, Nm = curNm;
+  const txt =
+    `VLP-ENZYME PACKING REPORT\n${'─'.repeat(35)}\n` +
+    `Enzima:   ${e.n} (Rg=${e.rg} nm, MW=${e.mw} kDa, PDB:${e.pdb})\n` +
+    `VLP:      ${v.n} (T=${v.T}, r_in=${v.r} nm, ${v.sub} subunidades)\n` +
+    `Eficiencia φ:            ${phi.toFixed(2)}\n` +
+    `N_max:                   ${Nm} moléculas/cápside\n` +
+    `Ocupación volumétrica:   ${(Nm*Ve/Vc*100).toFixed(1)} %\n` +
+    `V cápside:               ${(Vc/1000).toFixed(2)} × 10³ nm³\n` +
+    `V enzima:                ${Ve.toFixed(1)} nm³\n` +
+    `V libre:                 ${((1-Math.min(1,Nm*Ve/Vc))*Vc/1000).toFixed(2)} × 10³ nm³`;
+  navigator.clipboard.writeText(txt).then(() => {
+    const b = document.getElementById('cpbtn');
+    b.textContent = '✓ Copiado';
+    setTimeout(() => b.textContent = 'Copiar reporte', 2000);
+  }).catch(() => alert(txt));
+}
+
+// 3D Canvas interaction
+const sc3 = document.getElementById('sc');
+sc3.addEventListener('mousedown', e => {
+  autoRot = false; stopAutoRot(); dragging3 = true;
+  lmx3 = e.clientX; lmy3 = e.clientY; sc3.style.cursor = 'grabbing';
+});
+sc3.addEventListener('mousemove', e => {
+  if (!dragging3) return;
+  ry3 += (e.clientX - lmx3) * 0.013;
+  rx3 += (e.clientY - lmy3) * 0.013;
+  lmx3 = e.clientX; lmy3 = e.clientY;
+  draw3D();
+});
+sc3.addEventListener('mouseup',    () => { dragging3 = false; sc3.style.cursor = 'grab'; });
+sc3.addEventListener('mouseleave', () => { dragging3 = false; });
+sc3.addEventListener('touchstart', e => {
+  autoRot = false; stopAutoRot(); dragging3 = true;
+  lmx3 = e.touches[0].clientX; lmy3 = e.touches[0].clientY;
+  e.preventDefault();
+}, {passive:false});
+sc3.addEventListener('touchmove', e => {
+  if (!dragging3) return;
+  ry3 += (e.touches[0].clientX - lmx3) * 0.013;
+  rx3 += (e.touches[0].clientY - lmy3) * 0.013;
+  lmx3 = e.touches[0].clientX; lmy3 = e.touches[0].clientY;
+  draw3D(); e.preventDefault();
+}, {passive:false});
+sc3.addEventListener('touchend', () => dragging3 = false);
+
+function startAutoRot() {
+  autoRot = true;
+  function step() {
+    if (!autoRot) return;
+    ry3 += 0.007;
+    draw3D();
+    autoRafId = requestAnimationFrame(step);
+  }
+  if (autoRafId) cancelAnimationFrame(autoRafId);
+  autoRafId = requestAnimationFrame(step);
+}
+function stopAutoRot() {
+  autoRot = false;
+  if (autoRafId) cancelAnimationFrame(autoRafId);
+}
+
+// ═══════════════════════════════════════════
+// CG-MD SIMULATION
+// ═══════════════════════════════════════════
+let parts = [], srun = false, sstep = 0, rafid = null;
+let sT = 1, sN = 8, sRb = 13, sRw = 155;
+let hist = [], ref0 = [];
+
+function randn() {
+  const u = Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(Math.max(1e-10, u))) * Math.cos(2 * Math.PI * v);
+}
+
+function placeCircles2D(N, r, maxR) {
+  const out = [];
+  if (N <= 0) return out;
+  out.push({x:0, y:0});
+  if (out.length >= N) return out;
+  let ring = 2.1 * r;
+  while (out.length < N && ring <= maxR) {
+    const nc = Math.max(1, Math.floor(2 * Math.PI * ring / (2.15 * r)));
+    for (let k = 0; k < nc && out.length < N; k++) {
+      const a = 2 * Math.PI * k / nc;
+      const px = ring * Math.cos(a), py = ring * Math.sin(a);
+      if (Math.sqrt(px*px + py*py) + r <= maxR) out.push({x:px, y:py});
+    }
+    ring += 2.1 * r;
+  }
+  return out;
+}
+
+function initSim() {
+  parts = []; sstep = 0; hist = [];
+  const refs = placeCircles2D(sN, sRb + 3, sRw - sRb - 8);
+  const nn = Math.min(sN, refs.length);
+  for (let i = 0; i < nn; i++)
+    parts.push({x:refs[i].x+(Math.random()-.5)*2, y:refs[i].y+(Math.random()-.5)*2, vx:(Math.random()-.5)*.5, vy:(Math.random()-.5)*.5});
+  for (let i = nn; i < sN; i++) {
+    const a = Math.random()*Math.PI*2, rr = Math.random()*(sRw-sRb-10);
+    parts.push({x:rr*Math.cos(a), y:rr*Math.sin(a), vx:(Math.random()-.5)*.5, vy:(Math.random()-.5)*.5});
+  }
+  ref0 = parts.map(p => ({x:p.x, y:p.y}));
+  drawSim(); updSD();
+}
+
+function stepSim() {
+  const dt = 0.04, gm = 0.5, noise = Math.sqrt(2 * gm * sT / dt);
+  for (const p of parts) {
+    let fx = 0, fy = 0;
+    // Wall confinement
+    const pr = Math.sqrt(p.x*p.x + p.y*p.y);
+    if (pr > sRw - sRb && pr > 0.01) {
+      const dl = pr - (sRw - sRb);
+      fx -= 10 * dl * p.x / pr;
+      fy -= 10 * dl * p.y / pr;
+    }
+    // WCA pair repulsion
+    for (const q of parts) {
+      if (q === p) continue;
+      const dx = p.x-q.x, dy = p.y-q.y, d2 = dx*dx+dy*dy;
+      const sig = 2*sRb, cut2 = sig*sig*1.2599;
+      if (d2 < cut2 && d2 > 0.01) {
+        const sr2 = sig*sig/d2, sr6 = sr2*sr2*sr2, sr12 = sr6*sr6;
+        const fm = 4*(12*sr12 - 6*sr6) / d2;
+        fx += fm*dx; fy += fm*dy;
+      }
+    }
+    // Langevin: friction + noise
+    fx += -gm*p.vx + noise*randn();
+    fy += -gm*p.vy + noise*randn();
+    // Clamp
+    const fmax = 60;
+    fx = Math.max(-fmax, Math.min(fmax, fx));
+    fy = Math.max(-fmax, Math.min(fmax, fy));
+    p.vx += fx*dt; p.vy += fy*dt;
+    p.x  += p.vx*dt; p.y += p.vy*dt;
+  }
+  sstep++;
+}
+
+function calcRMSD() {
+  if (!parts.length) return 0;
+  let s = 0;
+  for (let i = 0; i < parts.length; i++)
+    s += (parts[i].x-ref0[i].x)**2 + (parts[i].y-ref0[i].y)**2;
+  return Math.sqrt(s / parts.length);
+}
+function calcMSD() {
+  if (!parts.length) return 0;
+  let s = 0;
+  for (let i = 0; i < parts.length; i++)
+    s += (parts[i].x-ref0[i].x)**2 + (parts[i].y-ref0[i].y)**2;
+  return s / parts.length;
+}
+function calcE() {
+  let ek = 0, ep = 0;
+  for (let i = 0; i < parts.length; i++) {
+    const p = parts[i];
+    ek += 0.5*(p.vx*p.vx + p.vy*p.vy);
+    for (let j = i+1; j < parts.length; j++) {
+      const q = parts[j], dx=p.x-q.x, dy=p.y-q.y, d2=dx*dx+dy*dy;
+      const sig=2*sRb, cut2=sig*sig*1.2599;
+      if (d2<cut2 && d2>0.01) {
+        const sr2=sig*sig/d2, sr6=sr2*sr2*sr2, sr12=sr6*sr6;
+        ep += 4*(sr12-sr6)+1;
+      }
+    }
+  }
+  return {ek: ek.toFixed(2), ep: Math.max(0,ep).toFixed(2)};
+}
+function countOv() {
+  let n = 0;
+  for (let i = 0; i < parts.length; i++)
+    for (let j = i+1; j < parts.length; j++) {
+      const dx=parts[i].x-parts[j].x, dy=parts[i].y-parts[j].y;
+      if (Math.sqrt(dx*dx+dy*dy) < 2*sRb) n++;
+    }
+  return n;
+}
+function getPhase() {
+  const phi2d = parts.length * sRb*sRb / (sRw*sRw);
+  if (phi2d > 0.65) return 'cristalino / vítreo';
+  if (phi2d > 0.42 && sT < 1.5) return 'semi-ordenado';
+  if (sT > 3.5) return 'gas ideal  (kT ≫ ε)';
+  return 'fluido desordenado';
+}
+
+function drawSim() {
+  const cv = document.getElementById('simc');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height, cx = W/2, cy = H/2;
+  ctx.clearRect(0, 0, W, H);
+  // Capsid interior fill
+  ctx.beginPath(); ctx.arc(cx, cy, sRw, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(255,255,255,0.015)'; ctx.fill();
+  // Capsid shell
+  ctx.beginPath(); ctx.arc(cx, cy, sRw+14, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(29,158,117,0.35)'; ctx.lineWidth = 18; ctx.stroke();
+  // Inner boundary dashed
+  ctx.beginPath(); ctx.arc(cx, cy, sRw, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(29,158,117,0.55)'; ctx.lineWidth = 1.5;
+  ctx.setLineDash([7,5]); ctx.stroke(); ctx.setLineDash([]);
+  // Particles
+  ctx.lineCap = 'round';
+  const mv = 3.5;
+  for (const p of parts) {
+    const v  = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+    const t  = Math.min(1, v / mv);
+    const rr = Math.round(29  + t*187);
+    const gg = Math.round(158 - t*68);
+    const bb = Math.round(117 - t*69);
+    // Velocity trail
+    ctx.beginPath();
+    ctx.moveTo(cx+p.x, cy+p.y);
+    ctx.lineTo(cx+p.x - p.vx*7, cy+p.y - p.vy*7);
+    ctx.strokeStyle = `rgba(${rr},${gg},${bb},0.22)`;
+    ctx.lineWidth = sRb * 1.4; ctx.stroke();
+    // Bead
+    ctx.beginPath(); ctx.arc(cx+p.x, cy+p.y, sRb, 0, Math.PI*2);
+    ctx.fillStyle   = `rgba(${rr},${gg},${bb},0.82)`; ctx.fill();
+    ctx.strokeStyle = `rgba(${Math.max(0,rr-50)},${Math.max(0,gg-50)},${Math.max(0,bb-50)},0.9)`;
+    ctx.lineWidth = 1; ctx.stroke();
+  }
+  ctx.lineCap = 'butt';
+  // Step label
+  ctx.fillStyle = 'rgba(138,143,168,0.45)';
+  ctx.font = '10px monospace'; ctx.textAlign = 'left';
+  ctx.fillText('t = ' + sstep, 9, 15);
+  // Color legend
+  const gx = W-80, gy = 9;
+  const lg = ctx.createLinearGradient(gx, 0, gx+64, 0);
+  lg.addColorStop(0, 'rgba(29,158,117,.85)');
+  lg.addColorStop(1, 'rgba(216,90,48,.85)');
+  ctx.fillStyle = lg; ctx.fillRect(gx, gy, 64, 7);
+  ctx.fillStyle = 'rgba(138,143,168,0.45)';
+  ctx.font = '9px monospace';
+  ctx.textAlign = 'left';  ctx.fillText('frío',     gx,    gy+17);
+  ctx.textAlign = 'right'; ctx.fillText('caliente', gx+64, gy+17);
+}
+
+function updSD() {
+  const rm = calcRMSD(), msd = calcMSD(), {ek, ep} = calcE();
+  document.getElementById('sd-s').textContent  = sstep;
+  document.getElementById('sd-r').textContent  = rm.toFixed(2);
+  document.getElementById('sd-m').textContent  = msd.toFixed(2);
+  document.getElementById('sd-ek').textContent = ek;
+  document.getElementById('sd-ep').textContent = ep;
+  document.getElementById('sd-ov').textContent = countOv() + ' pares';
+  document.getElementById('sd-ph').textContent = getPhase();
+}
+
+function simLoop() {
+  if (!srun) return;
+  for (let i = 0; i < 3; i++) stepSim();
+  drawSim();
+  if (sstep % 10 === 0) {
+    const rm = calcRMSD(), msd = calcMSD(), {ek, ep} = calcE();
+    hist.push({s:sstep, r:parseFloat(rm.toFixed(3)), m:parseFloat(msd.toFixed(2)), ek:parseFloat(ek), ep:parseFloat(ep)});
+    if (hist.length > 350) hist.shift();
+    updSD(); updRC();
+  }
+  rafid = requestAnimationFrame(simLoop);
+}
+
+function togSim() {
+  srun = !srun;
+  document.getElementById('runbtn').textContent = srun ? '⏸ Pausar' : '▶ Reanudar';
+  if (srun) simLoop();
+  else if (rafid) cancelAnimationFrame(rafid);
+}
+function rstSim() {
+  srun = false;
+  if (rafid) cancelAnimationFrame(rafid);
+  document.getElementById('runbtn').textContent = '▶ Iniciar';
+  initSim();
+}
+function updP() {
+  sT  = parseFloat(document.getElementById('Tsl').value);
+  sN  = parseInt(document.getElementById('Nsl').value);
+  sRb = parseInt(document.getElementById('Rsl').value);
+  document.getElementById('Tvl').textContent = sT.toFixed(1) + ' kT';
+  document.getElementById('Nvl').textContent = sN;
+  document.getElementById('Rvl').textContent = sRb + ' px';
+  const was = srun; srun = false;
+  if (rafid) cancelAnimationFrame(rafid);
+  initSim();
+  if (was) { srun = true; simLoop(); }
+}
+
+// ═══════════════════════════════════════════
+// ANALYSIS CHARTS
+// ═══════════════════════════════════════════
+let chR = null, chE = null, chG = null;
+
+function initCharts() {
+  if (!window.Chart) return;
+  Chart.defaults.color = '#8a8fa8';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
+  if (!chR) {
+    chR = new Chart(document.getElementById('rc'), {
+      type: 'line',
+      data: { labels: [], datasets: [
+        {label:'RMSD',  data:[], borderColor:'#1D9E75', borderWidth:1.5, pointRadius:0, fill:false, tension:.3},
+        {label:'√MSD',  data:[], borderColor:'#7F77DD', borderWidth:1,   pointRadius:0, fill:false, tension:.3, borderDash:[3,3]},
+      ]},
+      options: {
+        responsive:true, maintainAspectRatio:false, animation:false,
+        plugins:{ legend:{ display:true, position:'top', labels:{font:{size:9}, boxWidth:9, padding:6} } },
+        scales:{
+          x:{ ticks:{maxTicksLimit:5, font:{size:9}}, title:{display:true, text:'paso', font:{size:9}} },
+          y:{ ticks:{font:{size:9}}, title:{display:true, text:'u / u²', font:{size:9}} }
+        }
+      }
+    });
+  }
+  if (!chE) {
+    chE = new Chart(document.getElementById('ec'), {
+      type:'line',
+      data:{labels:[], datasets:[
+        {label:'E_cin', data:[], borderColor:'#378ADD', borderWidth:1.5, pointRadius:0, fill:false, tension:.3},
+        {label:'E_pot', data:[], borderColor:'#D85A30', borderWidth:1.5, pointRadius:0, fill:false, tension:.3, borderDash:[4,3]},
+      ]},
+      options:{
+        responsive:true, maintainAspectRatio:false, animation:false,
+        plugins:{legend:{display:true, position:'top', labels:{font:{size:9}, boxWidth:9, padding:6}}},
+        scales:{
+          x:{ticks:{maxTicksLimit:5, font:{size:9}}},
+          y:{ticks:{font:{size:9}}}
+        }
+      }
+    });
+  }
+}
+
+function updRC() {
+  if (!chR || !chE || !hist.length) return;
+  const lb = hist.map(h => h.s);
+  chR.data.labels = lb;
+  chR.data.datasets[0].data = hist.map(h => h.r);
+  chR.data.datasets[1].data = hist.map(h => parseFloat(Math.sqrt(h.m).toFixed(3)));
+  chR.update('none');
+  chE.data.labels = lb;
+  chE.data.datasets[0].data = hist.map(h => h.ek);
+  chE.data.datasets[1].data = hist.map(h => h.ep);
+  chE.update('none');
+}
+
+function calcAndDrawRDF() {
+  if (parts.length < 2) return;
+  const bins = 60, rmax = sRw * 1.4, dr = rmax / bins;
+  const hst = new Array(bins).fill(0);
+  for (let i = 0; i < parts.length; i++)
+    for (let j = i+1; j < parts.length; j++) {
+      const dx=parts[i].x-parts[j].x, dy=parts[i].y-parts[j].y;
+      const d = Math.sqrt(dx*dx+dy*dy), b = Math.floor(d/dr);
+      if (b < bins) hst[b] += 2;
+    }
+  const rho = parts.length / (Math.PI * sRw * sRw);
+  const rl = [], gl = [];
+  for (let k = 0; k < bins; k++) {
+    const r = (k + .5) * dr, sh = 2 * Math.PI * r * dr;
+    gl.push(parseFloat((hst[k] / (parts.length * rho * sh)).toFixed(4)));
+    rl.push(r.toFixed(0));
+  }
+  if (!chG) {
+    chG = new Chart(document.getElementById('rdf'), {
+      type:'line',
+      data:{labels:rl, datasets:[{label:'g(r)', data:gl, borderColor:'#BA7517', borderWidth:1.5, pointRadius:0, fill:false, tension:.25}]},
+      options:{
+        responsive:true, maintainAspectRatio:false, animation:false,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{ticks:{maxTicksLimit:8, font:{size:9}}, title:{display:true, text:'r (px)', font:{size:9}}},
+          y:{min:0, ticks:{font:{size:9}}, title:{display:true, text:'g(r)', font:{size:9}}}
+        }
+      }
+    });
+  } else {
+    chG.data.labels = rl; chG.data.datasets[0].data = gl; chG.update('none');
+  }
+}
+
+function updPkSt() {
+  const n = parts.length, ov = countOv();
+  const occ = (n * Math.PI * sRb*sRb / (Math.PI * sRw*sRw) * 100).toFixed(1);
+  let mr = 0;
+  for (const p of parts) mr += Math.sqrt(p.x*p.x + p.y*p.y);
+  mr /= (n || 1);
+  const {ek, ep} = calcE();
+  const et = (parseFloat(ek) + parseFloat(ep)).toFixed(2);
+  document.getElementById('pkst').innerHTML =
+    `<div class="mg" style="margin-top:0">
+      <div class="mc"><p class="ml">N simuladas</p><p class="mv">${n}</p></div>
+      <div class="mc"><p class="ml">Solapam.</p><p class="mv">${ov}</p><p class="mu">pares</p></div>
+      <div class="mc"><p class="ml">Ocup. 2D</p><p class="mv">${occ}<span class="mu"> %</span></p></div>
+      <div class="mc"><p class="ml">⟨r⟩</p><p class="mv">${mr.toFixed(1)}<span class="mu"> px</span></p></div>
+    </div>
+    <p style="font-size:10px;color:var(--text3);margin:.45rem 0 0">
+      E_total=${et} &nbsp;·&nbsp; RMSD=${calcRMSD().toFixed(2)} u &nbsp;·&nbsp; MSD=${calcMSD().toFixed(1)} u² &nbsp;·&nbsp; paso ${sstep}
+    </p>`;
+}
+
+function updAn() { initCharts(); updRC(); calcAndDrawRDF(); updPkSt(); }
+
+// CSV export
+function exportCSV() {
+  if (!hist.length) { alert('No hay datos. Ejecuta la simulación primero.'); return; }
+  const rows = ['paso,RMSD,MSD,E_cin,E_pot,E_total'];
+  hist.forEach(h => rows.push(`${h.s},${h.r},${h.m},${h.ek},${h.ep},${(h.ek+h.ep).toFixed(2)}`));
+  const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'vlp_cgmd_trajectory.csv';
+  a.click();
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+recalc();
+initSim();
+sw(0);
+startAutoRot();
+</script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+Final NPT equilibration - no restraints
+ &cntrl
+  imin=0,                      ! Molecular dynamics
+  ntx=5,                       ! Read coordinates and velocities
+  irest=1,                     ! Restart simulation
+  nstlim=50000,                ! 50000 steps = 100 ps
+  dt=0.002,                    ! 2 fs timestep
+  ntf=2, ntc=2,                ! SHAKE on bonds with hydrogen
+  temp0=300.0,                 ! Target temperature
+  ntpr=1000, ntwx=2500,        ! Output frequency
+  cut=9.0,                     ! Cutoff
+  ntb=2,                       ! Constant pressure
+  ntp=1,                       ! Isotropic pressure scaling
+  barostat=2,                  ! Monte Carlo barostat
+  pres0=1.0,                   ! Target pressure (1 bar)
+  taup=2.0,                    ! Pressure relaxation time
+  ntt=3, gamma_ln=2.0,         ! Langevin thermostat
+  ig=-1,                       ! Random seed
+  ntr=0,                       ! No restraints
+ /

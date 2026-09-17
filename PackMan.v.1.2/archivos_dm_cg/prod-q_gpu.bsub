@@ -1,0 +1,14 @@
+#BSUB -q q_gpu_v100
+#BSUB -n 4
+#BSUB -o STD_PR-prod.OUT
+#BSUB -e STD_PR-prod.ERR
+
+source /tmpu/scunam/config/tipo_nodo.sh
+module purge
+module load asigna/1_gpu
+module load amber/22_gpu
+
+date
+pmemd.cuda -O -i prod_md_WT4.in -p capside-3_cg-WAT.prmtop -c capside-3_cg-WAT_eq2.ncrst -o capside-3_cg-WAT_prod_md.out -r capside-3_cg-WAT_prod_md.ncrst -x capside-3_cg-WAT_prod_md.nc
+
+date

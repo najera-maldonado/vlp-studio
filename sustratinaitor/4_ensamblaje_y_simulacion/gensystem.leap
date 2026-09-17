@@ -1,0 +1,23 @@
+# Load SIRAH force field
+addPath ./sirah_x2.3_24-07.amber
+source leaprc.sirah
+source leaprc.gaff2
+GYE = loadmol2 GYE.mol2
+loadamberparams GYE.frcmod
+
+# Load model
+protein = loadpdb 3J7L-GYE.pdb
+
+# Info on system charge
+charge protein
+
+# Add solvent, counterions and 0.15M NaCl
+# Tuned solute-solvent closeness for best hydration
+solvateOct protein WT4BOX 20 0.7
+addIonsRand protein NaW 0
+
+# Save Parms
+saveAmberParmNetcdf protein 3J7L-GYE_cg.prmtop 3J7L-GYE_cg.ncrst
+savepdb protein 3J7L-GYE_cg-WAT.pdb
+# EXIT
+quit

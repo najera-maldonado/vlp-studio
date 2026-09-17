@@ -1,0 +1,24 @@
+# Load SIRAH force field
+addPath ./sirah_x2.3_24-07.amber
+source leaprc.sirah
+
+# Auto-detect capsid file (capside-*-cg.pdb pattern)
+# Will be replaced by setup script with actual filename
+set default PBradii mbondi3
+
+# Load model - AUTO_DETECT will be replaced by script
+protein = loadpdb AUTO_DETECT_CAPSID
+
+# Info on system charge
+charge protein
+
+# Add solvent, counterions and 0.15M NaCl
+# Tuned solute-solvent closeness for best hydration
+solvateOct protein WT4BOX 12 0.7
+addIonsRand protein NaW 0
+
+# Save Parms - AUTO_DETECT will be replaced by script
+saveAmberParmNetcdf protein AUTO_DETECT_OUTPUT.prmtop AUTO_DETECT_OUTPUT.ncrst
+savepdb protein AUTO_DETECT_OUTPUT.pdb
+# EXIT
+quit

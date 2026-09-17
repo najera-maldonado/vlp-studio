@@ -1,0 +1,15 @@
+
+tolerance 2.0
+filetype pdb
+output 3J7L-GYE.pdb
+
+structure 3J7L_cg.pdb
+  number 1
+  center
+  fixed 0. 0. 0. 0. 0. 0.
+end structure
+
+structure GYE.pdb
+  number  200
+  inside box -150.336 -147.174 -151.982 150.336 147.174 151.982
+end structure

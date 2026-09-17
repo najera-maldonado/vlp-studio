@@ -1,0 +1,24 @@
+Gradual heating 100K to 150K - heat3_100to150
+ &cntrl
+  imin=0,                      ! Molecular dynamics
+  ntx=5,                       ! Read coordinates only (first step) or 5 (subsequent)
+  irest=1,                     ! Do not restart (first step) or 1 (subsequent)
+  nstlim=5000,                 ! 5000 steps = 10 ps
+  dt=0.002,                    ! 2 fs timestep
+  ntf=2, ntc=2,                ! SHAKE on bonds with hydrogen
+  tempi=100.0,        ! Initial temperature
+  temp0=150.0,       ! Final temperature
+  ntpr=100, ntwx=500,          ! Output frequency
+  cut=9.0,                     ! Cutoff
+  ntb=1,                       ! Constant volume
+  ntp=0,                       ! No pressure control during heating
+  ntt=3, gamma_ln=2.0,         ! Langevin thermostat
+  ig=-1,                       ! Random seed
+  nmropt=1,                    ! NMR restraints for temperature ramp
+  ntr=1,                       ! Positional restraints
+  restraint_wt=5.0,            ! Restraint weight on protein
+  restraintmask='@CA,C,N,O',   ! Restrain protein backbone
+ /
+ &wt type='TEMP0', istep1=0, istep2=5000, 
+     value1=100.0, value2=150.0 /
+ &wt type='END' /

@@ -1,0 +1,90 @@
+# MAP file version [Apr 2020]
+
+# SIRAH force field
+# Coarse grained models for Nucleoside-nPhos
+# + Initial mapping: Machado in Nat Comm, 2017, 8:1503 [DOI: 10.1038/ncomms15031]
+# + Klein et al. 2020
+
+# ***** [ cAMP ]
+> CGRES
+  CGNAME   CMX
+  ALLNAME  CMP
+  MAP P       => PX
+  MAP C5' C5* => C5X
+  MAP C1' C1* => C1X
+  MAP C2      => C2A
+  MAP N1      => N1A
+  MAP N6      => N6A
+
+# ***** [ AMP ]
+> CGRES
+  CGNAME   AMX
+  ALLNAME  AMP
+  MAP P       => PX
+  MAP C5' C5* => C5X
+  MAP C1' C1* => C1X
+  MAP C2      => C2A
+  MAP N1      => N1A
+  MAP N6      => N6A
+
+# ***** [ ADP ]
+> CGRES
+  CGNAME   ADX
+  ALLNAME  ADP
+  MAP PB      => PXB
+  MAP PA      => PXA
+  MAP C5' C5* => C5X
+  MAP C1' C1* => C1X
+  MAP C2      => C2A
+  MAP N1      => N1A
+  MAP N6      => N6A
+
+# ***** [ ATP ]
+> CGRES
+  CGNAME   ATX
+  ALLNAME  ATP
+  MAP PG      => PXG
+  MAP PB      => PXB
+  MAP PA      => PXA
+  MAP C5' C5* => C5X
+  MAP C1' C1* => C1X
+  MAP C2      => C2A
+  MAP N1      => N1A
+  MAP N6      => N6A
+
+# ***** [ cGMP ]
+> CGRES
+  CGNAME   GMX
+  ALLNAME  PCG
+  MAP P PA    => PX
+  MAP C5' C5* => C5X
+  MAP C1' C1* => C1X
+  MAP N2      => N2G
+  MAP N1      => N1G
+  MAP O6      => O6G
+
+# ***** [ GDP ]
+> CGRES
+  CGNAME   GDX
+  ALLNAME  GDP
+  MAP PB      => PXB
+  MAP PA      => PXA
+  MAP C5' C5* => C5X
+  MAP C1' C1* => C1X
+  MAP O6      => O6G
+  MAP N1      => N1G
+  MAP N2      => N2G
+
+# ***** [ GTP ]
+> CGRES
+  CGNAME   GTX
+  ALLNAME  GTP
+  MAP PG      => PXG
+  MAP PB      => PXB
+  MAP PA      => PXA
+  MAP C5' C5* => C5X
+  MAP C1' C1* => C1X
+  MAP O6      => O6G
+  MAP N1      => N1G
+  MAP N2      => N2G
+

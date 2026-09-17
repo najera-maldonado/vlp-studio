@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Respaldos y temporales
+nanocapsule-mvp/_temp_backup/
+*.old
+.Rhistory
+
+# Salidas pesadas regenerables (se mantienen hole_runs/, cribado/ y docking/,
+# que son los resultados reales de Pac-Pore y pesan poco)
+nanocapsule-mvp/Output/BMV_IJS9/
+nanocapsule-mvp/Output/Generated_PDBs/
+
+# Archivos >100 MB (límite duro de GitHub). La cápside P22 (5UU5) se
+# redescarga de https://www.rcsb.org/structure/5UU5 (biological assembly 1)
+nanocapsule-mvp/Input/Capsides/P22_5UU5/5uu5.pdb1
+nanocapsule-mvp/Input/Capsides/P22_5UU5/capside.pdb
+
+# Zip redundante (ya está extraído en archivos_dm_cg/)
+PackMan.v.1.2/archivos_dm_cg.zip
+
+# Config local de Claude Code
+.claude/
+**/.claude/

@@ -1,0 +1,225 @@
+# MAP file version [Apr 2021]
+
+# SIRAH force field
+# Coarse grained model for glycans:
+# Garay et al. (2020)
+
+# The mapping follows the GLYCAM nomenclature syntax [http://glycam.org/docs/forcefield/glycam-naming-2]
+# This convention is very important to avoid ambiguities in setting residue connectivities.
+# Atom names in CHARMM format are also supported to allow renaming of residues to GLYCAM names.
+
+# ***** a-L-Fucp for bonds 1-6 b-D-GlcNAc
+> CGRES
+  CGNAME   Af0
+  ALLNAME  FUC 0fA
+  MAP O4  O4h     => GO4
+  MAP HO4 H4o H4O => GHo4
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** a-D-Manp [1-X]
+> CGRES
+  CGNAME   AM0
+  ALLNAME  0MA
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP HO6 H6o H6O => GHo6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** a-D-Manp [-2)-linked-(1-3)-a/b-D-Manp / -2)-linked-(1-6)-a/b-D-Manp]
+> CGRES
+  CGNAME   AM2
+  ALLNAME  2MA
+  MAP O4  O4h     => GO4
+  MAP HO4 H4o H4O => GHo4
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP HO6 H6o H6O => GHo6
+  MAP O2  O2h     => GO2
+
+# ***** a-D-Manp (bi-antenary bisected) [-3)}-4)}-6)}-1-X]
+> CGRES
+  CGNAME   AMQ
+  ALLNAME  QMA
+  MAP O4  O4h     => GO4
+  MAP O3  O3h     => GO3
+  MAP C6          => GC6
+  MAP O6  O6h     => GO6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** a-D-Manp [-3)}-6)}-1-X]
+> CGRES
+  CGNAME   AMV
+  ALLNAME  VMA
+  MAP O4  O4h     => GO4
+  MAP O3  O3h     => GO3
+  MAP C6          => GC6
+  MAP O6  O6h     => GO6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** a-D-Manp [-2)}-6)}-1-X]
+> CGRES
+  CGNAME   AMX
+  ALLNAME  XMA
+  MAP O4  O4h     => GO4
+  MAP HO4 H4o H4O => GHo4
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP O6  O6h     => GO6
+  MAP O2  O2h     => GO2
+
+# ***** a-D-Manp [-2)}-4)}-1-X]
+> CGRES
+  CGNAME   AMY
+  ALLNAME  YMA
+  MAP O4  O4h     => GO4
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP HO6 H6o H6O => GHo6
+  MAP O2  O2h     => GO2
+
+# ***** b-D-Galactose [1-X]
+> CGRES
+  CGNAME   BL0
+  ALLNAME  0LB
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP HO6 H6o H6O => GHo6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** b-D-Galactose [-3)}-1-X]
+> CGRES
+  CGNAME   BL3
+  ALLNAME  3LB
+  MAP O4  O4h     => GO4
+  MAP HO4 H4o H4O => GHo4
+  MAP O3  O3h     => GO3
+  MAP C6          => GC6
+  MAP HO6 H6o H6O => GHo6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** b-D-Galactose [-6)}-1-X]
+> CGRES
+  CGNAME   BL6
+  ALLNAME  6LB
+  MAP O4  O4h     => GO4
+  MAP HO4 H4o H4O => GHo4
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP O6  O6h     => GO6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** b-D-Manp [1-X]
+> CGRES
+  CGNAME   BM0
+  ALLNAME  0MB
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP HO6 H6o H6O => GHo6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** b-D-Manp [-4)}-1-X]
+> CGRES
+  CGNAME   BM4
+  ALLNAME  4MB
+  MAP O4  O4h     => GO4
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP HO6 H6o H6O => GHo6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** b-D-Manp (bi-antenary bisected) [-3)}-4)}-6)}-1-X]
+> CGRES
+  CGNAME   BMQ
+  ALLNAME  QMB
+  MAP O4  O4h     => GO4
+  MAP O3  O3h     => GO3
+  MAP C6          => GC6
+  MAP O6  O6h     => GO6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** b-D-Manp [-3)}-6)}-1-X]
+> CGRES
+  CGNAME   BMV
+  ALLNAME  VMB
+  MAP O4  O4h     => GO4
+  MAP O3  O3h     => GO3
+  MAP C6          => GC6
+  MAP O6  O6h     => GO6
+  MAP O2  O2h     => GO2
+  MAP HO2 H2o H2O => GHo2
+
+# ***** b-D-GlcNAc for bonds [1-X] and ASN glycosylation (1-N linked)
+> CGRES
+  CGNAME   BY0
+  ALLNAME  0YB
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP HO6 H6o H6O => GHo6
+  MAP N   N2      => GNac
+  MAP O   O7  O2N => GOac
+  MAP CT  C8  CME => GCac
+
+# ***** b-D-GlcNAc for bonds [-4)}-1-X] and ASN glycosylation (1-N linked)
+> CGRES
+  CGNAME   BY4
+  ALLNAME  4YB
+  MAP O4  O4h     => GO4
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP HO6 H6o H6O => GHo6
+  MAP N   N2      => GNac
+  MAP O   O7  O2N => GOac
+  MAP CT  C8  CME => GCac
+
+# ***** b-D-GlcNAc for bonds [-4)}-6)}-1-X] and ASN glycosylation (1-N linked)
+> CGRES
+  CGNAME   BYU
+  ALLNAME  UYB
+  MAP O4  O4h     => GO4
+  MAP O3  O3h     => GO3
+  MAP HO3 H3o H3O => GHo3
+  MAP C6          => GC6
+  MAP O6          => GO6
+  MAP N   N2      => GNac
+  MAP O   O7  O2N => GOac
+  MAP CT  C8  CME => GCac
+
+# ***** a-D-Sialic acid for bonds [-(2-3/6)]
+> CGRES
+  CGNAME   AS0
+  ALLNAME  0SA
+  MAP C1          => GC1
+  MAP O1A O11     => GOA
+  MAP O1B O12     => GOB
+  MAP O4          => GO4
+  MAP H4O HO4     => GHo4
+  MAP N5  N       => GNac
+  MAP O5N O       => GOac
+  MAP CME CT      => GCac
+  MAP O7          => GO7
+  MAP H7O HO7     => GHo7
+  MAP O8          => GO8
+  MAP H8O HO8     => GHo8

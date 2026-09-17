@@ -1,0 +1,31 @@
+# Core Dependencies
+Flask==2.3.2
+Werkzeug==2.3.6
+numpy==1.24.3
+biopython==1.81
+PyYAML==6.0.1
+
+# Scientific Computing
+scipy==1.10.1
+pandas==2.0.3
+
+# Molecular Visualization
+# Note: pymol-open-source must be installed separately via conda or apt:
+# conda install -c schrodinger pymol-open-source
+# or
+# apt-get install pymol
+
+# Development Dependencies (optional)
+pytest==7.4.0
+pytest-cov==4.1.0
+black==23.7.0
+flake8==6.0.0
+
+# Web Interface
+flask-cors==4.0.0
+python-dotenv==1.0.0
+
+# Utilities
+click==8.1.6
+tqdm==4.65.0
+requests==2.31.0
