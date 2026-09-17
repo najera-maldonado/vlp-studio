@@ -99,6 +99,27 @@ existe en dos sitios que pueden divergir. Cualquier corrección debe decidirse e
 
 ---
 
+## 4b. Decisiones científicas pendientes (las decide Lucio, no la IA)
+
+Cosas que parecían "bugs" pero son elecciones de ciencia. No se tocan hasta que Lucio
+decida la dirección y, en su caso, se corra la MD correspondiente (con la red de VLP-06).
+
+- **CIENCIA-1 — `capsid.py` radio interno ±1 Å.** El código suma +1 Å; el docstring dice
+  restar 1 Å (margen de seguridad). Contradicción. Recomendación de la IA: restar
+  (alinea con intención + más seguro). **Estado: Lucio lo decide luego.** Impacto real
+  bajo hoy (el radio casi siempre es el fallback 90 Å).
+- **CIENCIA-2 — `sustratinaitor` resolución CG vs all-atom.** Hoy el sistema es híbrido
+  incoherente (cápside CG + GYE all-atom de 144 átomos empaquetado + agua CG). Decidir:
+  todo CG (rehacer empaquetado con `GYE_cg_manual.pdb`, 17 beads — coherente con PackMan,
+  pero mapeo CG sin validar) o todo all-atom (inviable para cápside entera). **Estado:
+  aplazado hasta correr esa MD.**
+- **CIENCIA-3 — `PackMan` protocolo de heat.** Los `heat*.in` estáticos son all-atom
+  (`dt=0.002`, SHAKE, `@CA,C,N,O`) sobre topología CG SIRAH. `configurar_simulacion.sh`
+  ya genera los `.in` correctos en CG. Decidir protocolo y retirar los estáticos.
+  **Estado: aplazado hasta correr esa MD.**
+
+---
+
 ## 5b. Filosofía y alcance (leer antes de decidir qué tocar)
 
 **El proyecto NO está muerto ni congelado. Estamos poniendo cimientos.** La ciencia
@@ -149,7 +170,7 @@ cuando se conecten de verdad, y en la etapa rota de `sustratinaitor` (bug de res
 | ID | Estado | Tarea |
 |----|--------|-------|
 | **VLP-01** | ✅ | **Infra reproducible** (2026-09-17): `requirements.txt` reescrito a versiones que funcionan + RDKit; endpoint `/api/health` real (reporta motores/deps); `debug` respeta config (off por defecto); Dockerfile base py3.12 + motores apt (obabel/vina) + healthcheck urllib; compose sin curl. Verificado en vivo (boot + /api/health 200). **Caveat:** la imagen Docker no se pudo construir aquí (sin daemon); `hole`/`idock` no están en apt → documentado como límite conocido. |
-| **VLP-02** | ⬜ | **Corregir los 4 bugs de §4** (puntuales, alto valor): `5docking.sh` `found_any`, mismatch CG de sustratinaitor, `capsid.py` ±1 Å, `heat*.in` all-atom en PackMan. |
+| **VLP-02** | ✅ | **Bug mecánico corregido** (2026-09-17): `5docking.sh` `found_any` ahora se pone a 1 en el loop (antes `exit 1` siempre). Verificado. Los otros 3 "bugs" resultaron ser **decisiones científicas** → reclasificados abajo (CIENCIA-1/2/3), no se tocan ahora por decisión de Lucio. |
 | **VLP-03** | ⬜ | **Partir `packing_service.py`** en un módulo por puerta (`services/pore.py`, `md.py`, `library.py`, `packing.py`). |
 | **VLP-04** | ⬜ | **Partir `studio.html`** (un JS por pestaña) + **portada EMBUDO** como raíz. |
 | **VLP-05** | ⬜ | **Retirar fósiles**: `/classic`, prototipos muertos, código muerto de Poromania, docs que mienten. |

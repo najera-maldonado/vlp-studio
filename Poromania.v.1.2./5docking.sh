@@ -120,6 +120,7 @@ shopt -s nullglob
 found_any=0
 for d in mutants/mut_*; do
   [[ -d "$d" ]] || continue
+  found_any=1                            # VLP-02: antes nunca se ponía a 1 → exit 1 siempre
   dock_one "$(basename "$d")" || true   # <— esto impide que set -e mate el loop
 done
 

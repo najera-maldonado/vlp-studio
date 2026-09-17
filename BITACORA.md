@@ -11,6 +11,21 @@
 
 ---
 
+## 2026-09-17 (4) — VLP-02: bug mecánico corregido, 3 "bugs" eran ciencia
+
+- ✅ **`Poromania/5docking.sh` corregido:** `found_any=1` dentro del loop (antes nunca
+  se ponía a 1 → `exit 1` siempre, aunque el docking funcionara). Verificado en aislado.
+- ✅ **Reclasificación honesta:** los otros 3 "bugs" de §4 resultaron ser decisiones
+  científicas, no fixes de una línea. Movidos a ESTADO §4b como CIENCIA-1/2/3:
+  - CIENCIA-1: capsid.py ±1 Å (Lucio decide luego; IA recomienda restar).
+  - CIENCIA-2: sustratinaitor CG vs all-atom (aplazado hasta correr esa MD).
+  - CIENCIA-3: PackMan protocolo heat (aplazado hasta correr esa MD).
+- **Decisión de Lucio:** no tocar los 3 científicos ahora (coherente con la filosofía:
+  no tocar ciencia sin red y sin necesidad inmediata; ni esas MDs se han corrido).
+- ⬜ **Siguiente:** VLP-03 (partir `packing_service.py` por puerta).
+
+---
+
 ## 2026-09-17 (3) — VLP-01 hecho: infra reproducible
 
 - ✅ **`requirements.txt` reescrito** a las versiones que realmente funcionan (Flask

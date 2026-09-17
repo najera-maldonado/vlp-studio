@@ -8,7 +8,8 @@
 ## Ahora
 - [x] **VLP-01 — Infra reproducible** (2026-09-17): requirements reescrito + RDKit, `/api/health` real, debug configurable, Dockerfile py3.12 + motores, compose sin curl. Verificado en vivo.
 - [x] Confirmar que el Studio arranca hoy (verificado: boot + /api/health 200).
-- [ ] **VLP-02 — Corregir los 4 bugs** (siguiente): 5docking.sh `found_any`, mismatch CG, capsid ±1 Å, heat*.in. Ver ESTADO §6.
+- [x] **VLP-02 — Bug mecánico** (2026-09-17): 5docking.sh `found_any` corregido y verificado. Los otros 3 eran decisiones científicas → CIENCIA-1/2/3 (aplazadas por decisión de Lucio).
+- [ ] **VLP-03 — Partir `packing_service.py`** por puerta (siguiente paso del plan). Ver ESTADO §6.
 - [ ] (Humano, cuando puedas) construir la imagen Docker una vez para validarla: `cd nanocapsule-mvp && docker compose build`. Aquí no hubo daemon.
 
 ## Backlog (detalle en ESTADO.md §6)
@@ -19,9 +20,10 @@
 - [ ] VLP-06 — Tests de humo sobre las rutas reales.
 
 ## Humano (solo Lucio — la IA no puede)
-- [ ] Instalar/verificar binarios científicos en el sistema: `hole`, `vina`, `idock`, `obabel`, `pymol`, `packmol` + `rdkit` (Python). Ver ESTADO §7.
-- [ ] Decisión científica: en `sustratinaitor`, ¿el sistema va todo coarse-grained (rehacer el empaquetado con `GYE_cg_manual.pdb`, 17 beads) o todo all-atom? Hoy es híbrido incoherente.
-- [ ] Decisión científica: en `capsid.py`, el radio interno ¿es colisión +1 Å o −1 Å? (el código y el docstring se contradicen).
+- [ ] Construir la imagen Docker una vez para validar VLP-01: `cd nanocapsule-mvp && docker compose build`.
+- [ ] **CIENCIA-1** — decidir `capsid.py` radio ±1 Å (IA recomienda restar). Ver ESTADO §4b.
+- [ ] **CIENCIA-2** — decidir resolución de `sustratinaitor` (CG vs all-atom), al correr esa MD. Ver ESTADO §4b.
+- [ ] **CIENCIA-3** — decidir protocolo de heat de `PackMan`, al correr esa MD. Ver ESTADO §4b.
 
 ## Hecho
 - [x] Git inicial + monorepo publicado en GitHub (privado, cuenta najera-maldonado).
