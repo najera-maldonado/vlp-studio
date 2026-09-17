@@ -11,6 +11,19 @@
 
 ---
 
+## 2026-09-17 (8) — Portada EMBUDO descartada (revertida)
+
+- ❌ **VLP-04c revertida a petición de Lucio** ("no me gusta, no le veo utilidad").
+  Se había construido (portada en `/`, Studio en `/studio`) pero se descartó. `git revert`
+  del commit → `/` vuelve a ser el Studio directo, `/studio` y los archivos embudo
+  eliminados, 17 tests verdes. **No reconstruir la portada** (ESTADO §6 VLP-04c = ❌).
+- Nota de proceso: la construí por un malentendido — Lucio dijo "el layout" refiriéndose
+  al layout de ZELLIJ (que ya estaba hecho), y lo leí como layout web. El de zellij ya
+  está completo y validado (KDL parsea, comando `vlpstudio` se genera en shell interactiva).
+- ⬜ **Siguiente:** VLP-04b (partir studio.js por pestaña) o VLP-05.
+
+---
+
 ## 2026-09-17 (7) — VLP-04a: studio.html externalizado (CSS+JS a static/)
 
 - ✅ **`studio.html` 1190 → 281 líneas** (solo estructura): CSS inline → `static/css/

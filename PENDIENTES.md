@@ -13,13 +13,13 @@
 - [x] **VLP-03 — Partir `packing_service.py`** (2026-09-17): monolito 1225 líneas → 6 módulos por puerta + fachada de 71. 17 tests verdes + boot en vivo.
 - [x] **VLP-04a — Externalizar `studio.html`** (2026-09-17): CSS+JS a static/; template 1190→281 líneas. Verificado en navegador.
 - [ ] **VLP-04b — Partir `studio.js`** (830 líneas) por pestaña. Ya con red de navegador.
-- [ ] **VLP-04c — Portada EMBUDO** como raíz.
+- [x] ~~VLP-04c — Portada EMBUDO~~ DESCARTADA (2026-09-17, Lucio: "no le veo utilidad"). No reconstruir.
 - [ ] (Humano, cuando puedas) construir la imagen Docker una vez para validarla: `cd nanocapsule-mvp && docker compose build`. Aquí no hubo daemon.
 
 ## Backlog (detalle en ESTADO.md §6)
 - [ ] VLP-02 — Corregir los 4 bugs conocidos (5docking.sh, mismatch CG, capsid ±1 Å, heat*.in).
 - [ ] VLP-03 — Partir `packing_service.py` por puerta.
-- [ ] VLP-04 — Partir `studio.html` + portada EMBUDO.
+- [ ] VLP-04b — Partir `studio.js` por pestaña (único pendiente de VLP-04; la portada se descartó).
 - [ ] VLP-05 — Retirar fósiles (/classic, prototipos muertos, código muerto) + **renombrar `nanocapsule-mvp/` → `studio/`** (nombre engañoso; contiene el Studio vivo). Ver ESTADO §6.
 - [ ] VLP-06 — Tests de humo sobre las rutas reales.
 
