@@ -1,0 +1,59 @@
+// Layout de Zellij para trabajar en VLP Studio (PAC-ZYME).
+// Uso:  vlpstudio     (atajo auto-generado del .bashrc = reconecta o crea la sesión)
+//
+// Copia versionada. La copia VIVA que usa el comando está en
+// ~/.config/zellij/layouts/vlpstudio.kdl (misma que esta). Si editas una, copia a la otra.
+//
+// Dos pestañas (Alt+1 / Alt+2):
+//   Alt+1  trabajo  -> lazygit · Claude Code (grande) · pane manual con comandos del proyecto
+//   Alt+2  tablero  -> salud del proyecto · pendientes · estado por puerta
+//
+// A diferencia de residente (que monitorea un sitio vivo: tráfico/reseñas/buzón),
+// aquí no hay entradas externas: el tablero es ESTADO del proyecto, se actualiza
+// con Enter cuando lo pides, no en bucle cada 2 h.
+layout {
+    cwd "/home/luciernaga/Escritorio/Pac-Zyme/uno solo"
+
+    tab name="trabajo" focus=true {
+        pane split_direction="vertical" {
+            pane size="48%" {
+                name "git (lazygit)"
+                command "bash"
+                args "-lc" "command -v lazygit >/dev/null && lazygit || { echo 'lazygit no instalado'; exec bash; }"
+            }
+            pane split_direction="horizontal" size="52%" {
+                pane size="72%" {
+                    name "Claude Code (asistente)"
+                    command "claude"
+                }
+                pane size="28%" {
+                    name "manual (comandos del proyecto)"
+                    command "bash"
+                    args "-lc" "cd '/home/luciernaga/Escritorio/Pac-Zyme/uno solo'; studio(){ cd nanocapsule-mvp && FLASK_DEBUG=0 python3 src/web/app.py; }; salud(){ bash herramientas/salud.sh; }; pend(){ bat --paging=always --style=plain -l markdown PENDIENTES.md 2>/dev/null || less PENDIENTES.md; }; estado(){ bat --paging=always --style=plain -l markdown ESTADO.md 2>/dev/null || less ESTADO.md; }; bitacora(){ bat --paging=always --style=plain -l markdown BITACORA.md 2>/dev/null || less BITACORA.md; }; export -f studio salud pend estado bitacora; echo '🧪 studio (arranca Flask :5000) · salud · pend · estado · bitacora'; echo '🧑 humano: instalar binarios · gh auth · decisiones científicas'; exec bash"
+                }
+            }
+        }
+    }
+
+    tab name="tablero" {
+        pane split_direction="vertical" {
+            pane size="50%" {
+                name "salud del proyecto"
+                command "bash"
+                args "-lc" "cd '/home/luciernaga/Escritorio/Pac-Zyme/uno solo'; while true; do clear; bash herramientas/salud.sh; echo; read -s -p '↻ Enter = actualizar'; done"
+            }
+            pane split_direction="horizontal" {
+                pane size="55%" {
+                    name "pendientes"
+                    command "bash"
+                    args "-lc" "cd '/home/luciernaga/Escritorio/Pac-Zyme/uno solo'; while true; do clear; bat --style=plain -l markdown PENDIENTES.md 2>/dev/null || cat PENDIENTES.md; echo; read -s -n 1 -p '↻ Enter = actualizar · E = editar' k; [ \"$k\" = e ] && ${EDITOR:-nano} PENDIENTES.md; done"
+                }
+                pane {
+                    name "estado por puerta (ESTADO §3)"
+                    command "bash"
+                    args "-lc" "cd '/home/luciernaga/Escritorio/Pac-Zyme/uno solo'; while true; do clear; awk '/^## 3\\./{p=1} /^## 4\\./{p=0} p' ESTADO.md | bat --style=plain -l markdown 2>/dev/null || awk '/^## 3\\./{p=1} /^## 4\\./{p=0} p' ESTADO.md; echo; read -s -p '↻ Enter = actualizar'; done"
+                }
+            }
+        }
+    }
+}

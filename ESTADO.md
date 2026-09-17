@@ -116,15 +116,17 @@ proyecto roto. Git es el vehículo: cada extracción es un commit auditable.
 cuando se conecten de verdad, y en la etapa rota de `sustratinaitor` (bug de resolución).
 
 ### Plan de ejecución (ordenado; cada punto = uno o varios commits verificables)
-1. **Infra reproducible** (empezar por aquí — desbloquea todo, imposible de romper):
-   RDKit en `requirements.txt`, arreglar healthcheck `/api/health`, Docker que instale
-   los motores (hole/vina/obabel). Sin esto nadie puede levantar el proyecto real.
-2. **Corregir los 4 bugs de §4** (puntuales, alto valor): `5docking.sh` `found_any`,
-   mismatch CG de sustratinaitor, `capsid.py` ±1 Å, `heat*.in` all-atom en PackMan.
-3. **Partir `packing_service.py`** en un módulo por puerta (`services/pore.py`, `md.py`, `library.py`, `packing.py`).
-4. **Partir `studio.html`** (un JS por pestaña) + **portada EMBUDO** como raíz.
-5. **Retirar fósiles**: `/classic`, prototipos muertos, código muerto de Poromania, docs que mienten.
-6. **Tests de humo** sobre las rutas reales → a partir de ahí cada cambio es seguro.
+
+> IDs de tarea: para trabajar una, di *"trabaja VLP-0N"*. Estado: ⬜ pendiente · 🚧 en progreso · ✅ hecho.
+
+| ID | Estado | Tarea |
+|----|--------|-------|
+| **VLP-01** | ⬜ | **Infra reproducible** (empezar por aquí — desbloquea todo, imposible de romper): RDKit en `requirements.txt`, arreglar healthcheck `/api/health`, Docker que instale los motores (hole/vina/obabel). Sin esto nadie puede levantar el proyecto real. |
+| **VLP-02** | ⬜ | **Corregir los 4 bugs de §4** (puntuales, alto valor): `5docking.sh` `found_any`, mismatch CG de sustratinaitor, `capsid.py` ±1 Å, `heat*.in` all-atom en PackMan. |
+| **VLP-03** | ⬜ | **Partir `packing_service.py`** en un módulo por puerta (`services/pore.py`, `md.py`, `library.py`, `packing.py`). |
+| **VLP-04** | ⬜ | **Partir `studio.html`** (un JS por pestaña) + **portada EMBUDO** como raíz. |
+| **VLP-05** | ⬜ | **Retirar fósiles**: `/classic`, prototipos muertos, código muerto de Poromania, docs que mienten. |
+| **VLP-06** | ⬜ | **Tests de humo** sobre las rutas reales → a partir de ahí cada cambio es seguro. |
 
 ---
 
