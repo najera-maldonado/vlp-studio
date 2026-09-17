@@ -9,7 +9,8 @@
 - [x] **VLP-01 — Infra reproducible** (2026-09-17): requirements reescrito + RDKit, `/api/health` real, debug configurable, Dockerfile py3.12 + motores, compose sin curl. Verificado en vivo.
 - [x] Confirmar que el Studio arranca hoy (verificado: boot + /api/health 200).
 - [x] **VLP-02 — Bug mecánico** (2026-09-17): 5docking.sh `found_any` corregido y verificado. Los otros 3 eran decisiones científicas → CIENCIA-1/2/3 (aplazadas por decisión de Lucio).
-- [ ] **VLP-03 — Partir `packing_service.py`** por puerta (siguiente paso del plan). Ver ESTADO §6.
+- [x] **VLP-06 — Tests de humo** (2026-09-17, adelantado): 17 tests en `tests/test_smoke.py`, verdes en ~1.5s. La red para VLP-03.
+- [ ] **VLP-03 — Partir `packing_service.py`** por puerta (siguiente, ya con red de tests). Ver ESTADO §6.
 - [ ] (Humano, cuando puedas) construir la imagen Docker una vez para validarla: `cd nanocapsule-mvp && docker compose build`. Aquí no hubo daemon.
 
 ## Backlog (detalle en ESTADO.md §6)

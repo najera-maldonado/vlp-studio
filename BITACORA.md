@@ -11,6 +11,19 @@
 
 ---
 
+## 2026-09-17 (5) — VLP-06 adelantado: red de tests de humo antes de trocear
+
+- ✅ **Decisión:** hacer VLP-06 ANTES de VLP-03, para tener red al partir el monolito.
+- ✅ **`tests/test_smoke.py`** (17 tests, ~1.5s, pytest): boot + páginas, /api/health,
+  biblioteca (Input real), Pac-Pore rutas rápidas, sección RDKit (válido→radio, inválido
+  →400), profile/deimmuno/md ilustrativos, md_box, preview de enzimas, y funciones de
+  servicio (substrate_section, md_prepare). NO ejercen HOLE/PyMOL/Vina/Packmol (lentos).
+- ✅ `pytest.ini` (pythonpath) + `tests/conftest.py` (fixture client). pytest en requirements.
+- ✅ Comando `test` añadido al pane manual del layout; `salud.sh` muestra el resultado.
+- ⬜ **Siguiente:** VLP-03 (partir `packing_service.py` por puerta) — ya con red verde.
+
+---
+
 ## 2026-09-17 (4) — VLP-02: bug mecánico corregido, 3 "bugs" eran ciencia
 
 - ✅ **`Poromania/5docking.sh` corregido:** `found_any=1` dentro del loop (antes nunca

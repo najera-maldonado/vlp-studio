@@ -29,7 +29,7 @@ layout {
                 pane size="28%" {
                     name "manual (comandos del proyecto)"
                     command "bash"
-                    args "-lc" "cd '/home/luciernaga/Escritorio/Pac-Zyme/uno solo'; studio(){ cd nanocapsule-mvp && FLASK_DEBUG=0 python3 src/web/app.py; }; salud(){ bash herramientas/salud.sh; }; pend(){ bat --paging=always --style=plain -l markdown PENDIENTES.md 2>/dev/null || less PENDIENTES.md; }; estado(){ bat --paging=always --style=plain -l markdown ESTADO.md 2>/dev/null || less ESTADO.md; }; bitacora(){ bat --paging=always --style=plain -l markdown BITACORA.md 2>/dev/null || less BITACORA.md; }; export -f studio salud pend estado bitacora; echo '🧪 studio (arranca Flask :5000) · salud · pend · estado · bitacora'; echo '🧑 humano: instalar binarios · gh auth · decisiones científicas'; exec bash"
+                    args "-lc" "cd '/home/luciernaga/Escritorio/Pac-Zyme/uno solo'; studio(){ cd nanocapsule-mvp && FLASK_DEBUG=0 python3 src/web/app.py; }; test(){ ( cd nanocapsule-mvp && python3 -m pytest -q ); }; salud(){ bash herramientas/salud.sh; }; pend(){ bat --paging=always --style=plain -l markdown PENDIENTES.md 2>/dev/null || less PENDIENTES.md; }; estado(){ bat --paging=always --style=plain -l markdown ESTADO.md 2>/dev/null || less ESTADO.md; }; bitacora(){ bat --paging=always --style=plain -l markdown BITACORA.md 2>/dev/null || less BITACORA.md; }; export -f studio test salud pend estado bitacora; echo '🧪 studio (arranca Flask :5000) · test (pytest de humo) · salud · pend · estado · bitacora'; echo '🧑 humano: instalar binarios · gh auth · decisiones científicas'; exec bash"
                 }
             }
         }

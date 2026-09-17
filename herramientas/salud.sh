@@ -31,6 +31,17 @@ dirty="$(git status --porcelain 2>/dev/null | wc -l)"
 printf '  rama %s · %s cambios sin commitear\n' "$branch" "$dirty"
 git log --oneline -3 2>/dev/null | sed 's/^/  · /'
 
+echo "── Tests de humo (pytest) ───────────────"
+if python3 -c "import pytest" 2>/dev/null; then
+  res="$( cd nanocapsule-mvp && python3 -m pytest -q 2>/dev/null | tail -1 )"
+  case "$res" in
+    *passed*) ok "$res" ;;
+    *) no "${res:-sin salida}" ;;
+  esac
+else
+  no "pytest no instalado (pip install pytest)"
+fi
+
 echo
 echo "── Plan (ESTADO.md §6) ──────────────────"
 grep -E '^\| \*\*VLP-0' ESTADO.md 2>/dev/null | sed -E 's/\| \*\*(VLP-0[0-9])\*\* \| (.) \|.*/  \2 \1/' || echo "  (ESTADO.md no encontrado)"
