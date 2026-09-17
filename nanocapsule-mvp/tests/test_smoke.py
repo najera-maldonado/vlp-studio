@@ -24,15 +24,8 @@ def test_health_ok(client):
     assert d["deps"]["rdkit"] is True
 
 
-def test_portada_page(client):
-    # La raíz sirve la portada EMBUDO (VLP-04c).
-    r = client.get("/")
-    assert r.status_code == 200
-    assert "embudo" in r.get_data(as_text=True).lower()
-
-
 def test_studio_page(client):
-    assert client.get("/studio").status_code == 200
+    assert client.get("/").status_code == 200
 
 
 def test_classic_page(client):

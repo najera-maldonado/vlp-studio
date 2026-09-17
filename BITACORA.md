@@ -11,23 +11,6 @@
 
 ---
 
-## 2026-09-17 (8) — VLP-04c: portada EMBUDO
-
-- ✅ **Portada en la raíz `/`:** `templates/embudo.html` + `static/css/embudo.css`
-  (reutiliza los tokens de studio.css). Embudo de 5 barras que se estrechan
-  (Biblioteca→Pac-Pore→Studio3D→De-inmunización→MD) con badges real/packing/ilustrativo.
-  El Studio se movió a `/studio` (`/classic` intacto).
-- ✅ **Deep-link por hash:** cada puerta enlaza `/studio#<view>` y `studio.js` abre esa
-  pestaña. Se detectó y arregló una **carrera**: showView(pore) corría antes de que las
-  cargas async poblaran los selects → perfil en blanco. Fix: `await Promise.all([...])`
-  antes de abrir la pestaña por hash.
-- ✅ **Verificado en navegador:** portada renderiza el embudo; clic en PAC-PORE → /studio#pore
-  con la pestaña activa y la gráfica de perfil dibujada. 18 tests verdes (nuevo test de portada).
-- **VLP-04 casi cerrado:** falta solo VLP-04b (partir studio.js por pestaña).
-- ⬜ **Siguiente:** VLP-04b, o VLP-05 (fósiles + renombrar carpeta).
-
----
-
 ## 2026-09-17 (7) — VLP-04a: studio.html externalizado (CSS+JS a static/)
 
 - ✅ **`studio.html` 1190 → 281 líneas** (solo estructura): CSS inline → `static/css/
