@@ -99,7 +99,36 @@ existe en dos sitios que pueden divergir. Cualquier corrección debe decidirse e
 
 ---
 
-## 6. Cómo arrancar hoy
+## 6. Decisión estratégica: refundar por dentro, no reescribir de cero
+
+**Decidido (2026-09-17): NO se reescribe desde cero.** La ciencia difícil ya
+funciona (Pac-Pore end-to-end; los pipelines). Reescribir tiraría lo valioso y
+reintroduciría bugs ya resueltos (eje de simetría degenerado, `rseed` de HOLE,
+centrado de enzimas). La arquitectura es correcta; el problema es que los archivos
+crecieron sin partirse.
+
+**Patrón a seguir: "estrangulador"** — el Studio sigue funcionando en todo momento;
+en cada commit se extrae una pieza a su módulo y se verifica que arranca. No hay un
+"gran día del rewrite": hay muchos commits pequeños, reversibles, que nunca dejan el
+proyecto roto. Git es el vehículo: cada extracción es un commit auditable.
+
+**"Empezar limpio" solo cabe** en lo que hoy es maqueta (De-inmunización, Análisis MD)
+cuando se conecten de verdad, y en la etapa rota de `sustratinaitor` (bug de resolución).
+
+### Plan de ejecución (ordenado; cada punto = uno o varios commits verificables)
+1. **Infra reproducible** (empezar por aquí — desbloquea todo, imposible de romper):
+   RDKit en `requirements.txt`, arreglar healthcheck `/api/health`, Docker que instale
+   los motores (hole/vina/obabel). Sin esto nadie puede levantar el proyecto real.
+2. **Corregir los 4 bugs de §4** (puntuales, alto valor): `5docking.sh` `found_any`,
+   mismatch CG de sustratinaitor, `capsid.py` ±1 Å, `heat*.in` all-atom en PackMan.
+3. **Partir `packing_service.py`** en un módulo por puerta (`services/pore.py`, `md.py`, `library.py`, `packing.py`).
+4. **Partir `studio.html`** (un JS por pestaña) + **portada EMBUDO** como raíz.
+5. **Retirar fósiles**: `/classic`, prototipos muertos, código muerto de Poromania, docs que mienten.
+6. **Tests de humo** sobre las rutas reales → a partir de ahí cada cambio es seguro.
+
+---
+
+## 7. Cómo arrancar hoy
 
 ```bash
 cd nanocapsule-mvp
