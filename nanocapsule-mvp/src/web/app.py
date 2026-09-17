@@ -24,8 +24,14 @@ app = Flask(__name__, template_folder="templates", static_folder="static")
 # Páginas
 # --------------------------------------------------------------------------- #
 @app.route("/")
+def portada():
+    """Portada EMBUDO: las 4 puertas del embudo, real vs ilustrativo (VLP-04c)."""
+    return render_template("embudo.html")
+
+
+@app.route("/studio")
 def studio():
-    """Interfaz combinada (brutalista + datos reales + NGL)."""
+    """Interfaz combinada (brutalista + datos reales + NGL). La portada enlaza aquí."""
     return render_template("studio.html")
 
 

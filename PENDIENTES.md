@@ -12,8 +12,8 @@
 - [x] **VLP-06 — Tests de humo** (2026-09-17, adelantado): 17 tests en `tests/test_smoke.py`, verdes en ~1.5s. La red para VLP-03.
 - [x] **VLP-03 — Partir `packing_service.py`** (2026-09-17): monolito 1225 líneas → 6 módulos por puerta + fachada de 71. 17 tests verdes + boot en vivo.
 - [x] **VLP-04a — Externalizar `studio.html`** (2026-09-17): CSS+JS a static/; template 1190→281 líneas. Verificado en navegador.
-- [ ] **VLP-04b — Partir `studio.js`** (830 líneas) por pestaña. Ya con red de navegador.
-- [ ] **VLP-04c — Portada EMBUDO** como raíz.
+- [x] **VLP-04c — Portada EMBUDO** (2026-09-17): `/` = embudo con las 4 puertas; Studio movido a `/studio`. Verificado en navegador.
+- [ ] **VLP-04b — Partir `studio.js`** (830 líneas) por pestaña. Ya con red de navegador. (Único pendiente de VLP-04.)
 - [ ] (Humano, cuando puedas) construir la imagen Docker una vez para validarla: `cd nanocapsule-mvp && docker compose build`. Aquí no hubo daemon.
 
 ## Backlog (detalle en ESTADO.md §6)

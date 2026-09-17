@@ -825,6 +825,13 @@ $('mdFile').addEventListener('change', e => {
 
 // ───────────────────────── Init ─────────────────────────
 initNGL();
-loadLibrary();
-loadLibraryDetail();
-loadPoreConfig();
+(async function init() {
+  // Espera las cargas (pueblan los selects) ANTES de abrir la pestaña por hash,
+  // si no doPore()/etc. correrían con los selects vacíos (perfil en blanco).
+  await Promise.all([loadLibrary(), loadLibraryDetail(), loadPoreConfig()]);
+
+  // Si llegamos desde la portada EMBUDO con #pore, #md, etc., abre esa pestaña.
+  const v = (location.hash || '').slice(1);
+  const valid = ['biblioteca', 'studio', 'pore', 'deimmuno', 'md'];
+  if (valid.includes(v)) showView(v);
+})();
