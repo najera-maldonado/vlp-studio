@@ -173,7 +173,7 @@ cuando se conecten de verdad, y en la etapa rota de `sustratinaitor` (bug de res
 | **VLP-02** | ✅ | **Bug mecánico corregido** (2026-09-17): `5docking.sh` `found_any` ahora se pone a 1 en el loop (antes `exit 1` siempre). Verificado. Los otros 3 "bugs" resultaron ser **decisiones científicas** → reclasificados abajo (CIENCIA-1/2/3), no se tocan ahora por decisión de Lucio. |
 | **VLP-03** | ⬜ | **Partir `packing_service.py`** en un módulo por puerta (`services/pore.py`, `md.py`, `library.py`, `packing.py`). |
 | **VLP-04** | ⬜ | **Partir `studio.html`** (un JS por pestaña) + **portada EMBUDO** como raíz. |
-| **VLP-05** | ⬜ | **Retirar fósiles**: `/classic`, prototipos muertos, código muerto de Poromania, docs que mienten. |
+| **VLP-05** | ⬜ | **Retirar fósiles**: `/classic`, prototipos muertos, código muerto de Poromania, docs que mienten. **+ Renombrar `nanocapsule-mvp/` → `studio/`** (el nombre es fósil; contiene el Studio vivo). OJO al renombrar: actualizar `herramientas/vlpstudio.kdl`, `herramientas/salud.sh`, PENDIENTES/BITACORA y docs que citen la ruta (paths.py se resuelve por `__file__`, no se rompe). |
 | **VLP-06** | ⬜ | **Tests de humo** sobre las rutas reales → a partir de ahí cada cambio es seguro. |
 
 ---

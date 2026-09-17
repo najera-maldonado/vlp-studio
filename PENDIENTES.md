@@ -16,7 +16,7 @@
 - [ ] VLP-02 — Corregir los 4 bugs conocidos (5docking.sh, mismatch CG, capsid ±1 Å, heat*.in).
 - [ ] VLP-03 — Partir `packing_service.py` por puerta.
 - [ ] VLP-04 — Partir `studio.html` + portada EMBUDO.
-- [ ] VLP-05 — Retirar fósiles (/classic, prototipos muertos, código muerto).
+- [ ] VLP-05 — Retirar fósiles (/classic, prototipos muertos, código muerto) + **renombrar `nanocapsule-mvp/` → `studio/`** (nombre engañoso; contiene el Studio vivo). Ver ESTADO §6.
 - [ ] VLP-06 — Tests de humo sobre las rutas reales.
 
 ## Humano (solo Lucio — la IA no puede)
