@@ -17,11 +17,13 @@
 - [ ] (Humano, cuando puedas) construir la imagen Docker una vez para validarla: `cd nanocapsule-mvp && docker compose build`. Aquí no hubo daemon.
 
 ## Backlog (detalle en ESTADO.md §6)
-- [ ] VLP-02 — Corregir los 4 bugs conocidos (5docking.sh, mismatch CG, capsid ±1 Å, heat*.in).
-- [ ] VLP-03 — Partir `packing_service.py` por puerta.
-- [ ] VLP-04b — Partir `studio.js` por pestaña (único pendiente de VLP-04; la portada se descartó).
-- [ ] VLP-05 — Retirar fósiles (/classic, prototipos muertos, código muerto) + **renombrar `nanocapsule-mvp/` → `studio/`** (nombre engañoso; contiene el Studio vivo). Ver ESTADO §6.
-- [ ] VLP-06 — Tests de humo sobre las rutas reales.
+Hechos: VLP-01, 02, 03, 04a, 06, 07. Descartado: 04c (portada). Pendientes ↓
+- [ ] VLP-04b — Partir `studio.js` por pestaña (único pendiente de VLP-04).
+- [ ] VLP-05 — Retirar fósiles (/classic, prototipos muertos, código muerto) + renombrar `nanocapsule-mvp/` → `studio/`.
+- [ ] VLP-08 — CI (GitHub Actions): pytest en cada push. Lo más valioso pendiente.
+- [ ] VLP-09 — LICENSE real + arreglar `setup.py` (entry point roto).
+- [ ] VLP-10 — Linter/formatter (black+flake8 con config, opcional pre-commit).
+- [ ] VLP-11 — `fetch_data.sh` para las estructuras pesadas gitignoreadas.
 
 ## Humano (solo Lucio — la IA no puede)
 - [ ] Construir la imagen Docker una vez para validar VLP-01: `cd nanocapsule-mvp && docker compose build`.

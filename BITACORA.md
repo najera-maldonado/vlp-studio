@@ -11,6 +11,22 @@
 
 ---
 
+## 2026-09-17 (9) — VLP-07: versionado por motor + plan ampliado (best practices)
+
+- ✅ **VLP-07 hecho:** `VERSION` + `CHANGELOG.md` en cada motor, independientes —
+  Studio 0.1.0, Poromania 1.2.0, PackMan 1.2.0, sustratinaitor 0.1.0. Convención de
+  tags con prefijo por motor (`studio/vX.Y.Z`, etc.); tags baseline creados. La versión
+  vive en archivo, NO en el nombre de carpeta (que es frágil, rompe rutas).
+- ✅ **Plan ampliado tras revisar buenas prácticas** (ESTADO §6): añadidos VLP-08 (CI
+  GitHub Actions — lo más valioso pendiente), VLP-09 (LICENSE + arreglar setup.py),
+  VLP-10 (linter/formatter), VLP-11 (script de datos). Gaps confirmados: sin LICENSE,
+  sin CI, sin config de lint, sin CHANGELOG (este último ya resuelto por VLP-07).
+- Fuera de alcance por ahora (documentado): mypy, logging real, tests de integración de
+  motores, endurecer seguridad, Makefile.
+- ⬜ **Siguiente:** cerrar cimientos (VLP-04b, 05) y luego VLP-08 (CI).
+
+---
+
 ## 2026-09-17 (8) — Portada EMBUDO descartada (revertida)
 
 - ❌ **VLP-04c revertida a petición de Lucio** ("no me gusta, no le veo utilidad").

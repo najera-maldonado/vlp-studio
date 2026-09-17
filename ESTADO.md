@@ -177,6 +177,16 @@ cuando se conecten de verdad, y en la etapa rota de `sustratinaitor` (bug de res
 | **VLP-04c** | ❌ | **Portada EMBUDO — DESCARTADA** (2026-09-17): se construyó y se revirtió a petición de Lucio ("no le veo utilidad"). `/` sigue entrando directo al Studio. NO reconstruir. |
 | **VLP-05** | ⬜ | **Retirar fósiles**: `/classic`, prototipos muertos, código muerto de Poromania, docs que mienten. **+ Renombrar `nanocapsule-mvp/` → `studio/`** (el nombre es fósil; contiene el Studio vivo). OJO al renombrar: actualizar `herramientas/vlpstudio.kdl`, `herramientas/salud.sh`, PENDIENTES/BITACORA y docs que citen la ruta (paths.py se resuelve por `__file__`, no se rompe). |
 | **VLP-06** | ✅ | **Tests de humo** (2026-09-17, ADELANTADO antes de VLP-03 para tener red al partir el monolito): `nanocapsule-mvp/tests/test_smoke.py`, 17 tests, ~1.5s. Cubren boot, páginas, biblioteca, Pac-Pore (rutas rápidas), sección RDKit, MD/deimmuno ilustrativos, preview y funciones de servicio. NO ejercen motores lentos (HOLE/PyMOL/Vina/Packmol). Correr: `cd nanocapsule-mvp && python3 -m pytest -q` (o `test` en el pane manual). El tablero `salud.sh` muestra el resultado. |
+| **VLP-07** | ✅ | **Versionado por motor** (2026-09-17): `VERSION` + `CHANGELOG.md` en cada motor, independientes (Studio 0.1.0, Poromania 1.2.0, PackMan 1.2.0, sustratinaitor 0.1.0). Convención de tags git con prefijo por motor: `studio/vX.Y.Z`, `poromania/vX.Y.Z`, `packman/vX.Y.Z`, `sustratinaitor/vX.Y.Z`. Se versiona en archivo, NO en el nombre de carpeta (frágil). Tags baseline creados. |
+| **VLP-08** | ⬜ | **CI (GitHub Actions)**: correr `pytest` en cada push/PR. Lo más valioso: sin CI los tests se pudren. Instalar RDKit + deps; los motores binarios NO van a CI (los tests no los ejercen). Cuidar que `Input/` tenga datos (o mockear). |
+| **VLP-09** | ⬜ | **LICENSE + arreglar `setup.py`**: hoy declara MIT pero no hay archivo LICENSE (incoherencia); el entry point apunta a `cli/main.py` inexistente → añadir LICENSE real y retirar/arreglar el entry point. |
+| **VLP-10** | ⬜ | **Linter/formatter**: `black` + `flake8` (ya en requirements, sin usar) con config (`pyproject.toml`/`setup.cfg`) y, opcional, `pre-commit`. |
+| **VLP-11** | ⬜ | **Script de datos**: `fetch_data.sh` que redescargue las estructuras pesadas gitignoreadas (cápside P22 de RCSB) → clon fresco 100% reproducible. Cierra el hueco de VLP-01. |
+
+Deliberadamente FUERA del plan por ahora (se consideraron): tests de integración de los
+motores (lentos, requieren binarios); type checking (mypy); logging real (sección de
+default.yaml sin usar); endurecer seguridad de subprocess/SMILES (solo al exponer a
+internet); Makefile (redundante con salud.sh + pane manual).
 
 ---
 
