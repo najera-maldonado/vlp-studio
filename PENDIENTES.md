@@ -11,7 +11,9 @@
 - [x] **VLP-02 — Bug mecánico** (2026-09-17): 5docking.sh `found_any` corregido y verificado. Los otros 3 eran decisiones científicas → CIENCIA-1/2/3 (aplazadas por decisión de Lucio).
 - [x] **VLP-06 — Tests de humo** (2026-09-17, adelantado): 17 tests en `tests/test_smoke.py`, verdes en ~1.5s. La red para VLP-03.
 - [x] **VLP-03 — Partir `packing_service.py`** (2026-09-17): monolito 1225 líneas → 6 módulos por puerta + fachada de 71. 17 tests verdes + boot en vivo.
-- [ ] **VLP-04 — Partir `studio.html`** (un JS por pestaña) + portada EMBUDO (siguiente). Ver ESTADO §6.
+- [x] **VLP-04a — Externalizar `studio.html`** (2026-09-17): CSS+JS a static/; template 1190→281 líneas. Verificado en navegador.
+- [ ] **VLP-04b — Partir `studio.js`** (830 líneas) por pestaña. Ya con red de navegador.
+- [ ] **VLP-04c — Portada EMBUDO** como raíz.
 - [ ] (Humano, cuando puedas) construir la imagen Docker una vez para validarla: `cd nanocapsule-mvp && docker compose build`. Aquí no hubo daemon.
 
 ## Backlog (detalle en ESTADO.md §6)

@@ -11,6 +11,24 @@
 
 ---
 
+## 2026-09-17 (7) — VLP-04a: studio.html externalizado (CSS+JS a static/)
+
+- ✅ **`studio.html` 1190 → 281 líneas** (solo estructura): CSS inline → `static/css/
+  studio.css` (77), JS inline → `static/js/studio.js` (830). Extracción byte-idéntica
+  con script Python; rutas `/static/...` planas (sin Jinja). Orden de carga preservado
+  (studio.js al final del body).
+- ✅ **Verificado a fondo** (frontend, sin red de tests propia): `node --check` del JS OK,
+  servido con content-type correcto, 17 tests backend verdes, y **en navegador real**
+  (claude-in-chrome): render con CSS, badge "PACKMOL LISTO" (JS corrió /api/health),
+  biblioteca con datos reales, cambio a pestaña PAC-PORE con gráfica Chart.js y dropdown
+  de canales poblado, CERO errores de consola.
+- **Decisión de alcance:** VLP-04 se dividió en 04a (externalizar, HECHO), 04b (partir
+  studio.js por pestaña, pendiente) y 04c (portada EMBUDO, pendiente). La externalización
+  ya da el grueso de la editabilidad; el split fino y la portada van aparte.
+- ⬜ **Siguiente:** VLP-04b (studio.js por pestaña) o VLP-04c (portada EMBUDO).
+
+---
+
 ## 2026-09-17 (6) — VLP-03: monolito partido por puertas (estrangulador)
 
 - ✅ **`packing_service.py` (1225 líneas) → 6 módulos** por responsabilidad:
