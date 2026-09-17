@@ -11,6 +11,21 @@
 
 ---
 
+## 2026-09-17 (2) — Filosofía aclarada: cimientos para editar la ciencia, no congelarla
+
+- ✅ **Corrección de alcance (ESTADO §5b):** la ciencia NO está fuera de alcance ni
+  congelada para siempre. Esta fase de cimientos existe **para poder pulir/reconstruir
+  la ciencia real con seguridad en el futuro**. Hoy no se toca solo porque falta la red
+  (modularidad + tests); esos cimientos son la licencia para editarla luego.
+- ✅ **Frontera permanente reducida a:** datos crudos pesados, el otro proyecto/cuenta,
+  y las tripas de motores de terceros (HOLE/Vina/AMBER/SIRAH se llaman, no se forkean).
+  Todo lo demás —incluida la ciencia propia— es editable a futuro con red.
+- Contexto: Lucio construyó toda la ciencia solo; el conocimiento vive en su cabeza y el
+  código. Los cimientos (ESTADO/bitácora/modularidad/tests) también sirven para que ese
+  conocimiento deje de depender solo de su memoria.
+
+---
+
 ## 2026-09-17 — Fundación: git, diagnóstico y sistema de trabajo
 
 - ✅ **Git iniciado** y monorepo (los 4 proyectos) publicado en GitHub privado:

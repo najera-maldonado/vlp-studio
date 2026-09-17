@@ -99,6 +99,33 @@ existe en dos sitios que pueden divergir. Cualquier corrección debe decidirse e
 
 ---
 
+## 5b. Filosofía y alcance (leer antes de decidir qué tocar)
+
+**El proyecto NO está muerto ni congelado. Estamos poniendo cimientos.** La ciencia
+la construyó Lucio solo; el conocimiento vive en su cabeza y en el código. El objetivo
+de esta fase (estructura, auditabilidad, editar-sin-romper) es **habilitar** que en el
+futuro se pueda pulir, parchear y reconstruir la ciencia real **con seguridad** — no
+sustituirla.
+
+Por qué hoy no tocamos la ciencia: ahora no hay red (monolito, cero tests). La
+modularidad (VLP-03/04) + los tests de humo (VLP-06) SON la licencia para editar la
+ciencia después con marcha atrás y verificación.
+
+**Fronteras (qué significa "no tocar"):**
+- **Permanente — nunca:** los datos crudos pesados (los produce un motor, van en
+  `.gitignore`); el otro proyecto/cuenta (`mexicanoresidente-ux`, residente-mx); y las
+  **tripas de los motores de terceros** — HOLE, Vina, AMBER, campo de fuerza SIRAH se
+  **llaman**, no se reescriben ni se forkean.
+- **Protegido AHORA, editable DESPUÉS (con red):** toda la ciencia propia — análisis de
+  poro, cribado de mutantes, protocolos de MD, empaquetado. Candidata a pulir/reconstruir
+  una vez existan los cimientos. Durante VLP-03 se **mueve tal cual, no se reescribe**;
+  reescribirla ahora reintroduce bugs ya resueltos (eje de simetría, rseed, centrado).
+- **Aplazado hasta que haya razón real (no "nunca"):** deploy en nube, multiusuario,
+  cola de trabajos, endurecer seguridad. Tiene sentido el día que lo use alguien más.
+- **Ampliación futura, no ahora:** De-inmunización real (NetMHCIIpan/FEP).
+
+---
+
 ## 6. Decisión estratégica: refundar por dentro, no reescribir de cero
 
 **Decidido (2026-09-17): NO se reescribe desde cero.** La ciencia difícil ya
