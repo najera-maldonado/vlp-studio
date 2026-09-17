@@ -1,31 +1,27 @@
-# Core Dependencies
-Flask==2.3.2
-Werkzeug==2.3.6
-numpy==1.24.3
-biopython==1.81
+# Dependencias de Python — VLP Studio
+# Pines alineados con el entorno que REALMENTE funciona (Python 3.12), no con los
+# fósiles anteriores (que fijaban Flask 2.3.2 y NO declaraban RDKit → irreproducible).
+# Actualizado en VLP-01 (2026-09-17). Ver ESTADO.md §4.
+
+# --- Núcleo usado por el código (src/) ---
+Flask==3.1.3
+Werkzeug==3.1.8
 PyYAML==6.0.1
+numpy==1.26.4
+rdkit==2025.9.1          # geometría 3D de sustratos por SMILES (STUDIO 3D + PAC-PORE)
 
-# Scientific Computing
-scipy==1.10.1
-pandas==2.0.3
+# --- Motores externos (NO son paquetes pip; instalar en el sistema) ---
+# El código los invoca por subprocess. Sin ellos, las puertas que los usan fallan.
+#   packmol            (apt: packmol)            · empaquetado
+#   pymol              (apt: pymol / conda)      · radio interno, cribado de mutantes
+#   openbabel → obabel (apt: openbabel)          · preparación de receptor/ligando
+#   autodock-vina → vina (apt: autodock-vina)    · docking
+#   hole               (NO en apt — Oxford, manual) · perfil del poro
+#   idock              (NO en apt — manual)         · docking alternativo (Poromania)
 
-# Molecular Visualization
-# Note: pymol-open-source must be installed separately via conda or apt:
-# conda install -c schrodinger pymol-open-source
-# or
-# apt-get install pymol
-
-# Development Dependencies (optional)
+# --- Desarrollo (opcional) ---
 pytest==7.4.0
 pytest-cov==4.1.0
-black==23.7.0
-flake8==6.0.0
 
-# Web Interface
-flask-cors==4.0.0
-python-dotenv==1.0.0
-
-# Utilities
-click==8.1.6
-tqdm==4.65.0
-requests==2.31.0
+# --- Declaradas antes pero NO importadas en src/ (revisar/retirar en VLP-05) ---
+# biopython, scipy, pandas, flask-cors, python-dotenv, click, tqdm, requests

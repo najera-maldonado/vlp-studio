@@ -6,8 +6,10 @@
 > aquí solo el recordatorio de lo inmediato y lo que depende de ti (humano).
 
 ## Ahora
-- [ ] **VLP-01 — Infra reproducible** (siguiente commit): RDKit en `requirements.txt`, healthcheck `/api/health` real, Docker que instale hole/vina/obabel. Ver ESTADO §6.
-- [ ] Confirmar que el Studio arranca hoy (`cd nanocapsule-mvp && FLASK_DEBUG=0 python3 src/web/app.py`).
+- [x] **VLP-01 — Infra reproducible** (2026-09-17): requirements reescrito + RDKit, `/api/health` real, debug configurable, Dockerfile py3.12 + motores, compose sin curl. Verificado en vivo.
+- [x] Confirmar que el Studio arranca hoy (verificado: boot + /api/health 200).
+- [ ] **VLP-02 — Corregir los 4 bugs** (siguiente): 5docking.sh `found_any`, mismatch CG, capsid ±1 Å, heat*.in. Ver ESTADO §6.
+- [ ] (Humano, cuando puedas) construir la imagen Docker una vez para validarla: `cd nanocapsule-mvp && docker compose build`. Aquí no hubo daemon.
 
 ## Backlog (detalle en ESTADO.md §6)
 - [ ] VLP-02 — Corregir los 4 bugs conocidos (5docking.sh, mismatch CG, capsid ±1 Å, heat*.in).

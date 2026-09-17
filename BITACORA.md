@@ -11,6 +11,25 @@
 
 ---
 
+## 2026-09-17 (3) — VLP-01 hecho: infra reproducible
+
+- ✅ **`requirements.txt` reescrito** a las versiones que realmente funcionan (Flask
+  3.1.3, numpy 1.26.4, py3.12) + **RDKit 2025.9.1** (antes ausente → irreproducible).
+  Motores externos documentados como no-pip; deps no usadas marcadas para VLP-05.
+- ✅ **Endpoint `/api/health` real** en `app.py`: reporta qué motores (which) y deps
+  (import) están presentes. Antes no existía → el healthcheck de Docker daba unhealthy.
+- ✅ **`debug` respeta config** (web.debug=false por defecto + override FLASK_DEBUG);
+  antes estaba `debug=True` hardcodeado.
+- ✅ **Dockerfile** base py3.12 (no 3.9), instala obabel+vina, healthcheck por urllib
+  (no requests/curl). **compose** healthcheck por python (no curl).
+- ✅ **Verificado en vivo:** boot del Flask + `/api/health` → 200 con los 6 motores y 4
+  deps presentes; debug off.
+- 🚧 **Caveat honesto:** la imagen Docker NO se construyó (sin daemon aquí); `hole`/
+  `idock` no están en apt → documentado como límite. Pendiente humano: `docker compose build` una vez.
+- ⬜ **Siguiente:** VLP-02 (los 4 bugs).
+
+---
+
 ## 2026-09-17 (2) — Filosofía aclarada: cimientos para editar la ciencia, no congelarla
 
 - ✅ **Corrección de alcance (ESTADO §5b):** la ciencia NO está fuera de alcance ni

@@ -35,6 +35,23 @@ def classic():
     return render_template("index.html")
 
 
+@app.route("/api/health")
+def health():
+    """Chequeo de salud: 200 si la app vive, más qué motores/deps están presentes.
+
+    Lo usan el HEALTHCHECK de Docker/compose y el pane 'salud' del tablero. Barato:
+    solo `which` de binarios e import diferido de deps, sin lanzar subprocesos.
+    """
+    import importlib.util
+    import shutil
+
+    engines = {name: bool(shutil.which(name))
+               for name in ("packmol", "pymol", "obabel", "vina", "hole", "idock")}
+    deps = {name: importlib.util.find_spec(name) is not None
+            for name in ("rdkit", "numpy", "yaml", "flask")}
+    return jsonify({"status": "ok", "engines": engines, "deps": deps})
+
+
 # --------------------------------------------------------------------------- #
 # Biblioteca
 # --------------------------------------------------------------------------- #
@@ -521,9 +538,15 @@ def download_experiment_zip():
 
 
 if __name__ == "__main__":
+    import os
+
     port = svc._config.get("web.port", 5000)
     host = svc._config.get("web.host", "0.0.0.0")
-    print("Iniciando servidor web nanocapsule MVP...")
+    # debug: respeta config (web.debug, por defecto false) y el override FLASK_DEBUG.
+    env_debug = os.environ.get("FLASK_DEBUG")
+    debug = (env_debug == "1") if env_debug is not None else svc._config.get("web.debug", False)
+    print("Iniciando servidor web VLP Studio...")
     print(f"Studio (nuevo):  http://localhost:{port}/")
     print(f"Clásico (NGL):   http://localhost:{port}/classic")
-    app.run(debug=True, host=host, port=port)
+    print(f"Salud:           http://localhost:{port}/api/health")
+    app.run(debug=debug, host=host, port=port)

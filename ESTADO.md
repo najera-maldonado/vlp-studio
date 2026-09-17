@@ -148,7 +148,7 @@ cuando se conecten de verdad, y en la etapa rota de `sustratinaitor` (bug de res
 
 | ID | Estado | Tarea |
 |----|--------|-------|
-| **VLP-01** | ⬜ | **Infra reproducible** (empezar por aquí — desbloquea todo, imposible de romper): RDKit en `requirements.txt`, arreglar healthcheck `/api/health`, Docker que instale los motores (hole/vina/obabel). Sin esto nadie puede levantar el proyecto real. |
+| **VLP-01** | ✅ | **Infra reproducible** (2026-09-17): `requirements.txt` reescrito a versiones que funcionan + RDKit; endpoint `/api/health` real (reporta motores/deps); `debug` respeta config (off por defecto); Dockerfile base py3.12 + motores apt (obabel/vina) + healthcheck urllib; compose sin curl. Verificado en vivo (boot + /api/health 200). **Caveat:** la imagen Docker no se pudo construir aquí (sin daemon); `hole`/`idock` no están en apt → documentado como límite conocido. |
 | **VLP-02** | ⬜ | **Corregir los 4 bugs de §4** (puntuales, alto valor): `5docking.sh` `found_any`, mismatch CG de sustratinaitor, `capsid.py` ±1 Å, `heat*.in` all-atom en PackMan. |
 | **VLP-03** | ⬜ | **Partir `packing_service.py`** en un módulo por puerta (`services/pore.py`, `md.py`, `library.py`, `packing.py`). |
 | **VLP-04** | ⬜ | **Partir `studio.html`** (un JS por pestaña) + **portada EMBUDO** como raíz. |
