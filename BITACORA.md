@@ -11,6 +11,22 @@
 
 ---
 
+## 2026-09-17 (6) — VLP-03: monolito partido por puertas (estrangulador)
+
+- ✅ **`packing_service.py` (1225 líneas) → 6 módulos** por responsabilidad:
+  `common.py` (infra+helpers PDB), `library.py`, `pore.py` (526, Pac-Pore completo),
+  `deimmuno.py`, `md.py`, `packing.py` (Studio 3D).
+- ✅ **Fachada:** `packing_service.py` quedó en 71 líneas re-exportando la API pública
+  (24 nombres, incl. `_config`). `app.py` y los tests NO cambiaron → estrangulador puro.
+- ✅ **Verificado:** 17 tests verdes tras el swap + boot real del Flask con una ruta por
+  puerta (health/library/pore/deimmuno/md) → todas 200, sin errores.
+- **Cómo crecer ahora:** puerta nueva = módulo nuevo + una línea de re-export en la fachada.
+- **Nota:** el nombre `packing_service.py` quedó legacy (ya es fachada, no "packing");
+  renombrarlo tocaría app.py+tests → opcional para VLP-05.
+- ⬜ **Siguiente:** VLP-04 (partir `studio.html` + portada EMBUDO).
+
+---
+
 ## 2026-09-17 (5) — VLP-06 adelantado: red de tests de humo antes de trocear
 
 - ✅ **Decisión:** hacer VLP-06 ANTES de VLP-03, para tener red al partir el monolito.
