@@ -159,26 +159,59 @@ GET  /api/download/{exp_id} # Descarga resultados en ZIP
 - BioPython
 - PyYAML
 
-### Software Externo
-- Packmol (instalación del sistema)
-- PyMOL (para cálculos geométricos)
+### Motores externos (software de terceros)
+
+El Studio **invoca** estos motores como procesos externos (no los redistribuye). Se
+dividen en dos grupos según se puedan o no empaquetar en la imagen Docker:
+
+| Motor | Puerta / uso | Instalación | Licencia | ¿En la imagen Docker? |
+|-------|--------------|-------------|----------|-----------------------|
+| Packmol | Empaquetamiento | `apt install packmol` | libre | ✅ incluido |
+| PyMOL (open-source) | Geometría, mutagénesis | `apt install pymol` | permisiva | ✅ incluido |
+| Open Babel (`obabel`) | Preparación de ligandos | `apt install openbabel` | GPL-2.0 | ✅ incluido |
+| AutoDock Vina (`vina`) | Docking | `apt install autodock-vina` | Apache-2.0 | ✅ incluido |
+| **HOLE** | Pac-Pore (perfil de poro) | manual (Oxford) | **académica, NO redistribuible** | ❌ apórtalo tú |
+| **idock** | Docking alternativo | manual | verificar | ❌ apórtalo tú |
+| **GROMACS** (`gmx`) | Puerta 4 (MD SIRAH) | `apt`/manual | LGPL-2.1 | ❌ no incluido |
+
+> **Por qué HOLE e idock no vienen en la imagen:** su licencia académica **no permite
+> redistribuirlos**, así que hornearlos en una imagen pública violaría sus términos.
+> Debes obtenerlos tú mismo bajo su licencia y aportarlos al contenedor (ver abajo).
+> HOLE: https://www.holeprogram.org/ · GROMACS: https://www.gromacs.org/
+
+Sin HOLE, la puerta **Pac-Pore** no funciona; sin GROMACS, la puerta **Análisis MD**
+(Puerta 4) no corre. El resto del Studio (empaquetamiento, docking Vina) sí funciona.
 
 ## Instalación
 
+### Opción A — Docker (recomendada, reproducible)
+
 ```bash
-# Clonar repositorio
 git clone <repository>
+cd nanocapsule-mvp
+docker compose build          # construye nanocapsule-mvp:latest
+docker compose up -d          # arranca en http://localhost:5000
+# verificar: curl http://localhost:5000/api/health  -> {"status":"ok", ...}
+```
 
-# Instalar dependencias
+La imagen trae Packmol, PyMOL, Open Babel y Vina. Para habilitar Pac-Pore / Puerta 4,
+monta tus binarios de HOLE / GROMACS por volumen (tú aportas la licencia), p.ej. añade
+en `docker-compose.yml` bajo `volumes:`:
+
+```yaml
+      - /ruta/a/tu/hole:/usr/local/bin/hole:ro     # HOLE que instalaste bajo su licencia
+      - /ruta/a/tu/gmx:/usr/local/bin/gmx:ro        # GROMACS
+```
+
+### Opción B — Local (pip + binarios del sistema)
+
+```bash
+git clone <repository>
+cd nanocapsule-mvp
 pip install -r requirements.txt
-
-# Instalar Packmol
-sudo apt-get install packmol  # Linux
-brew install packmol           # macOS
-
-# Ejecutar servidor
-cd src/web
-python app.py
+sudo apt-get install packmol pymol openbabel autodock-vina   # Linux
+# HOLE, idock y GROMACS: instálalos aparte bajo su licencia y ponlos en el PATH
+python src/web/app.py         # http://localhost:5000
 ```
 
 ## Uso Básico
@@ -193,7 +226,7 @@ python app.py
    ```
 
 3. **Acceder a Interface**:
-   - Abrir navegador en http://localhost:5001
+   - Abrir navegador en http://localhost:5000
 
 4. **Generar Empaquetamiento**:
    - Seleccionar estructuras

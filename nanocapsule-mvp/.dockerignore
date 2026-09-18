@@ -1,0 +1,32 @@
+# Datos pesados: se proveen por volumen (compose monta Input/ y Output/) o por
+# fetch_data.sh, NO se hornean en la imagen.
+Output/
+Input/
+Generated_PDBs/
+
+# Fósil marcado para retirar (VLP-05); no debe entrar en una imagen publicable.
+_temp_backup/
+
+# Artefactos de Python / tests / caché.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Git y metadatos de repo.
+.git/
+.gitignore
+.dockerignore
+
+# Entornos y editores.
+.venv/
+venv/
+.env
+.vscode/
+.idea/
+
+# Documentación y notas (no necesarias en runtime).
+*.md
+docs/

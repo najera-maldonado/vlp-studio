@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pymol \
     openbabel \
     autodock-vina \
-    libgl1-mesa-glx \
+    libgl1 \
     libxrender1 \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*

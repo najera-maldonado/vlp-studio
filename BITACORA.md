@@ -11,6 +11,29 @@
 
 ---
 
+## 2026-09-17 (12) — Fase A arrancada: la imagen Docker YA CONSTRUYE Y ARRANCA ✅
+
+- ✅ **Docker daemon verificado disponible** (v29.8.0) → se atacó la Fase A (el riesgo real).
+- 🐛 **2 bugs de build encontrados y arreglados en caliente:**
+  1. **Sin `.dockerignore`** → build context de **2.4 GB** (Output 1.3G, _temp_backup 770M,
+     Input 337M). Creado `nanocapsule-mvp/.dockerignore` → context a **564 kB**. (Input/
+     Output van por volumen, no en la imagen; _temp_backup es fósil.)
+  2. **`libgl1-mesa-glx` no existe en Debian 13 (trixie)**, que es lo que `python:3.12-slim`
+     rastrea ahora → apt exit 100. Cambiado a **`libgl1`** en el Dockerfile. Los demás apt
+     (packmol/pymol/openbabel/autodock-vina) SÍ resuelven.
+- ✅ **Imagen construida** (`nanocapsule-mvp:latest`, 298 MB) **y verificada en vivo:**
+  `docker compose up` → contenedor **healthy**, `/api/health` = `status ok`. Deps OK
+  (flask/numpy/rdkit/yaml). Motores DENTRO: packmol/pymol/obabel/vina ✅.
+- ⚠️ **Confirmado lo esperado (NO son bugs):** dentro del contenedor faltan **hole**,
+  **idock** (no están en apt; + hole no es redistribuible) y **gmx/GROMACS** (Puerta 4).
+  → Pac-Pore y Puerta 4 MD no funcionan en el contenedor tal cual. Se resuelve aparte
+  (capa/volumen para hole/idock bajo licencia del usuario; decisión de cómo proveer GROMACS).
+- ⬜ **Siguiente:** decidir cómo proveer hole/idock/GROMACS (sin hornear los no
+  redistribuibles), luego Fase B (CI, LICENSE MIT, pinning, fósiles). Cambios de hoy
+  (.dockerignore + Dockerfile) SIN commitear aún.
+
+---
+
 ## 2026-09-17 (11) — Investigación enfocada: reproducibilidad para un dev único
 
 - ✅ **Cerrado el vacío del eje (e).** 2ª deep-research enfocada solo en reproducibilidad
