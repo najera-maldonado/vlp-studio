@@ -11,6 +11,23 @@
 
 ---
 
+## 2026-09-17 (14) — VLP-08: CI en GitHub Actions ✅ VERDE
+
+- ✅ **CI hecho y verde al primer intento** (run 35303445371, success en 31s).
+  `.github/workflows/ci.yml`: en push/PR a main → Python 3.12, deps pip, lint crítico
+  (flake8 E9/F63/F7/F82, solo errores reales sin ruido de estilo) + 17 tests de humo.
+- **Decisión de alcance:** CI solo instala deps pip (NO motores). Verificado que los
+  imports de pymol en src/ son lazy (dentro de funciones) y app.py/conftest no importan
+  motores al tope → los tests de humo colectan y pasan sin pymol/hole/gromacs. Mirror del
+  principio de la investigación: CI valida cableado, no ciencia.
+- Cubre solo `nanocapsule-mvp/` (el Studio). Los otros 3 motores (Poromania/PackMan/
+  sustratinaitor) no tienen tests aún → fuera de CI por ahora.
+- Pre-validado local antes del push: lint 0 errores, 17 tests verdes.
+- ⬜ **Siguiente Fase B:** pinning de deps (pip-tools/uv), retirar fósiles (VLP-05),
+  cerrar VLP-09 (entry point cli roto).
+
+---
+
 ## 2026-09-17 (13) — Fase B: LICENSE MIT aplicada (VLP-09 parte 1)
 
 - ✅ **LICENSE MIT** en la raíz del monorepo. Titular: **najera-maldonado** (nombre de
