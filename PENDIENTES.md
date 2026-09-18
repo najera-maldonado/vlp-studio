@@ -5,11 +5,13 @@
 > Actualizado 2026-09-18: repo público; incorporados los apuntes de ciencia/software de Lucio.
 
 ## ⏭️ PRÓXIMA SESIÓN (decisión de Lucio, 2026-09-18): REVISAR TODOS LOS MOTORES
-Antes de seguir construyendo o extendiendo, hacer una **pasada de VERIFICACIÓN CIENTÍFICA**
-de los 4 motores (Studio/packing, Poromania/poro, PackMan/MD, sustratinaitor). Motivo:
-Lucio señala que **las corridas de MD PUEDEN ESTAR MAL** → NO dar por buenos los resultados
-de dinámica hasta verificarlos (setup, mapeo CG, equilibración, análisis). Esta pasada
-AUDITA lo existente; es distinta de los ítems de "trabajo nuevo" de abajo.
+Antes de seguir construyendo o extendiendo, hacer una **auditoría científica INDEPENDIENTE
+y DESDE CERO** de los 4 motores (Studio/packing, Poromania/poro, PackMan/MD, sustratinaitor).
+**Briefing completo en [`REVISION_MOTORES.md`](REVISION_MOTORES.md)** — leerlo primero.
+Motivo: Lucio señala que **las corridas de MD PUEDEN ESTAR MAL** → NO dar por buenos los
+resultados de dinámica hasta verificarlos. **IMPORTANTE (anti-sesgo):** Lucio quiere una
+revisión desde cero, NO que se confirme una revisión previa; cualquier hallazgo anterior es
+sospecha sin verificar, para cross-check solo DESPUÉS de la propia pasada — nunca norma.
 - Terreno firme vs frágil: el **packing es geométrico y determinista** (semilla fija, golden
   test) → más confiable que la MD. Si la MD flaquea, packing + JOSS siguen en pie.
 - Prioridad cercana, enmarcada como VERIFICACIÓN (no extensión): **JOSS en paralelo** (no
