@@ -11,6 +11,23 @@
 
 ---
 
+## 2026-09-18 (19) — Relicenciar MIT → AGPLv3 (decisión de Lucio)
+
+- ✅ **Cambio de licencia a GNU AGPLv3 o posterior** (commit 4d064ea). Razón de Lucio:
+  mantenerlo abierto y evitar apropiación, INCLUIDO el caso de correrlo como servicio web
+  (el Studio es una app Flask → AGPL cierra el hueco SaaS que GPLv3 deja abierto).
+- Actualizados coherentes: LICENSE (texto oficial AGPLv3 de SPDX), setup.py
+  (license=AGPL-3.0-or-later + clasificador), CITATION.cff, README raíz + Studio,
+  THIRD_PARTY.md, README de Poromania (badge + link al LICENSE raíz). Copyright najera-maldonado.
+  THIRD_PARTY conserva "MIT-like" solo para Packmol (su licencia propia). 22 tests verdes, CI verde.
+- ⚠️ **APRENDIZAJE (git/gh):** el push falló con "Repository not found" porque la cuenta
+  ACTIVA de gh se había cambiado a `mexicanoresidente-ux` (la otra cuenta) → no ve el repo
+  privado. Fix: `gh auth switch --user najera-maldonado`. Recordar esto al retomar si vuelve a fallar.
+- ⬜ **Siguiente:** igual que antes (repo público → Zenodo DOI → JOSS; o cerrar pendientes
+  menores de software). La licencia AGPLv3 no cambia el plan de publicación.
+
+---
+
 ## 2026-09-17 (18) — Pulido "bien bien" pre-publicación (4 ítems) ✅ CI verde
 
 - ✅ **READMEs de PackMan y sustratinaitor** (antes sin README; ahora los 4 motores
