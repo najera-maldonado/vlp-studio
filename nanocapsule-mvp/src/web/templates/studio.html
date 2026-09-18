@@ -276,6 +276,13 @@
   <div class="foot">Nanocapsule MVP · servido por Flask</div>
 </div>
 
-<script src="/static/js/studio.js"></script>
+<!-- studio.js partido por puerta (VLP-04b). ORDEN IMPORTANTE: comparten scope global;
+     el arranque (listeners + init) vive en packing.js y corre al final. -->
+<script src="/static/js/studio-core.js"></script>
+<script src="/static/js/library.js"></script>
+<script src="/static/js/analisis-md.js"></script>
+<script src="/static/js/deinmunizacion.js"></script>
+<script src="/static/js/pac-pore.js"></script>
+<script src="/static/js/packing.js"></script>
 </body>
 </html>
