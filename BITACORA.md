@@ -11,6 +11,25 @@
 
 ---
 
+## 2026-09-17 (13) — Fase B: LICENSE MIT aplicada (VLP-09 parte 1)
+
+- ✅ **LICENSE MIT** en la raíz del monorepo. Titular: **najera-maldonado** (nombre de
+  Lucio en publicaciones científicas, confirmado por él), año 2026. Cubre el código propio
+  de los 4 proyectos.
+- ✅ **THIRD_PARTY.md**: lista las licencias de cada motor externo, separando los
+  redistribuibles (packmol/pymol/obabel/vina/rdkit) de los que NO se distribuyen y aporta
+  el usuario (HOLE, idock, NetMHCIIpan, GROMACS, SIRAH). Deja explícito que MIT del código
+  es compatible con motores GPL/LGPL que se INVOCAN (no se enlazan).
+- ✅ **setup.py**: añadido `license='MIT'`, author → najera-maldonado, URLs placeholder
+  `yourusername/nanocapsule-mvp` → `najera-maldonado/vlp-studio`. (El clasificador MIT ya
+  estaba.)
+- ⚠️ **Pendiente de VLP-09:** el entry point `nanocapsule=cli.main:cli` sigue roto (no hay
+  módulo cli; CLAUDE.md ya lo notaba). No rompe el install, pero el comando fallaría.
+  Arreglarlo o quitarlo en una pasada aparte.
+- ⬜ **Siguiente Fase B:** CI (VLP-08), pinning de deps, retirar fósiles (VLP-05).
+
+---
+
 ## 2026-09-17 (12) — Fase A arrancada: la imagen Docker YA CONSTRUYE Y ARRANCA ✅
 
 - ✅ **Docker daemon verificado disponible** (v29.8.0) → se atacó la Fase A (el riesgo real).

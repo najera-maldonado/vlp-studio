@@ -31,12 +31,13 @@ dev_requirements = [
 setup(
     name='nanocapsule-designer',
     version='1.0.0',
-    author='Nanocapsule Team',
+    author='najera-maldonado',
     author_email='',
     description='Professional system for designing and packaging therapeutic enzymes in viral capsids',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/yourusername/nanocapsule-mvp',
+    license='MIT',
+    url='https://github.com/najera-maldonado/vlp-studio',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     include_package_data=True,
@@ -71,9 +72,9 @@ setup(
     ],
     keywords='molecular-dynamics, protein-packing, capsid, enzyme, packmol, pymol',
     project_urls={
-        'Bug Reports': 'https://github.com/yourusername/nanocapsule-mvp/issues',
-        'Source': 'https://github.com/yourusername/nanocapsule-mvp',
-        'Documentation': 'https://github.com/yourusername/nanocapsule-mvp/wiki',
+        'Bug Reports': 'https://github.com/najera-maldonado/vlp-studio/issues',
+        'Source': 'https://github.com/najera-maldonado/vlp-studio',
+        'Documentation': 'https://github.com/najera-maldonado/vlp-studio/wiki',
     },
 )
 
