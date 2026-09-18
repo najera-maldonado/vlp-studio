@@ -39,12 +39,16 @@
 - [ ] **Barrido de pH** y medir el cambio de tamaño del poro (conecta con los estados morfológicos de P22).
 - [ ] **Estabilidad de mutantes del poro** (mapeados a la cápside) vs la cápside sola.
 - [ ] Complemento barato: CHAP (proxy de agua) antes del PMF caro.
+- [ ] Métodos de energía libre del cruce/unión (apuntes Lucio): umbrella sampling (= el push de arriba) · **metadinámica** (alternativa para el PMF) · **MM-PBSA/MM-GBSA** (energía de unión desde trayectoria MD; complementa/sustituye a Vina en `dock_correlate`).
 
 **Puerta 4 — MD (hoy NUNCA corrida; bloque "correr la MD bien"):**
 - [ ] Correr la MD (PackMan tiene el protocolo; faltan trayectorias/`.dat`).
 - [ ] **Réplicas a distintas temperaturas** (liga con CIENCIA-3, heat).
 - [ ] **Solvatar con dodecaedro rómbico** los sistemas icosaédricos (eficiente para ~esféricos).
 - [ ] **Añadir GROMACS** al pipeline empaquetador→MD (hoy PackMan es estilo AMBER).
+- [ ] **Decidir CG: SIRAH vs Martini 3** (apunte Lucio; ya era pregunta abierta en INVESTIGACION_2026-09-17.md).
+- [ ] **Replica-exchange (REMD/HREMD)** como sampling avanzado (además de réplicas por temperatura). (confirmar si "replicas" era esto)
+- [ ] **uMD** = MD sin sesgo como baseline frente a la steered/push. (confirmar con Lucio: ¿unbiased o µs?)
 
 **Puerta 3 — de-inmunización:**
 - [ ] Motor real (NetMHCIIpan-4.3, ya identificado).
@@ -67,6 +71,9 @@
 - [ ] Conectar la **MD de PackMan al visor 3D** (extensión de motor↔visualizador).
 - [ ] **Quitar emojis del código + comentarios/strings a INGLÉS** (pulido pro/JOSS; también los READMEs públicos). Se solapa con "repo/docs en inglés".
 - [ ] **Demo hosteado de solo lectura** (a): sitio que muestra el Studio + resultados precomputados usando los endpoints ligeros (sin motores pesados). Deployable (Vercel); la app completa con HOLE/GROMACS no. Para visibilidad/JOSS.
+
+## Frontera nueva — a decidir si entra (apunte Lucio, confirmar)
+- [ ] **QM/MM** — modelar la CATÁLISIS / reacción química de la enzima en el sitio activo (cuántica en el sitio + MM en el resto). Va MÁS ALLÁ del embudo actual (packing/transporte/estabilidad) hacia la FUNCIÓN de la enzima. Grande y dirección nueva. ¿Confirmas que es modelar la reacción?
 
 ## Grande / a scopear (visión del embudo — no bloquea publicar)
 - [ ] **Combinar los motores**: que el Studio orqueste el embudo COMPLETO end-to-end (packing → poro → de-inmunización → MD) desde una interfaz. Hoy solo Pac-Pore está cableado (vía Poromania). Software + ciencia; es la dirección natural del proyecto.
