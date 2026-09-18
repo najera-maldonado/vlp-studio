@@ -47,7 +47,7 @@
 - [ ] **Solvatar con dodecaedro rómbico** los sistemas icosaédricos (eficiente para ~esféricos).
 - [ ] **Añadir GROMACS** al pipeline empaquetador→MD (hoy PackMan es estilo AMBER).
 - [ ] **Decidir CG: SIRAH vs Martini 3** (apunte Lucio; ya era pregunta abierta en INVESTIGACION_2026-09-17.md).
-- [ ] **Replica-exchange (REMD/HREMD)** como sampling avanzado (además de réplicas por temperatura). (confirmar si "replicas" era esto)
+- [ ] **Replica-exchange (T-REMD/HREMD)** como sampling avanzado (confirmado por Lucio 2026-09-18; probablemente T-REMD, que unifica con "réplicas a distintas temperaturas").
 - [ ] **uMD** = MD sin sesgo como baseline frente a la steered/push. (confirmar con Lucio: ¿unbiased o µs?)
 
 **Puerta 3 — de-inmunización:**
@@ -72,8 +72,8 @@
 - [ ] **Quitar emojis del código + comentarios/strings a INGLÉS** (pulido pro/JOSS; también los READMEs públicos). Se solapa con "repo/docs en inglés".
 - [ ] **Demo hosteado de solo lectura** (a): sitio que muestra el Studio + resultados precomputados usando los endpoints ligeros (sin motores pesados). Deployable (Vercel); la app completa con HOLE/GROMACS no. Para visibilidad/JOSS.
 
-## Frontera nueva — a decidir si entra (apunte Lucio, confirmar)
-- [ ] **QM/MM** — modelar la CATÁLISIS / reacción química de la enzima en el sitio activo (cuántica en el sitio + MM en el resto). Va MÁS ALLÁ del embudo actual (packing/transporte/estabilidad) hacia la FUNCIÓN de la enzima. Grande y dirección nueva. ¿Confirmas que es modelar la reacción?
+## Frontera nueva — QM/MM (confirmado: modelar la reacción; PERO es lo más limitante)
+- [ ] **QM/MM** — modelar la CATÁLISIS / reacción de la enzima en el sitio activo (QM en el sitio + MM en el resto). Confirmado por Lucio (2026-09-18) que es modelar la reacción. **ES LA PIEZA MÁS PESADA Y LIMITANTE DEL PLAN:** muy caro (coordenada de reacción, TS), necesita motor QM (ORCA/CP2K gratis-académico, o Gaussian) acoplado a MM, y criterio experto (región QM, nivel de teoría, frontera). Subproyecto de MESES. Es ORTOGONAL al embudo (pregunta por la FUNCIÓN, no por transporte/estabilidad). **Recomendación: DESPUÉS de que corra la MD de Puerta 4; que NO bloquee lo cercano.** Frontera OK (se llama el motor QM, no se forkea).
 
 ## Grande / a scopear (visión del embudo — no bloquea publicar)
 - [ ] **Combinar los motores**: que el Studio orqueste el embudo COMPLETO end-to-end (packing → poro → de-inmunización → MD) desde una interfaz. Hoy solo Pac-Pore está cableado (vía Poromania). Software + ciencia; es la dirección natural del proyecto.
