@@ -11,6 +11,20 @@
 
 ---
 
+## 2026-09-17 (16) — VLP-05: /classic oculta+deprecated → FASE B COMPLETA ✅
+
+- ✅ **VLP-05 resuelto** (decisión de Lucio: conservar pero ocultar). `/classic` sigue
+  funcional pero: enlace del footer quitado (0 enlaces UI), route/arranque marcados
+  DEPRECATED, nota en README, comentario del test actualizado. 17 tests verdes.
+- ✅ **FASE B ("confiable") COMPLETA:** LICENSE MIT + THIRD_PARTY + CI verde + pinning
+  (lock) + VLP-09 (entry point) + VLP-05 (fósiles/classic). Falta solo, opcional: borrar
+  `_temp_backup` local (770 MB, no está en git; decisión de Lucio con `rm -rf`).
+- ⬜ **Siguiente = FASE C (citable):** README real (el actual sigue siendo el fósil de
+  abril con parches; reescribirlo de verdad) + `CITATION.cff`. Opcional: golden file, JOSS.
+- DECISIÓN AÚN ABIERTA para Fase C: ¿release normal de GitHub o apuntar a JOSS (DOI + paper)?
+
+---
+
 ## 2026-09-17 (15) — Fase B: pinning + cierre VLP-09; falta decidir /classic (VLP-05)
 
 - ✅ **Pinning (requirements.lock):** 17 paquetes con versión exacta (incl. transitivas
