@@ -11,6 +11,24 @@
 
 ---
 
+## 2026-09-17 (15) — Fase B: pinning + cierre VLP-09; falta decidir /classic (VLP-05)
+
+- ✅ **Pinning (requirements.lock):** 17 paquetes con versión exacta (incl. transitivas
+  antes sueltas). Dockerfile y CI instalan desde el lock → build/CI reproducibles.
+  Verificado: build Docker OK, lock instala limpio en venv aislado, 17 tests verdes, CI verde.
+- ✅ **VLP-09 cerrado:** retirado el entry point roto `nanocapsule=cli.main:cli` (apuntaba
+  a src/cli inexistente, solo __init__ vacío) + borrado el paquete cli vacío. No hay CLI;
+  el punto de entrada real es `python src/web/app.py`.
+- 🔎 **VLP-05 (fósiles) — hallazgos:**
+  - `_temp_backup/` (770 MB) **NO está trackeado en git** → no es basura del repo, es local.
+    Lucio puede `rm -rf nanocapsule-mvp/_temp_backup` para recuperar disco (opcional, su decisión).
+  - **`/classic`** (interfaz NGL antigua) SÍ está viva y con test de humo que exige 200.
+    Retirarla es una DECISIÓN DE PRODUCTO (cambia comportamiento), no limpieza mecánica →
+    NO se tocó unilateralmente. PENDIENTE de que Lucio decida si se retira o se conserva.
+- ⬜ **Siguiente:** decidir /classic; luego Fase C (README real + CITATION.cff).
+
+---
+
 ## 2026-09-17 (14) — VLP-08: CI en GitHub Actions ✅ VERDE
 
 - ✅ **CI hecho y verde al primer intento** (run 35303445371, success en 31s).
