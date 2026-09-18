@@ -55,9 +55,7 @@ def _random_positions(n: int, radius: float, min_distance: float) -> List[List[f
             if x * x + y * y + z * z > 1:
                 continue
             candidate = [x * effective_radius, y * effective_radius, z * effective_radius]
-            if all(
-                math.dist(candidate, p) >= min_distance for p in positions
-            ):
+            if all(math.dist(candidate, p) >= min_distance for p in positions):
                 positions.append(candidate)
                 placed = True
                 break
@@ -66,7 +64,11 @@ def _random_positions(n: int, radius: float, min_distance: float) -> List[List[f
             x, y, z = (random.uniform(-1, 1) for _ in range(3))
             norm = math.sqrt(x * x + y * y + z * z) or 1.0
             positions.append(
-                [x / norm * effective_radius, y / norm * effective_radius, z / norm * effective_radius]
+                [
+                    x / norm * effective_radius,
+                    y / norm * effective_radius,
+                    z / norm * effective_radius,
+                ]
             )
     return positions
 
@@ -171,7 +173,9 @@ def preview(
 # Colocador de sustrato ALREDEDOR de la cápside (ILUSTRATIVO — como sustratinaitor)
 # --------------------------------------------------------------------------- #
 # Plantilla de un sustrato: cadena corta de ~12 beads (glucosilceramida ilustrativa).
-_SUBSTRATE_TEMPLATE = [(i * 1.6, 1.2 * math.sin(i * 0.9), 0.8 * math.cos(i * 0.6)) for i in range(12)]
+_SUBSTRATE_TEMPLATE = [
+    (i * 1.6, 1.2 * math.sin(i * 0.9), 0.8 * math.cos(i * 0.6)) for i in range(12)
+]
 _ST_CX = sum(p[0] for p in _SUBSTRATE_TEMPLATE) / len(_SUBSTRATE_TEMPLATE)
 _ST_CY = sum(p[1] for p in _SUBSTRATE_TEMPLATE) / len(_SUBSTRATE_TEMPLATE)
 _ST_CZ = sum(p[2] for p in _SUBSTRATE_TEMPLATE) / len(_SUBSTRATE_TEMPLATE)
@@ -196,7 +200,7 @@ def _around_positions(n, center, r_inner, r_outer, box, min_distance=7.0):
         attempts += 1
         x, y, z = (random.uniform(-box, box) for _ in range(3))
         r = math.sqrt(x * x + y * y + z * z)
-        if r < r_inner * 0.85 or r > r_outer * 1.04:   # cavidad o fuera del cascarón
+        if r < r_inner * 0.85 or r > r_outer * 1.04:  # cavidad o fuera del cascarón
             cand = [cx + x, cy + y, cz + z]
             if all(math.dist(cand, p) >= min_distance for p in positions):
                 positions.append(cand)
@@ -217,7 +221,7 @@ def _smiles_to_template(smiles: str) -> List:
     if smiles in _smiles_cache:
         return _smiles_cache[smiles]
 
-    from rdkit import Chem            # import perezoso
+    from rdkit import Chem  # import perezoso
     from rdkit.Chem import AllChem
 
     mol = Chem.MolFromSmiles(smiles)
@@ -254,8 +258,9 @@ def _smiles_to_template(smiles: str) -> List:
     return atoms
 
 
-def preview_substrate(capsid_name: str, n: int = 60, smiles: str = None,
-                      save_file: bool = False) -> Dict[str, Any]:
+def preview_substrate(
+    capsid_name: str, n: int = 60, smiles: str = None, save_file: bool = False
+) -> Dict[str, Any]:
     """PDB combinado: cápside (modelo 0) + N copias de sustrato colocadas alrededor.
 
     Si `smiles` viene, el sustrato se genera desde ese SMILES con RDKit; si no, se
@@ -273,8 +278,8 @@ def preview_substrate(capsid_name: str, n: int = 60, smiles: str = None,
     capsid_content = capsid_path.read_text()
     center = _pdb_centroid(capsid_content)
     r_outer = _max_radius(capsid_content, center)
-    r_inner = r_outer * 0.72          # cavidad interna aprox (ilustrativo)
-    box = r_outer * 1.2               # caja del tamaño de la cápside (como sustratinaitor)
+    r_inner = r_outer * 0.72  # cavidad interna aprox (ilustrativo)
+    box = r_outer * 1.2  # caja del tamaño de la cápside (como sustratinaitor)
 
     positions = _around_positions(n, center, r_inner, r_outer, box)
 
@@ -313,7 +318,11 @@ def preview_substrate(capsid_name: str, n: int = 60, smiles: str = None,
         saved_path = paths.GENERATED_DIR / f"{capsid_name}_sustrato_{len(positions)}_{ts}.pdb"
         saved_path.write_text(content)
 
-    return {"content": content, "n": len(positions), "saved_path": str(saved_path) if saved_path else None}
+    return {
+        "content": content,
+        "n": len(positions),
+        "saved_path": str(saved_path) if saved_path else None,
+    }
 
 
 # --------------------------------------------------------------------------- #

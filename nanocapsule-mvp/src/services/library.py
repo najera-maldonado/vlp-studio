@@ -74,15 +74,17 @@ def library_detail() -> Dict[str, Any]:
             atoms, chains = _count_atoms_chains(text)
         except OSError:
             atoms, chains = 0, 0
-        capsides.append({
-            "name": name,
-            "pdb": _pdb_code(name),
-            "atoms": atoms,
-            "chains": chains,
-            "t_number": _T_NUMBER.get(chains, f"T={chains}" if chains else "—"),
-            # El radio cacheado corresponde a BMV (la única calculada hasta ahora).
-            "radius": cached_radius if name.startswith("BMV") else None,
-        })
+        capsides.append(
+            {
+                "name": name,
+                "pdb": _pdb_code(name),
+                "atoms": atoms,
+                "chains": chains,
+                "t_number": _T_NUMBER.get(chains, f"T={chains}" if chains else "—"),
+                # El radio cacheado corresponde a BMV (la única calculada hasta ahora).
+                "radius": cached_radius if name.startswith("BMV") else None,
+            }
+        )
 
     volumes = _load_enzyme_volumes()
     enzymes = []
@@ -95,15 +97,17 @@ def library_detail() -> Dict[str, Any]:
         code = _pdb_code(name)
         vol = volumes.get(code, {})
         role = _ENZYME_ROLE.get(code, {"enfermedad": "—", "rol": "—"})
-        enzymes.append({
-            "name": name,
-            "pdb": code,
-            "atoms": atoms,
-            "chains": chains,
-            "rg": vol.get("rg"),
-            "volume": vol.get("volume"),
-            "enfermedad": role["enfermedad"],
-            "rol": role["rol"],
-        })
+        enzymes.append(
+            {
+                "name": name,
+                "pdb": code,
+                "atoms": atoms,
+                "chains": chains,
+                "rg": vol.get("rg"),
+                "volume": vol.get("volume"),
+                "enfermedad": role["enfermedad"],
+                "rol": role["rol"],
+            }
+        )
 
     return {"capsides": capsides, "enzymes": enzymes}

@@ -3,16 +3,18 @@ Ejecutor de experimentos con soporte para procesamiento paralelo.
 Integra el ExperimentManager con el ParallelPacker para ejecutar réplicas.
 """
 
-from pathlib import Path
-from typing import Dict, Any, Optional
 import sys
+from pathlib import Path
+from typing import Any, Dict, Optional
+
 sys.path.append(str(Path(__file__).parent.parent))
 
-from .experiment_manager import ExperimentManager
+from packing.parallel_packer import ParallelPacker
+
 from .capsid import Capsid
 from .cargo import Cargo
 from .config import ConfigManager
-from packing.parallel_packer import ParallelPacker
+from .experiment_manager import ExperimentManager
 
 
 class ExperimentRunner:
@@ -29,9 +31,11 @@ class ExperimentRunner:
             config: Configuración del sistema
         """
         self.config = config or ConfigManager()
-        self.experiment_manager = ExperimentManager(output_base_dir=output_base_dir, config=self.config)
+        self.experiment_manager = ExperimentManager(
+            output_base_dir=output_base_dir, config=self.config
+        )
         self.parallel_packer = ParallelPacker(
-            packmol_executable=self.config.get('engines.packmol.executable', 'packmol')
+            packmol_executable=self.config.get("engines.packmol.executable", "packmol")
         )
 
     def run_maximum_packing(
@@ -40,7 +44,7 @@ class ExperimentRunner:
         enzyme_file: str,
         capsid_name: Optional[str] = None,
         enzyme_name: Optional[str] = None,
-        n_replicas: int = 10
+        n_replicas: int = 10,
     ) -> Dict[str, Any]:
         """
         Ejecuta empaquetamiento máximo con múltiples réplicas en paralelo.
@@ -61,12 +65,12 @@ class ExperimentRunner:
         if not enzyme_name:
             enzyme_name = str(Path(enzyme_file).stem)
 
-        print(f"\n{'='*60}")
-        print(f"EXPERIMENTO DE EMPAQUETAMIENTO MÁXIMO")
+        print(f"\n{'=' * 60}")
+        print("EXPERIMENTO DE EMPAQUETAMIENTO MÁXIMO")
         print(f"Cápside: {capsid_name}")
         print(f"Enzima: {enzyme_name}")
         print(f"Réplicas: {n_replicas} (ejecutándose en paralelo)")
-        print(f"{'='*60}\n")
+        print(f"{'=' * 60}\n")
 
         # Validar archivos de entrada
         if not Path(capsid_file).exists():
@@ -74,7 +78,7 @@ class ExperimentRunner:
         if not Path(enzyme_file).exists():
             raise FileNotFoundError(f"Archivo de enzima no encontrado: {enzyme_file}")
 
-        print(f"Archivos validados:")
+        print("Archivos validados:")
         print(f"  Cápside: {Path(capsid_file).resolve()}")
         print(f"  Enzima: {Path(enzyme_file).resolve()}\n")
 
@@ -96,7 +100,7 @@ class ExperimentRunner:
 
             if internal_radius is None:
                 print("Advertencia: Radio interno retornó None, usando valor por defecto")
-                internal_radius = self.config.get('packing.internal_radius_default', 90.0)
+                internal_radius = self.config.get("packing.internal_radius_default", 90.0)
 
             print(f"Radio interno: {internal_radius:.2f} Å\n")
 
@@ -109,7 +113,7 @@ class ExperimentRunner:
 
         except Exception as e:
             print(f"Error calculando radio interno: {e}")
-            internal_radius = self.config.get('packing.internal_radius_default', 90.0)
+            internal_radius = self.config.get("packing.internal_radius_default", 90.0)
             print(f"Usando radio interno por defecto: {internal_radius:.2f} Å\n")
 
         # Preparar enzima (centrar)
@@ -126,17 +130,17 @@ class ExperimentRunner:
             centered_enzyme = enzyme_file
 
         # Obtener parámetros de configuración
-        tolerance = self.config.get('packing.tolerance', 2.0)
-        exclusion_radius = self.config.get('packing.exclusion_radius', 10.0)
-        max_violation_threshold = self.config.get('packing.max_violation_threshold', 0.05)
-        min_lines_threshold = self.config.get('packing.min_lines_threshold', 10000)
+        tolerance = self.config.get("packing.tolerance", 2.0)
+        exclusion_radius = self.config.get("packing.exclusion_radius", 10.0)
+        max_violation_threshold = self.config.get("packing.max_violation_threshold", 0.05)
+        min_lines_threshold = self.config.get("packing.min_lines_threshold", 10000)
 
         # Ejecutar réplicas en paralelo
         print(f"\nEjecutando {n_replicas} réplicas en paralelo...")
         print("Esto puede tomar varios minutos...\n")
 
         # Validar todos los parámetros antes de ejecutar
-        print(f"Parámetros de ejecución:")
+        print("Parámetros de ejecución:")
         print(f"  Cápside: {capsid_file}")
         print(f"  Enzima: {centered_enzyme}")
         print(f"  Radio interno: {internal_radius}")
@@ -147,9 +151,11 @@ class ExperimentRunner:
 
         # Verificar que ningún valor sea None
         if any(v is None for v in [capsid_file, centered_enzyme, internal_radius, experiment_dir]):
-            raise ValueError(f"Parámetros inválidos para empaquetamiento: "
-                           f"capsid={capsid_file}, enzyme={centered_enzyme}, "
-                           f"radius={internal_radius}, dir={experiment_dir}")
+            raise ValueError(
+                f"Parámetros inválidos para empaquetamiento: "
+                f"capsid={capsid_file}, enzyme={centered_enzyme}, "
+                f"radius={internal_radius}, dir={experiment_dir}"
+            )
 
         results = self.parallel_packer.run_parallel_replicas(
             capsid_file=str(capsid_file),
@@ -160,14 +166,14 @@ class ExperimentRunner:
             exclusion_radius=float(exclusion_radius),
             output_dir=str(experiment_dir),
             max_violation_threshold=float(max_violation_threshold),
-            min_lines_threshold=int(min_lines_threshold)
+            min_lines_threshold=int(min_lines_threshold),
         )
 
         # Agregar información adicional
-        results['capsid_name'] = capsid_name
-        results['enzyme_name'] = enzyme_name
-        results['internal_radius'] = internal_radius
-        results['experiment_dir'] = str(experiment_dir)
+        results["capsid_name"] = capsid_name
+        results["enzyme_name"] = enzyme_name
+        results["internal_radius"] = internal_radius
+        results["experiment_dir"] = str(experiment_dir)
 
         # Mostrar resumen de resultados
         self._print_summary(results)
@@ -181,13 +187,15 @@ class ExperimentRunner:
         Args:
             results: Resultados del experimento
         """
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("RESUMEN DE RESULTADOS")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
-        if results.get('success'):
-            print(f"✓ Experimento completado exitosamente")
-            print(f"  - Réplicas exitosas: {results['n_replicas_success']}/{results['n_replicas_total']}")
+        if results.get("success"):
+            print("✓ Experimento completado exitosamente")
+            print(
+                f"  - Réplicas exitosas: {results['n_replicas_success']}/{results['n_replicas_total']}"
+            )
             print(f"  - Mejor resultado: {results['best']} enzimas")
             print(f"  - Promedio: {results['mean']:.2f} enzimas")
             print(f"  - Desviación estándar: {results['stdev']:.2f}")
@@ -196,13 +204,11 @@ class ExperimentRunner:
             print(f"✗ Experimento fallido: {results.get('error', 'Error desconocido')}")
 
         print(f"\nResultados guardados en: {results.get('experiment_dir', 'N/A')}")
-        print(f"{'='*60}\n")
+        print(f"{'=' * 60}\n")
 
 
 def run_parallel_experiment(
-    capsid_file: str,
-    enzyme_file: str,
-    output_dir: str = "Output"
+    capsid_file: str, enzyme_file: str, output_dir: str = "Output"
 ) -> Dict[str, Any]:
     """
     Función auxiliar para ejecutar un experimento con procesamiento paralelo.
@@ -232,5 +238,5 @@ if __name__ == "__main__":
 
     results = run_parallel_experiment(capsid_file, enzyme_file)
 
-    print(f"\nExperimento finalizado.")
+    print("\nExperimento finalizado.")
     print(f"Mejor resultado: {results.get('best', 0)} enzimas empaquetadas")

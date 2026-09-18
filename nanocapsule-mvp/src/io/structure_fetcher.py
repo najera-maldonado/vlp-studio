@@ -3,12 +3,12 @@ Módulo para obtener y preparar estructuras desde PDB.
 Maneja la descarga de unidades biológicas completas para cápsides.
 """
 
-import os
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
 
 try:
     from pymol import cmd
+
     PYMOL_AVAILABLE = True
 except ImportError:
     PYMOL_AVAILABLE = False
@@ -70,12 +70,12 @@ class StructureFetcher:
             # PASO 1: Fetch con type=pdb1 para obtener unidad biológica
             # Esto es CRUCIAL para cápsides - DEBE ejecutarse PRIMERO
             print(f"   Ejecutando: fetch {pdb_id}, type=pdb1")
-            cmd.fetch(pdb_id, type='pdb1')
+            cmd.fetch(pdb_id, type="pdb1")
 
             # PASO 2: Activar todos los estados DESPUÉS del fetch
             # Esto es CRÍTICO - debe ir en secuencia separada
-            print(f"   Ejecutando: set all_states, on")
-            cmd.set('all_states', 'on')
+            print("   Ejecutando: set all_states, on")
+            cmd.set("all_states", "on")
 
             # Dar tiempo para que se procese
             cmd.refresh()
@@ -85,14 +85,16 @@ class StructureFetcher:
             print(f"Estructura descargada: {n_atoms} átomos")
 
             if n_atoms < 1000:
-                print(f"Advertencia: Muy pocos átomos ({n_atoms}). "
-                      "Puede que no sea la unidad biológica completa.")
+                print(
+                    f"Advertencia: Muy pocos átomos ({n_atoms}). "
+                    "Puede que no sea la unidad biológica completa."
+                )
 
             # Guardar estructura
             cmd.save(str(output_path), pdb_id)
 
             # Limpiar
-            cmd.delete('all')
+            cmd.delete("all")
 
             print(f"Cápside guardada en: {output_path}")
             return str(output_path)
@@ -103,8 +105,9 @@ class StructureFetcher:
             # Intentar método alternativo
             return self._fetch_alternative(pdb_id, output_path)
 
-    def fetch_enzyme(self, pdb_id: str, output_name: Optional[str] = None,
-                    chains: Optional[list] = None) -> str:
+    def fetch_enzyme(
+        self, pdb_id: str, output_name: Optional[str] = None, chains: Optional[list] = None
+    ) -> str:
         """
         Descarga una enzima o proteína desde PDB.
 
@@ -139,14 +142,14 @@ class StructureFetcher:
             cmd.fetch(pdb_id)
 
             # Remover agua y ligandos pequeños
-            cmd.remove('solvent')
-            cmd.remove('organic')  # Remueve moléculas orgánicas pequeñas
+            cmd.remove("solvent")
+            cmd.remove("organic")  # Remueve moléculas orgánicas pequeñas
 
             # Si se especificaron cadenas, mantener solo esas
             if chains:
-                chains_str = '+'.join(chains)
-                cmd.select('enzyme', f'chain {chains_str}')
-                cmd.save(str(output_path), 'enzyme')
+                chains_str = "+".join(chains)
+                cmd.select("enzyme", f"chain {chains_str}")
+                cmd.save(str(output_path), "enzyme")
             else:
                 cmd.save(str(output_path), pdb_id)
 
@@ -154,7 +157,7 @@ class StructureFetcher:
             print(f"Enzima descargada: {n_atoms} átomos")
 
             # Limpiar
-            cmd.delete('all')
+            cmd.delete("all")
 
             print(f"Enzima guardada en: {output_path}")
             return str(output_path)
@@ -175,28 +178,28 @@ class StructureFetcher:
             cmd.reinitialize()
 
             # Comandos específicos para algunos casos conocidos
-            if pdb_id == '1QBE':  # QB bacteriophage
-                cmd.fetch('1QBE', type='pdb1')
-                cmd.set('all_states', 'on')
+            if pdb_id == "1QBE":  # QB bacteriophage
+                cmd.fetch("1QBE", type="pdb1")
+                cmd.set("all_states", "on")
 
-            elif pdb_id == '2MS2':  # MS2 bacteriophage
-                cmd.fetch('2MS2', type='pdb1')
-                cmd.set('all_states', 'on')
+            elif pdb_id == "2MS2":  # MS2 bacteriophage
+                cmd.fetch("2MS2", type="pdb1")
+                cmd.set("all_states", "on")
 
-            elif pdb_id == '1CWP':  # CCMV
-                cmd.fetch('1CWP', type='pdb1')
-                cmd.set('all_states', 'on')
+            elif pdb_id == "1CWP":  # CCMV
+                cmd.fetch("1CWP", type="pdb1")
+                cmd.set("all_states", "on")
 
             else:
                 # Genérico: intentar con pdb1
-                cmd.fetch(pdb_id, type='pdb1')
-                cmd.set('all_states', 'on')
+                cmd.fetch(pdb_id, type="pdb1")
+                cmd.set("all_states", "on")
 
             # Guardar
             cmd.save(str(output_path), pdb_id)
             n_atoms = cmd.count_atoms(pdb_id)
 
-            cmd.delete('all')
+            cmd.delete("all")
 
             print(f"Estructura alternativa guardada: {n_atoms} átomos")
             return str(output_path)
@@ -277,14 +280,14 @@ class StructureFetcher:
 
         # Descargar cápside QB completa
         try:
-            capsid_file = fetcher.fetch_capsid('1QBE', 'QB_capsid_complete.pdb')
+            capsid_file = fetcher.fetch_capsid("1QBE", "QB_capsid_complete.pdb")
             print(f"Cápside QB lista: {capsid_file}")
         except Exception as e:
             print(f"Error con cápside: {e}")
 
         # Descargar enzima GCase
         try:
-            enzyme_file = fetcher.fetch_enzyme('1OGS', 'GCase_enzyme.pdb')
+            enzyme_file = fetcher.fetch_enzyme("1OGS", "GCase_enzyme.pdb")
             print(f"Enzima GCase lista: {enzyme_file}")
         except Exception as e:
             print(f"Error con enzima: {e}")

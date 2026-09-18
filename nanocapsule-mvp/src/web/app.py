@@ -10,7 +10,7 @@ import datetime
 import sys
 from pathlib import Path
 
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, jsonify, render_template, request
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -46,10 +46,14 @@ def health():
     import importlib.util
     import shutil
 
-    engines = {name: bool(shutil.which(name))
-               for name in ("packmol", "pymol", "obabel", "vina", "hole", "idock")}
-    deps = {name: importlib.util.find_spec(name) is not None
-            for name in ("rdkit", "numpy", "yaml", "flask")}
+    engines = {
+        name: bool(shutil.which(name))
+        for name in ("packmol", "pymol", "obabel", "vina", "hole", "idock")
+    }
+    deps = {
+        name: importlib.util.find_spec(name) is not None
+        for name in ("rdkit", "numpy", "yaml", "flask")
+    }
     return jsonify({"status": "ok", "engines": engines, "deps": deps})
 
 
@@ -117,8 +121,9 @@ def get_pore_channels():
 def get_pore_channel():
     try:
         content = svc.pore_channel_content(request.args.get("id"))
-        return app.response_class(content, mimetype="text/plain",
-                                  headers={"Access-Control-Allow-Origin": "*"})
+        return app.response_class(
+            content, mimetype="text/plain", headers={"Access-Control-Allow-Origin": "*"}
+        )
     except FileNotFoundError as e:
         return jsonify({"error": str(e)}), 404
     except Exception as e:
@@ -189,8 +194,9 @@ def post_pore_dock():
 def get_pore_section():
     data = request.get_json(force=True) or {}
     try:
-        return jsonify({"smiles": data.get("smiles"),
-                        "radius": svc.substrate_section(data.get("smiles"))})
+        return jsonify(
+            {"smiles": data.get("smiles"), "radius": svc.substrate_section(data.get("smiles"))}
+        )
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
@@ -227,11 +233,13 @@ def get_md_box():
 def post_md_prepare():
     data = request.get_json(force=True) or {}
     try:
-        return jsonify(svc.md_prepare(
-            data.get("capsid"),
-            int(data.get("n_substrate", 40)),
-            data.get("smiles"),
-        ))
+        return jsonify(
+            svc.md_prepare(
+                data.get("capsid"),
+                int(data.get("n_substrate", 40)),
+                data.get("smiles"),
+            )
+        )
     except FileNotFoundError as e:
         return jsonify({"error": str(e)}), 404
     except Exception as e:
@@ -250,12 +258,14 @@ def calculate_radius():
             return jsonify({"error": "Nombre de cápside requerido"}), 400
 
         radius = svc.calculate_radius(capsid, save=True)
-        return jsonify({
-            "status": "success",
-            "capsid": capsid,
-            "internal_radius": radius,
-            "message": f"Radio interno calculado: {radius:.1f} Å",
-        })
+        return jsonify(
+            {
+                "status": "success",
+                "capsid": capsid,
+                "internal_radius": radius,
+                "message": f"Radio interno calculado: {radius:.1f} Å",
+            }
+        )
     except FileNotFoundError as e:
         return jsonify({"error": str(e)}), 404
     except Exception as e:
@@ -279,31 +289,35 @@ def run_experiment():
 
         if not run_packing:
             # Modo configuración: no ejecuta Packmol, solo confirma parámetros.
-            return jsonify({
-                "status": "configured",
-                "capsid": capsid,
-                "enzyme": enzyme,
-                "n_replicas": n_replicas or svc._config.get("experiments.n_replicas", 10),
-                "message": "Experimento configurado. Envía run_packing=true para ejecutar.",
-            })
+            return jsonify(
+                {
+                    "status": "configured",
+                    "capsid": capsid,
+                    "enzyme": enzyme,
+                    "n_replicas": n_replicas or svc._config.get("experiments.n_replicas", 10),
+                    "message": "Experimento configurado. Envía run_packing=true para ejecutar.",
+                }
+            )
 
         results = svc.run_experiment(capsid, enzyme, n_replicas=n_replicas)
-        return jsonify({
-            "status": "completed",
-            "success": results.get("success", False),
-            "best_result": results.get("best", 0),
-            "mean": results.get("mean", 0.0),
-            "stdev": results.get("stdev", 0.0),
-            "median": results.get("median", 0.0),
-            "worst": results.get("worst", 0),
-            "n_replicas_success": results.get("n_replicas_success", 0),
-            "n_replicas_total": results.get("n_replicas_total", n_replicas),
-            "internal_radius": results.get("internal_radius", 0.0),
-            "experiment_dir": results.get("experiment_dir", ""),
-            "best_file": results.get("best_file", ""),
-            "all_results": results.get("all_results", []),
-            "message": f"Mejor resultado: {results.get('best', 0)} enzimas",
-        })
+        return jsonify(
+            {
+                "status": "completed",
+                "success": results.get("success", False),
+                "best_result": results.get("best", 0),
+                "mean": results.get("mean", 0.0),
+                "stdev": results.get("stdev", 0.0),
+                "median": results.get("median", 0.0),
+                "worst": results.get("worst", 0),
+                "n_replicas_success": results.get("n_replicas_success", 0),
+                "n_replicas_total": results.get("n_replicas_total", n_replicas),
+                "internal_radius": results.get("internal_radius", 0.0),
+                "experiment_dir": results.get("experiment_dir", ""),
+                "best_file": results.get("best_file", ""),
+                "all_results": results.get("all_results", []),
+                "message": f"Mejor resultado: {results.get('best', 0)} enzimas",
+            }
+        )
     except FileNotFoundError as e:
         return jsonify({"error": str(e)}), 404
     except Exception as e:
@@ -438,19 +452,25 @@ def list_generated_files():
         files = []
         for file_path in output_dir.glob("*.pdb"):
             stat = file_path.stat()
-            files.append({
-                "name": file_path.name,
-                "size": stat.st_size,
-                "size_mb": round(stat.st_size / 1024 / 1024, 2),
-                "modified": datetime.datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S"),
-                "path": str(file_path),
-            })
+            files.append(
+                {
+                    "name": file_path.name,
+                    "size": stat.st_size,
+                    "size_mb": round(stat.st_size / 1024 / 1024, 2),
+                    "modified": datetime.datetime.fromtimestamp(stat.st_mtime).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    ),
+                    "path": str(file_path),
+                }
+            )
         files.sort(key=lambda x: x["modified"], reverse=True)
-        return jsonify({
-            "files": files,
-            "count": len(files),
-            "total_size_mb": round(sum(f["size"] for f in files) / 1024 / 1024, 2),
-        })
+        return jsonify(
+            {
+                "files": files,
+                "count": len(files),
+                "total_size_mb": round(sum(f["size"] for f in files) / 1024 / 1024, 2),
+            }
+        )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -470,7 +490,9 @@ def cleanup_generated_files():
             if datetime.datetime.fromtimestamp(file_path.stat().st_mtime) < cutoff:
                 removed.append(file_path.name)
                 file_path.unlink()
-        return jsonify({"message": "Limpieza completada", "removed": len(removed), "removed_files": removed})
+        return jsonify(
+            {"message": "Limpieza completada", "removed": len(removed), "removed_files": removed}
+        )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -511,7 +533,10 @@ def download_experiment_zip():
             if paths.GENERATED_DIR.exists():
                 for fp in paths.GENERATED_DIR.glob(f"{capsid}_*enzimas_{enzyme}_*.pdb"):
                     zf.write(fp, f"generated_pdbs/{fp.name}")
-            for stype, sname, label in (("capside", capsid, "capside"), ("enzima", enzyme, "enzima")):
+            for stype, sname, label in (
+                ("capside", capsid, "capside"),
+                ("enzima", enzyme, "enzima"),
+            ):
                 try:
                     p = svc.structure_path(stype, sname)
                     if p.exists():

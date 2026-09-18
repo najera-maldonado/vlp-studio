@@ -8,6 +8,7 @@ camino y tardan; aquí solo lo rápido y determinista.
 
 Si al refactorizar una ruta deja de responder o cambia de forma, estos tests lo cazan.
 """
+
 from src.services import packing_service as svc
 
 
@@ -127,8 +128,9 @@ def test_md_box(client):
 def test_preview_enzymes_returns_pdb(client):
     caps = client.get("/api/library/capsides").get_json()
     enz = client.get("/api/library/enzymes").get_json()
-    r = client.post("/api/preview/enzymes",
-                    json={"capsid": caps[0], "enzyme": enz[0], "n_enzymes": 2})
+    r = client.post(
+        "/api/preview/enzymes", json={"capsid": caps[0], "enzyme": enz[0], "n_enzymes": 2}
+    )
     assert r.status_code == 200
     body = r.get_data(as_text=True)
     assert "MODEL" in body and "END" in body  # es un PDB con modelos

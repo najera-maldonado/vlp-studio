@@ -1,0 +1,17 @@
+# Config de herramientas del Studio (VLP-10). No es build-system: el empaquetado sigue
+# en setup.py. Aquí solo linter/formatter (ruff), para un estándar de estilo consistente
+# y de bajo mantenimiento para un desarrollador único.
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["_temp_backup"]
+
+[tool.ruff.lint]
+# E/W (pycodestyle), F (pyflakes), I (orden de imports). E501 (línea larga) se ignora:
+# el formatter ya acota el código, y algunas cadenas/comentarios largos no valen el ruido.
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"

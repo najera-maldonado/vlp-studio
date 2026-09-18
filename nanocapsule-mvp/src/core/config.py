@@ -3,10 +3,10 @@ Gestor de configuración centralizada para Nanocapsule Designer.
 Maneja la carga y acceso a parámetros de configuración desde archivos YAML.
 """
 
-import os
-import yaml
-from typing import Any, Dict, Optional
 from pathlib import Path
+from typing import Any, Dict, Optional
+
+import yaml
 
 
 class ConfigManager:
@@ -59,7 +59,7 @@ class ConfigManager:
             yaml.YAMLError: Si hay error parseando el YAML
         """
         try:
-            with open(self.config_path, 'r') as f:
+            with open(self.config_path, "r") as f:
                 config = yaml.safe_load(f)
                 return config or {}
         except FileNotFoundError:
@@ -79,38 +79,29 @@ class ConfigManager:
             Diccionario con configuración mínima por defecto
         """
         return {
-            'packing': {
-                'internal_radius_default': 90.0,
-                'collision_margin': 2.0,
-                'exclusion_radius': 5.0,
-                'tolerance': 2.0,
-                'max_violation_threshold': 0.10,
-                'min_lines_threshold': 10000
+            "packing": {
+                "internal_radius_default": 90.0,
+                "collision_margin": 2.0,
+                "exclusion_radius": 5.0,
+                "tolerance": 2.0,
+                "max_violation_threshold": 0.10,
+                "min_lines_threshold": 10000,
             },
-            'engines': {
-                'packmol': {
-                    'executable': 'packmol',
-                    'timeout': 300
-                },
-                'pymol': {
-                    'headless': True,
-                    'quiet': True
-                }
+            "engines": {
+                "packmol": {"executable": "packmol", "timeout": 300},
+                "pymol": {"headless": True, "quiet": True},
             },
-            'io': {
-                'temp_dir': './temp',
-                'cleanup_temp': True,
-                'default_capsid': 'capside.pdb',
-                'default_enzyme': 'enzima.pdb'
+            "io": {
+                "temp_dir": "./temp",
+                "cleanup_temp": True,
+                "default_capsid": "capside.pdb",
+                "default_enzyme": "enzima.pdb",
             },
-            'logging': {
-                'level': 'INFO',
-                'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            "logging": {
+                "level": "INFO",
+                "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             },
-            'web': {
-                'port': 5001,
-                'host': '0.0.0.0'
-            }
+            "web": {"port": 5001, "host": "0.0.0.0"},
         }
 
     def get(self, key: str, default: Any = None) -> Any:
@@ -133,7 +124,7 @@ class ConfigManager:
             >>> config.get('no.existe', 'valor_default')
             'valor_default'
         """
-        keys = key.split('.')
+        keys = key.split(".")
         value = self._config
 
         for k in keys:
@@ -166,7 +157,7 @@ class ConfigManager:
         Returns:
             Diccionario con configuración del motor
         """
-        return self.get(f'engines.{engine}', {})
+        return self.get(f"engines.{engine}", {})
 
     def reload(self):
         """

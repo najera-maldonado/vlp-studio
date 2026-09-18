@@ -52,7 +52,7 @@ def pore_channels() -> Dict[str, Any]:
     if crib.exists():
         for sph in sorted(crib.glob("*/hole_*/hole_spheres.pdb")):
             key = sph.parents[1].name
-            name = sph.parent.name[len("hole_"):]
+            name = sph.parent.name[len("hole_") :]
             channels.append({"id": "cribado:" + key + "/" + name, "path": str(sph)})
     return {"channels": channels}
 
@@ -76,6 +76,7 @@ def _pore_axis(pdb_text: str, center: List[float]) -> List[float]:
     (ese suele caer en el plano y hace que HOLE se escape del canal).
     """
     import numpy as np
+
     pts = []
     for line in pdb_text.split("\n"):
         if line.startswith(("ATOM", "HETATM")) and len(line) >= 54:
@@ -84,12 +85,12 @@ def _pore_axis(pdb_text: str, center: List[float]) -> List[float]:
             except ValueError:
                 continue
     a = np.array(pts) - np.array(center)
-    w, vec = np.linalg.eigh(a.T @ a)          # w ascendente
+    w, vec = np.linalg.eigh(a.T @ a)  # w ascendente
     # El par de valores propios más cercano define el plano; el otro es el eje.
     if abs(w[1] - w[0]) < abs(w[2] - w[1]):
-        axis = vec[:, 2]                       # w0≈w1 (plano) → eje = mayor (prolato)
+        axis = vec[:, 2]  # w0≈w1 (plano) → eje = mayor (prolato)
     else:
-        axis = vec[:, 0]                       # w1≈w2 (plano) → eje = menor (oblato)
+        axis = vec[:, 0]  # w1≈w2 (plano) → eje = menor (oblato)
     return [float(axis[0]), float(axis[1]), float(axis[2])]
 
 
@@ -134,8 +135,9 @@ def _hole_on(receptor_pdb: Path, workdir: Path) -> Dict[str, Any]:
         "sample 0.25\n"
         "rseed 1\n"
     )
-    proc = subprocess.run(["hole"], input=hole_input, cwd=str(workdir),
-                          capture_output=True, text=True, timeout=180)
+    proc = subprocess.run(
+        ["hole"], input=hole_input, cwd=str(workdir), capture_output=True, text=True, timeout=180
+    )
     (workdir / "hole_out.txt").write_text(proc.stdout)
 
     zs, rs = _parse_hole_profile(proc.stdout)
@@ -162,8 +164,13 @@ def run_hole(structure_key: str) -> Dict[str, Any]:
         raise FileNotFoundError(f"Estructura no encontrada: {structure_key}")
     workdir = paths.OUTPUT_DIR / "hole_runs" / structure_key.replace("/", "__")
     d = _hole_on(pdb, workdir)
-    return {"structure": structure_key, "channel_id": "run:" + workdir.name,
-            "illustrative": False, "source": "HOLE (calculado ahora)", **d}
+    return {
+        "structure": structure_key,
+        "channel_id": "run:" + workdir.name,
+        "illustrative": False,
+        "source": "HOLE (calculado ahora)",
+        **d,
+    }
 
 
 # --------------------------------------------------------------------------- #
@@ -182,6 +189,7 @@ def _chain_ids(pdb_text: str) -> List[str]:
 def _constriction_point(spheres_pdb: Path):
     """Coordenada de la esfera de menor radio POSITIVO (la constricción real)."""
     import numpy as np
+
     best = None
     for line in spheres_pdb.read_text().split("\n"):
         if line.startswith(("ATOM", "HETATM")) and len(line) >= 66:
@@ -198,6 +206,7 @@ def _constriction_point(spheres_pdb: Path):
 def _pore_residues(pdb_text: str, constriction, chains: List[str], n: int = 3):
     """Residuos que revisten el poro: CA comunes a todas las cadenas, cerca de la constricción."""
     import numpy as np
+
     res = {}
     for line in pdb_text.split("\n"):
         if line.startswith("ATOM") and line[12:16].strip() == "CA":
@@ -219,6 +228,7 @@ def _pore_residues(pdb_text: str, constriction, chains: List[str], n: int = 3):
 def _generate_mutants(wt_pdb: Path, chains: List[str], library: List[Dict], outdir: Path):
     """Genera los PDB de todos los mutantes en UNA llamada a PyMOL (mutagenesis wizard)."""
     import subprocess
+
     lines = ["from pymol import cmd", f"cmd.load(r'{wt_pdb}','WT')"]
     for mut in library:
         tag = mut["name"]
@@ -226,7 +236,9 @@ def _generate_mutants(wt_pdb: Path, chains: List[str], library: List[Dict], outd
         for ch in chains:
             for pos, aa in mut["muts"].items():
                 lines.append("cmd.wizard('mutagenesis'); w=cmd.get_wizard()")
-                lines.append(f"w.set_mode('{aa}'); w.do_select('/{tag}//{ch}/{pos}/'); w.apply(); cmd.set_wizard()")
+                lines.append(
+                    f"w.set_mode('{aa}'); w.do_select('/{tag}//{ch}/{pos}/'); w.apply(); cmd.set_wizard()"
+                )
         lines.append("cmd.rebuild()")
         lines.append(f"cmd.save(r'{outdir}/{tag}.pdb','{tag}')")
         lines.append(f"cmd.delete('{tag}')")
@@ -235,8 +247,28 @@ def _generate_mutants(wt_pdb: Path, chains: List[str], library: List[Dict], outd
     subprocess.run(["pymol", "-cq", str(script)], capture_output=True, text=True, timeout=400)
 
 
-_AA3 = {"ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE",
-        "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL"}
+_AA3 = {
+    "ALA",
+    "ARG",
+    "ASN",
+    "ASP",
+    "CYS",
+    "GLN",
+    "GLU",
+    "GLY",
+    "HIS",
+    "ILE",
+    "LEU",
+    "LYS",
+    "MET",
+    "PHE",
+    "PRO",
+    "SER",
+    "THR",
+    "TRP",
+    "TYR",
+    "VAL",
+}
 
 
 def evaluate_mutant(structure_key: str, mutations: Dict[str, str]) -> Dict[str, Any]:
@@ -305,7 +337,9 @@ def screen_mutants(structure_key: str, substrate_radius: Optional[float] = None)
     for i in range(len(pos)):
         library.append({"name": f"m_{pos[i]}G", "muts": {pos[i]: "GLY"}})
     if len(pos) >= 2:
-        library.append({"name": "m_" + "_".join(pos[:2]) + "G", "muts": {p: "GLY" for p in pos[:2]}})
+        library.append(
+            {"name": "m_" + "_".join(pos[:2]) + "G", "muts": {p: "GLY" for p in pos[:2]}}
+        )
     if len(pos) >= 3:
         library.append({"name": "m_" + "_".join(pos) + "G", "muts": {p: "GLY" for p in pos}})
         library.append({"name": "m_" + "_".join(pos) + "A", "muts": {p: "ALA" for p in pos}})
@@ -324,14 +358,16 @@ def screen_mutants(structure_key: str, substrate_radius: Optional[float] = None)
         try:
             d = _hole_on(pdb, mutdir / ("hole_" + mut["name"]))
             pmin = d["pore_min"]
-            results.append({
-                "name": mut["name"],
-                "mutations": ", ".join(f"{p}{aa[0]}" for p, aa in mut["muts"].items()),
-                "pore_min": pmin,
-                "delta": round(pmin - wt["pore_min"], 2),
-                "passes": (substrate_radius is not None and pmin >= substrate_radius),
-                "channel_id": "cribado:" + structure_key.replace("/", "__") + "/" + mut["name"],
-            })
+            results.append(
+                {
+                    "name": mut["name"],
+                    "mutations": ", ".join(f"{p}{aa[0]}" for p, aa in mut["muts"].items()),
+                    "pore_min": pmin,
+                    "delta": round(pmin - wt["pore_min"], 2),
+                    "passes": (substrate_radius is not None and pmin >= substrate_radius),
+                    "channel_id": "cribado:" + structure_key.replace("/", "__") + "/" + mut["name"],
+                }
+            )
         except Exception:
             continue
 
@@ -350,36 +386,96 @@ def screen_mutants(structure_key: str, substrate_radius: Optional[float] = None)
 # --------------------------------------------------------------------------- #
 def _prep_receptor_pdbqt(pdb_path: Path, out_pdbqt: Path):
     import subprocess
+
     h = out_pdbqt.with_name(out_pdbqt.stem + "_H.pdb")
-    subprocess.run(["obabel", str(pdb_path), "-O", str(h), "-p", "7.4", "-h", "--errorlevel", "1"],
-                   capture_output=True, timeout=180)
-    subprocess.run(["obabel", str(h), "-O", str(out_pdbqt), "-xr", "--partialcharge", "gasteiger", "--errorlevel", "1"],
-                   capture_output=True, timeout=180)
+    subprocess.run(
+        ["obabel", str(pdb_path), "-O", str(h), "-p", "7.4", "-h", "--errorlevel", "1"],
+        capture_output=True,
+        timeout=180,
+    )
+    subprocess.run(
+        [
+            "obabel",
+            str(h),
+            "-O",
+            str(out_pdbqt),
+            "-xr",
+            "--partialcharge",
+            "gasteiger",
+            "--errorlevel",
+            "1",
+        ],
+        capture_output=True,
+        timeout=180,
+    )
     if not out_pdbqt.exists() or out_pdbqt.stat().st_size == 0:
         raise RuntimeError("No se pudo preparar el receptor (obabel)")
 
 
 def _prep_ligand_pdbqt(smiles: str, out_pdbqt: Path):
     import subprocess
-    subprocess.run(["obabel", f"-:{smiles}", "-O", str(out_pdbqt), "--gen3d", "-p", "7.4",
-                    "--partialcharge", "gasteiger", "--errorlevel", "1"],
-                   capture_output=True, timeout=180)
+
+    subprocess.run(
+        [
+            "obabel",
+            f"-:{smiles}",
+            "-O",
+            str(out_pdbqt),
+            "--gen3d",
+            "-p",
+            "7.4",
+            "--partialcharge",
+            "gasteiger",
+            "--errorlevel",
+            "1",
+        ],
+        capture_output=True,
+        timeout=180,
+    )
     if not out_pdbqt.exists() or out_pdbqt.stat().st_size == 0:
         raise RuntimeError("No se pudo preparar el ligando desde el SMILES")
 
 
-def _vina_affinity(receptor_pdbqt: Path, ligand_pdbqt: Path, center, size: int, workdir: Path) -> float:
+def _vina_affinity(
+    receptor_pdbqt: Path, ligand_pdbqt: Path, center, size: int, workdir: Path
+) -> float:
     import subprocess
+
     out = workdir / "dock_out.pdbqt"
-    subprocess.run(["vina", "--receptor", str(receptor_pdbqt), "--ligand", str(ligand_pdbqt),
-                    "--center_x", f"{center[0]:.3f}", "--center_y", f"{center[1]:.3f}", "--center_z", f"{center[2]:.3f}",
-                    "--size_x", str(size), "--size_y", str(size), "--size_z", str(size),
-                    "--exhaustiveness", "8", "--seed", "1", "--out", str(out)],
-                   capture_output=True, text=True, timeout=400)
+    subprocess.run(
+        [
+            "vina",
+            "--receptor",
+            str(receptor_pdbqt),
+            "--ligand",
+            str(ligand_pdbqt),
+            "--center_x",
+            f"{center[0]:.3f}",
+            "--center_y",
+            f"{center[1]:.3f}",
+            "--center_z",
+            f"{center[2]:.3f}",
+            "--size_x",
+            str(size),
+            "--size_y",
+            str(size),
+            "--size_z",
+            str(size),
+            "--exhaustiveness",
+            "8",
+            "--seed",
+            "1",
+            "--out",
+            str(out),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=400,
+    )
     if out.exists():
         for line in out.read_text().split("\n"):
             if line.startswith("REMARK VINA RESULT"):
-                return float(line.split()[3])           # mejor afinidad (kcal/mol)
+                return float(line.split()[3])  # mejor afinidad (kcal/mol)
     raise RuntimeError("vina no devolvió afinidad")
 
 
@@ -412,13 +508,25 @@ def dock_correlate(structure_key: str, smiles: str) -> Dict[str, Any]:
     _prep_ligand_pdbqt(smiles, lig)
 
     wt_model = (paths.POROMANIA_DIR / "modelos" / structure_key).with_suffix(".pdb")
-    entries = [{"name": "WT", "pore_min": scr["wt_min"], "pdb": wt_model,
-                "spheres": paths.OUTPUT_DIR / "hole_runs" / key / "hole_spheres.pdb", "passes": None}]
-    for m in scr["mutants"][:4]:                       # WT + top 4 mutantes (acota el tiempo)
-        entries.append({"name": m["name"], "pore_min": m["pore_min"],
-                        "pdb": crib / (m["name"] + ".pdb"),
-                        "spheres": crib / ("hole_" + m["name"]) / "hole_spheres.pdb",
-                        "passes": m["passes"]})
+    entries = [
+        {
+            "name": "WT",
+            "pore_min": scr["wt_min"],
+            "pdb": wt_model,
+            "spheres": paths.OUTPUT_DIR / "hole_runs" / key / "hole_spheres.pdb",
+            "passes": None,
+        }
+    ]
+    for m in scr["mutants"][:4]:  # WT + top 4 mutantes (acota el tiempo)
+        entries.append(
+            {
+                "name": m["name"],
+                "pore_min": m["pore_min"],
+                "pdb": crib / (m["name"] + ".pdb"),
+                "spheres": crib / ("hole_" + m["name"]) / "hole_spheres.pdb",
+                "passes": m["passes"],
+            }
+        )
 
     results = []
     for e in entries:
@@ -431,14 +539,25 @@ def dock_correlate(structure_key: str, smiles: str) -> Dict[str, Any]:
             wd = dockdir / ("dock_" + e["name"])
             wd.mkdir(exist_ok=True)
             aff = _vina_affinity(rec, lig, center, size, wd)
-            results.append({"name": e["name"], "pore_min": e["pore_min"],
-                            "affinity": aff, "passes": e["passes"]})
+            results.append(
+                {
+                    "name": e["name"],
+                    "pore_min": e["pore_min"],
+                    "affinity": aff,
+                    "passes": e["passes"],
+                }
+            )
         except Exception:
             continue
 
     corr = _pearson([r["pore_min"] for r in results], [r["affinity"] for r in results])
-    return {"structure": structure_key, "smiles": smiles, "section": section,
-            "points": results, "correlation": corr}
+    return {
+        "structure": structure_key,
+        "smiles": smiles,
+        "section": section,
+        "points": results,
+        "correlation": corr,
+    }
 
 
 def pore_channel_content(structure_id: str) -> str:
@@ -459,9 +578,9 @@ def substrate_section(smiles: str) -> Optional[float]:
     if not smiles:
         return None
 
-    from rdkit import Chem                # import perezoso
-    from rdkit.Chem import AllChem
     import numpy as np
+    from rdkit import Chem  # import perezoso
+    from rdkit.Chem import AllChem
 
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
@@ -480,8 +599,12 @@ def substrate_section(smiles: str) -> Optional[float]:
         pass
 
     conf = mol.GetConformer()
-    xyz = np.array([[conf.GetAtomPosition(i).x, conf.GetAtomPosition(i).y, conf.GetAtomPosition(i).z]
-                    for i in range(mol.GetNumAtoms())])
+    xyz = np.array(
+        [
+            [conf.GetAtomPosition(i).x, conf.GetAtomPosition(i).y, conf.GetAtomPosition(i).z]
+            for i in range(mol.GetNumAtoms())
+        ]
+    )
     xyz -= xyz.mean(axis=0)
     _, _, vt = np.linalg.svd(xyz, full_matrices=False)
     ext = xyz @ vt.T
@@ -502,9 +625,9 @@ def pore_profile(capsid_name: str, axis: str, n_points: int = 61) -> Dict[str, A
     offset = (sum(ord(c) for c in (capsid_name or "")) % 7) * 0.05
     pore_min = round(pore_min + offset, 2)
 
-    mouth = 4.7                         # radio en la boca del canal
+    mouth = 4.7  # radio en la boca del canal
     half = n_points // 2
-    width = (n_points / 6.0) ** 2       # anchura de la gaussiana
+    width = (n_points / 6.0) ** 2  # anchura de la gaussiana
 
     positions: List[int] = []
     radius: List[float] = []

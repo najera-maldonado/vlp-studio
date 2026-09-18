@@ -4,11 +4,12 @@ Extrae y mejora funcionalidad de 1calcula_radio_interno.py
 """
 
 import os
-from typing import Optional, Tuple, Dict, Any
 from pathlib import Path
+from typing import Any, Dict, Optional
 
 try:
     from pymol import cmd, stored
+
     PYMOL_AVAILABLE = True
 except ImportError:
     PYMOL_AVAILABLE = False
@@ -70,7 +71,7 @@ class Capsid:
         """
         if not PYMOL_AVAILABLE:
             # Si PyMOL no está disponible, usar valor por defecto
-            default_radius = self.config.get('packing.internal_radius_default', 90.0)
+            default_radius = self.config.get("packing.internal_radius_default", 90.0)
             print(f"PyMOL no disponible. Usando radio por defecto: {default_radius} Å")
             self.internal_radius = default_radius
             return default_radius
@@ -84,15 +85,18 @@ class Capsid:
 
             # Calcular centro geométrico ANTES de recentrar
             stored.xyz = [0.0, 0.0, 0.0]
-            cmd.iterate_state(1, "capside",
-                            "stored.xyz[0] += x; stored.xyz[1] += y; stored.xyz[2] += z")
+            cmd.iterate_state(
+                1, "capside", "stored.xyz[0] += x; stored.xyz[1] += y; stored.xyz[2] += z"
+            )
             n_atoms = cmd.count_atoms("capside")
 
             if n_atoms == 0:
                 raise RuntimeError("La cápside no contiene átomos")
 
             center_original = [coord / n_atoms for coord in stored.xyz]
-            print(f"Centro original: ({center_original[0]:.2f}, {center_original[1]:.2f}, {center_original[2]:.2f})")
+            print(
+                f"Centro original: ({center_original[0]:.2f}, {center_original[1]:.2f}, {center_original[2]:.2f})"
+            )
 
             # IMPORTANTE: Recentrar en el origen antes de calcular radio
             cmd.alter_state(1, "capside", f"x = x - {center_original[0]}")
@@ -134,7 +138,7 @@ class Capsid:
 
             if radio_colision is None:
                 # No se encontró colisión, usar valor por defecto
-                radio_colision = self.config.get('packing.internal_radius_default', 90.0)
+                radio_colision = self.config.get("packing.internal_radius_default", 90.0)
                 print(f"No se detectó colisión. Usando radio por defecto: {radio_colision} Å")
             else:
                 # CORRECCIÓN: Expandir 1 Å más allá de la colisión como en original
@@ -159,7 +163,7 @@ class Capsid:
         except Exception as e:
             print(f"Error calculando radio interno: {e}")
             # Usar valor por defecto en caso de error
-            default_radius = self.config.get('packing.internal_radius_default', 90.0)
+            default_radius = self.config.get("packing.internal_radius_default", 90.0)
             self.internal_radius = default_radius
             return default_radius
 
@@ -194,6 +198,7 @@ class Capsid:
 
             # Alternativamente, trasladar al origen
             import numpy as np
+
             coords = cmd.get_coords("structure")
             if coords is not None:
                 com = np.mean(coords, axis=0)
@@ -225,12 +230,13 @@ class Capsid:
             self.calculate_internal_radius(save_to_file=False)
 
         return {
-            'internal_radius': self.internal_radius,
-            'center': self.center,
-            'pdb_path': self.pdb_path,
-            'centered_path': self.centered_path,
+            "internal_radius": self.internal_radius,
+            "center": self.center,
+            "pdb_path": self.pdb_path,
+            "centered_path": self.centered_path,
             # Radio efectivo para empaquetamiento (con margen de colisión)
-            'packing_radius': self.internal_radius - self.config.get('packing.collision_margin', 2.0)
+            "packing_radius": self.internal_radius
+            - self.config.get("packing.collision_margin", 2.0),
         }
 
     def validate_structure(self) -> bool:
@@ -249,9 +255,9 @@ class Capsid:
 
         # Verificar que tenga líneas ATOM o HETATM
         has_atoms = False
-        with open(self.pdb_path, 'r') as f:
+        with open(self.pdb_path, "r") as f:
             for line in f:
-                if line.startswith(('ATOM', 'HETATM')):
+                if line.startswith(("ATOM", "HETATM")):
                     has_atoms = True
                     break
 

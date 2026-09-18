@@ -4,19 +4,19 @@ Maneja la ejecución de 7 réplicas para cada combinación cápside-enzima
 y organiza los resultados en estructura de carpetas apropiada.
 """
 
-import os
 import json
+import os
 import shutil
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Tuple, Optional, Any
 import statistics
 import sys
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 sys.path.append(str(Path(__file__).parent.parent))
 
 from .config import ConfigManager
-from .capsid import Capsid
-from .cargo import Cargo
+
 try:
     from packing.parallel_packer import ParallelPacker
 except ImportError:
@@ -34,8 +34,7 @@ class ExperimentManager:
     - Selecciona el mejor resultado
     """
 
-    def __init__(self, config: Optional[ConfigManager] = None,
-                 output_base_dir: str = "../Output"):
+    def __init__(self, config: Optional[ConfigManager] = None, output_base_dir: str = "../Output"):
         """
         Inicializa el gestor de experimentos.
 
@@ -47,7 +46,9 @@ class ExperimentManager:
         self.output_base_dir = Path(output_base_dir)
         self.n_replicas = 7  # Número de réplicas por experimento
         self.current_experiment = None
-        self.use_parallel = ParallelPacker is not None  # Usar procesamiento paralelo si está disponible
+        self.use_parallel = (
+            ParallelPacker is not None
+        )  # Usar procesamiento paralelo si está disponible
 
     def setup_experiment(self, capsid_name: str, enzyme_name: str) -> Path:
         """
@@ -78,16 +79,16 @@ class ExperimentManager:
 
         # Guardar información del experimento
         self.current_experiment = {
-            'capsid': capsid_name,
-            'enzyme': enzyme_name,
-            'experiment_dir': experiment_dir,
-            'timestamp': datetime.now().isoformat(),
-            'n_replicas': self.n_replicas
+            "capsid": capsid_name,
+            "enzyme": enzyme_name,
+            "experiment_dir": experiment_dir,
+            "timestamp": datetime.now().isoformat(),
+            "n_replicas": self.n_replicas,
         }
 
         # Guardar metadata del experimento
         metadata_path = experiment_dir / "experiment_metadata.json"
-        with open(metadata_path, 'w') as f:
+        with open(metadata_path, "w") as f:
             json.dump(self.current_experiment, f, indent=2, default=str)
 
         print(f"Experimento configurado en: {experiment_dir}")
@@ -109,7 +110,7 @@ class ExperimentManager:
         if not 1 <= replica_number <= self.n_replicas:
             raise ValueError(f"Réplica debe estar entre 1 y {self.n_replicas}")
 
-        return self.current_experiment['experiment_dir'] / f"replica_{replica_number}"
+        return self.current_experiment["experiment_dir"] / f"replica_{replica_number}"
 
     def save_replica_result(self, replica_number: int, result_data: Dict[str, Any]):
         """
@@ -129,23 +130,23 @@ class ExperimentManager:
 
         # Guardar metadata de la réplica
         metadata = {
-            'replica': replica_number,
-            'timestamp': datetime.now().isoformat(),
-            **result_data
+            "replica": replica_number,
+            "timestamp": datetime.now().isoformat(),
+            **result_data,
         }
 
         metadata_path = replica_dir / "metadata.json"
-        with open(metadata_path, 'w') as f:
+        with open(metadata_path, "w") as f:
             json.dump(metadata, f, indent=2, default=str)
 
         # Copiar archivos de resultado si existen
-        if result_data.get('output_file') and os.path.exists(result_data['output_file']):
-            output_dest = replica_dir / Path(result_data['output_file']).name
-            shutil.copy2(result_data['output_file'], output_dest)
+        if result_data.get("output_file") and os.path.exists(result_data["output_file"]):
+            output_dest = replica_dir / Path(result_data["output_file"]).name
+            shutil.copy2(result_data["output_file"], output_dest)
 
-        if result_data.get('log_file') and os.path.exists(result_data['log_file']):
-            log_dest = replica_dir / Path(result_data['log_file']).name
-            shutil.copy2(result_data['log_file'], log_dest)
+        if result_data.get("log_file") and os.path.exists(result_data["log_file"]):
+            log_dest = replica_dir / Path(result_data["log_file"]).name
+            shutil.copy2(result_data["log_file"], log_dest)
 
     def consolidate_results(self) -> Dict[str, Any]:
         """
@@ -157,56 +158,60 @@ class ExperimentManager:
         if not self.current_experiment:
             raise RuntimeError("No hay experimento activo")
 
-        experiment_dir = self.current_experiment['experiment_dir']
+        experiment_dir = self.current_experiment["experiment_dir"]
 
         # Recolectar resultados de todas las réplicas
         results = []
         for i in range(1, self.n_replicas + 1):
             metadata_path = experiment_dir / f"replica_{i}" / "metadata.json"
             if metadata_path.exists():
-                with open(metadata_path, 'r') as f:
+                with open(metadata_path, "r") as f:
                     results.append(json.load(f))
 
         if not results:
-            return {'error': 'No se encontraron resultados'}
+            return {"error": "No se encontraron resultados"}
 
         # Extraer números de enzimas empaquetadas
-        n_packed_list = [r['n_packed'] for r in results if r.get('success', False)]
+        n_packed_list = [r["n_packed"] for r in results if r.get("success", False)]
 
         if not n_packed_list:
-            return {'error': 'Ninguna réplica fue exitosa'}
+            return {"error": "Ninguna réplica fue exitosa"}
 
         # Calcular estadísticas
         stats = {
-            'n_replicas_success': len(n_packed_list),
-            'n_replicas_total': self.n_replicas,
-            'best': max(n_packed_list),
-            'worst': min(n_packed_list),
-            'mean': statistics.mean(n_packed_list),
-            'median': statistics.median(n_packed_list),
-            'stdev': statistics.stdev(n_packed_list) if len(n_packed_list) > 1 else 0,
-            'all_values': n_packed_list
+            "n_replicas_success": len(n_packed_list),
+            "n_replicas_total": self.n_replicas,
+            "best": max(n_packed_list),
+            "worst": min(n_packed_list),
+            "mean": statistics.mean(n_packed_list),
+            "median": statistics.median(n_packed_list),
+            "stdev": statistics.stdev(n_packed_list) if len(n_packed_list) > 1 else 0,
+            "all_values": n_packed_list,
         }
 
         # Identificar mejor réplica
         best_replica = None
         for r in results:
-            if r.get('n_packed') == stats['best']:
+            if r.get("n_packed") == stats["best"]:
                 best_replica = r
                 break
 
         # Copiar mejor resultado a summary
-        if best_replica and best_replica.get('output_file'):
-            source_file = experiment_dir / f"replica_{best_replica['replica']}" / Path(best_replica['output_file']).name
+        if best_replica and best_replica.get("output_file"):
+            source_file = (
+                experiment_dir
+                / f"replica_{best_replica['replica']}"
+                / Path(best_replica["output_file"]).name
+            )
             if source_file.exists():
                 best_dest = experiment_dir / "summary" / "best_packing.pdb"
                 shutil.copy2(source_file, best_dest)
-                stats['best_replica'] = best_replica['replica']
-                stats['best_file'] = str(best_dest)
+                stats["best_replica"] = best_replica["replica"]
+                stats["best_file"] = str(best_dest)
 
         # Guardar estadísticas
         stats_path = experiment_dir / "summary" / "statistics.json"
-        with open(stats_path, 'w') as f:
+        with open(stats_path, "w") as f:
             json.dump(stats, f, indent=2)
 
         # Generar reporte texto
@@ -221,10 +226,10 @@ class ExperimentManager:
         Args:
             stats: Estadísticas consolidadas
         """
-        experiment_dir = self.current_experiment['experiment_dir']
+        experiment_dir = self.current_experiment["experiment_dir"]
         report_path = experiment_dir / "summary" / "report.txt"
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             f.write("=" * 60 + "\n")
             f.write("REPORTE DE EXPERIMENTO DE EMPAQUETAMIENTO\n")
             f.write("=" * 60 + "\n\n")
@@ -236,19 +241,21 @@ class ExperimentManager:
 
             f.write("RESULTADOS:\n")
             f.write("-" * 40 + "\n")
-            f.write(f"Réplicas exitosas: {stats.get('n_replicas_success', 0)}/{stats.get('n_replicas_total', 0)}\n")
+            f.write(
+                f"Réplicas exitosas: {stats.get('n_replicas_success', 0)}/{stats.get('n_replicas_total', 0)}\n"
+            )
             f.write(f"Mejor resultado: {stats.get('best', 'N/A')} enzimas\n")
             f.write(f"Peor resultado: {stats.get('worst', 'N/A')} enzimas\n")
             f.write(f"Promedio: {stats.get('mean', 0):.2f} enzimas\n")
             f.write(f"Mediana: {stats.get('median', 0):.2f} enzimas\n")
             f.write(f"Desviación estándar: {stats.get('stdev', 0):.2f}\n\n")
 
-            if stats.get('all_values'):
+            if stats.get("all_values"):
                 f.write("Valores por réplica:\n")
-                for i, val in enumerate(stats['all_values'], 1):
+                for i, val in enumerate(stats["all_values"], 1):
                     f.write(f"  Réplica {i}: {val} enzimas\n")
 
-            if stats.get('best_file'):
+            if stats.get("best_file"):
                 f.write(f"\nMejor archivo: {Path(stats['best_file']).name}\n")
                 f.write(f"De réplica: {stats.get('best_replica', 'N/A')}\n")
 
@@ -268,10 +275,12 @@ class ExperimentManager:
         capsid_clean = Path(capsid_name).stem.replace(" ", "_")
         enzyme_clean = Path(enzyme_name).stem.replace(" ", "_")
 
-        stats_path = self.output_base_dir / capsid_clean / enzyme_clean / "summary" / "statistics.json"
+        stats_path = (
+            self.output_base_dir / capsid_clean / enzyme_clean / "summary" / "statistics.json"
+        )
 
         if stats_path.exists():
-            with open(stats_path, 'r') as f:
+            with open(stats_path, "r") as f:
                 return json.load(f)
 
         return None
@@ -297,15 +306,15 @@ class ExperimentManager:
                         # Verificar si hay metadata
                         metadata_path = enzyme_dir / "experiment_metadata.json"
                         if metadata_path.exists():
-                            with open(metadata_path, 'r') as f:
+                            with open(metadata_path, "r") as f:
                                 exp_data = json.load(f)
 
                             # Verificar si hay estadísticas
                             stats_path = enzyme_dir / "summary" / "statistics.json"
                             if stats_path.exists():
-                                with open(stats_path, 'r') as f:
+                                with open(stats_path, "r") as f:
                                     stats = json.load(f)
-                                exp_data['best_result'] = stats.get('best')
+                                exp_data["best_result"] = stats.get("best")
 
                             experiments.append(exp_data)
 

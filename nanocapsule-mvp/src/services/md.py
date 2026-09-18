@@ -36,7 +36,7 @@ def _curve_explosion(n: int = 200) -> List[Dict[str, float]]:
             y = 300 + 8 * math.sin(i * 0.5)
         else:
             t = (i - knee) / (n - knee)
-            y = 300 + (17666 - 300) * (t ** 3)
+            y = 300 + (17666 - 300) * (t**3)
         pts.append({"x": i, "y": round(y, 1)})
     return pts
 
@@ -68,21 +68,56 @@ def md_examples() -> Dict[str, Any]:
         "illustrative": True,
         "source": "packmanreplicas1/1_2",
         "examples": [
-            {"id": "sana", "name": "Producción sana", "desc": "RMSD que converge — lo que debería salir",
-             "xlabel": "Frame", "ylabel": "RMSD (Å)", "anchor": "RMSD final 2.8 Å", "color": "#2e8b57",
-             "points": _curve_sana()},
-            {"id": "explosion", "name": "La explosión", "desc": "heat1 → 17.666 K · el fallo real",
-             "xlabel": "Frame", "ylabel": "Temperatura (K)", "anchor": "pico 17.666 K", "color": "#FF2600",
-             "points": _curve_explosion()},
-            {"id": "rmsf_ok", "name": "RMSF ← factores B", "desc": "la validación gratis · r=0.81",
-             "xlabel": "Residuo", "ylabel": "RMSF (Å)", "anchor": "r = 0.81", "color": "#378ADD",
-             "points": _curve_rmsf(good=True)},
-            {"id": "rmsf_bug", "name": "RMSF sin ajuste", "desc": "el bug de hoy · r=0.12",
-             "xlabel": "Residuo", "ylabel": "RMSF (Å)", "anchor": "r = 0.12", "color": "#BA7517",
-             "points": _curve_rmsf(good=False)},
-            {"id": "sasa", "name": "SASA en el vacío", "desc": "métrica ciega al confinamiento",
-             "xlabel": "Frame", "ylabel": "SASA (Å²)", "anchor": "~41.893 Å²", "color": "#7F77DD",
-             "points": _curve_sasa()},
+            {
+                "id": "sana",
+                "name": "Producción sana",
+                "desc": "RMSD que converge — lo que debería salir",
+                "xlabel": "Frame",
+                "ylabel": "RMSD (Å)",
+                "anchor": "RMSD final 2.8 Å",
+                "color": "#2e8b57",
+                "points": _curve_sana(),
+            },
+            {
+                "id": "explosion",
+                "name": "La explosión",
+                "desc": "heat1 → 17.666 K · el fallo real",
+                "xlabel": "Frame",
+                "ylabel": "Temperatura (K)",
+                "anchor": "pico 17.666 K",
+                "color": "#FF2600",
+                "points": _curve_explosion(),
+            },
+            {
+                "id": "rmsf_ok",
+                "name": "RMSF ← factores B",
+                "desc": "la validación gratis · r=0.81",
+                "xlabel": "Residuo",
+                "ylabel": "RMSF (Å)",
+                "anchor": "r = 0.81",
+                "color": "#378ADD",
+                "points": _curve_rmsf(good=True),
+            },
+            {
+                "id": "rmsf_bug",
+                "name": "RMSF sin ajuste",
+                "desc": "el bug de hoy · r=0.12",
+                "xlabel": "Residuo",
+                "ylabel": "RMSF (Å)",
+                "anchor": "r = 0.12",
+                "color": "#BA7517",
+                "points": _curve_rmsf(good=False),
+            },
+            {
+                "id": "sasa",
+                "name": "SASA en el vacío",
+                "desc": "métrica ciega al confinamiento",
+                "xlabel": "Frame",
+                "ylabel": "SASA (Å²)",
+                "anchor": "~41.893 Å²",
+                "color": "#7F77DD",
+                "points": _curve_sasa(),
+            },
         ],
     }
 
@@ -108,7 +143,9 @@ def md_box(capsid_name: str) -> Dict[str, Any]:
     }
 
 
-def md_prepare(capsid_name: str, n_substrate: int = 40, smiles: Optional[str] = None) -> Dict[str, Any]:
+def md_prepare(
+    capsid_name: str, n_substrate: int = 40, smiles: Optional[str] = None
+) -> Dict[str, Any]:
     """Prepara los inputs de DM (Packmol + tLeaP) para el sistema cápside+sustrato."""
     b = md_box(capsid_name)
     h = b["box_half"]
@@ -138,5 +175,10 @@ def md_prepare(capsid_name: str, n_substrate: int = 40, smiles: Optional[str] = 
         f"savepdb sys {capsid_name}-solvatado.pdb\n"
         "quit\n"
     )
-    return {**b, "n_substrate": n_substrate, "smiles": smiles,
-            "packmol_input": packmol, "leap_input": leap}
+    return {
+        **b,
+        "n_substrate": n_substrate,
+        "smiles": smiles,
+        "packmol_input": packmol,
+        "leap_input": leap,
+    }
