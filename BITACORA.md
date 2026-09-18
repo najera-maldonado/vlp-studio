@@ -11,6 +11,57 @@
 
 ---
 
+## 2026-09-17 (11) — Investigación enfocada: reproducibilidad para un dev único
+
+- ✅ **Cerrado el vacío del eje (e).** 2ª deep-research enfocada solo en reproducibilidad
+  realista para VLP Studio mantenido por una persona. Reporte en
+  **`INVESTIGACION_REPRODUCIBILIDAD_2026-09-17.md`** (23 fuentes, 23/25 claims confirmados).
+  Nota: el paso de síntesis automática falló por límite de sesión → sintetizado a mano
+  sobre los claims verificados (cada recomendación cita fuente).
+- **Plan de acción priorizado (mínimo viable, por retorno/esfuerzo):**
+  1. **conda-lock por motor** (pinning exacto de HOLE/Vina/GROMACS/RDKit) — mayor retorno.
+  2. **Log de provenance por corrida** (params + versiones junto a cada output; push-based,
+     sin refactor).
+  3. **VLP-08 (CI) como stub-run + lint** — pytest de humo + linting en Actions; NO correr
+     motores pesados en CI (el estándar nf-core es stub que genera outputs vacíos).
+  4. **Golden file + numpy.allclose** para un perfil de poro de referencia — red contra
+     regresiones científicas (no solo bugs de código).
+  5. **Quedarse en Makefile/scripts**; Snakemake solo si hace falta paralelismo/reanudar/
+     barridos (y ahí da provenance gratis en .snakemake/metadata).
+- **Sobre-ingeniería a EVITAR (refutado o desaconsejado):** repo separado de test-data
+  (refutado 0-3); metadatos FAIR con ontologías/DOIs; WMS "porque sí"; tratar el testing
+  automatizado como dogma universal (refutado 0-3).
+- **Regla de oro:** subir un nivel de madurez cuesta 5-10× más esfuerzo → elegir el mínimo
+  nivel necesario.
+- ⬜ **Siguiente:** ejecutar el plan (empezar por conda-lock y/o VLP-08 con lo aprendido).
+
+---
+
+## 2026-09-17 (10) — Investigación externa: qué se nos está pasando (deep-research)
+
+- ✅ **Investigación profunda recuperada y terminada.** La sesión (9) se cortó (apagón)
+  con una deep-research corriendo ("ver proyectos similares, qué se nos pasa"); no dejó
+  resultados rescatables, así que se relanzó. Resultado completo en
+  **`INVESTIGACION_2026-09-17.md`** (24 fuentes, 24/25 claims confirmados por verificación
+  adversarial). Nota de proceso: el primer relanzamiento falló (args demasiado largo →
+  el agente de scope agotó reintentos de salida estructurada); se recortó el args y corrió.
+- **Hallazgos clave por puerta:**
+  - 🔴 **Puerta 1 (poro) es el punto frágil:** HOLE2 + cribado geométrico estático
+    subestima el transporte (cadenas laterales dominan, poros "respiran", ignora gating
+    hidrofóbico <5 Å). Fix barato de mayor impacto: **CHAP** (proxy de agua desde MD corta).
+    Escalables: CAVER/MOLE, CaverDock (puente HOLE2↔Vina), PMF por umbrella sampling+WHAM.
+  - 🟡 **Puerta 3 (de-inmunización) puede dejar de ser maqueta YA:** **NetMHCIIpan-4.3**
+    es standalone descargable (MHC-II/CD4+, lo relevante para enzimas). Plantilla de motor:
+    King et al. PNAS 2014 (SVM+Rosetta).
+  - 🟢 **Puerta 2:** P22 es el precedente experimental directo; ojo, la carga es
+    enzima-dependiente (no asumir protocolo fijo). **Puerta 4:** SIRAH confirmado apto.
+  - ⚠️ **Reproducibilidad (eje e): SIN respuesta verificada** — ningún claim sobrevivió.
+    Es el mayor hueco; merece una 2ª búsqueda enfocada solo en ese eje.
+- ⬜ **Siguiente:** decidir si se actúa sobre Puerta 1 (CHAP) / Puerta 3 (NetMHCIIpan), y/o
+  relanzar deep-research solo sobre reproducibilidad. Cimientos aún pendientes: VLP-04b, 05, 08.
+
+---
+
 ## 2026-09-17 (9) — VLP-07: versionado por motor + plan ampliado (best practices)
 
 - ✅ **VLP-07 hecho:** `VERSION` + `CHANGELOG.md` en cada motor, independientes —

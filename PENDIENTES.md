@@ -14,7 +14,8 @@
 - [x] **VLP-04a — Externalizar `studio.html`** (2026-09-17): CSS+JS a static/; template 1190→281 líneas. Verificado en navegador.
 - [ ] **VLP-04b — Partir `studio.js`** (830 líneas) por pestaña. Ya con red de navegador.
 - [x] ~~VLP-04c — Portada EMBUDO~~ DESCARTADA (2026-09-17, Lucio: "no le veo utilidad"). No reconstruir.
-- [ ] (Humano, cuando puedas) construir la imagen Docker una vez para validarla: `cd nanocapsule-mvp && docker compose build`. Aquí no hubo daemon.
+- [ ] **META: dejar el proyecto PUBLICABLE COMO SOFTWARE** (decidido 2026-09-17, Lucio). Release open-source reproducible que otros puedan instalar/usar/citar. ~2-3 semanas. Plan en 3 fases ↓. NO es publicable-como-ciencia (eso son meses: MD sin correr, Puerta 1 frágil, Puerta 3 ilustrativa).
+- [ ] **Docker: DAEMON YA DISPONIBLE** (verificado 2026-09-17: docker v29.8.0 corriendo). Siguiente acción acordada: correr `cd nanocapsule-mvp && docker compose build` JUNTOS en sesión para ver qué se rompe (ya no es bloqueo-humano). "apúntalo, luego lo hacemos".
 
 ## Backlog (detalle en ESTADO.md §6)
 Hechos: VLP-01, 02, 03, 04a, 06, 07. Descartado: 04c (portada). Pendientes ↓
@@ -25,8 +26,22 @@ Hechos: VLP-01, 02, 03, 04a, 06, 07. Descartado: 04c (portada). Pendientes ↓
 - [ ] VLP-10 — Linter/formatter (black+flake8 con config, opcional pre-commit).
 - [ ] VLP-11 — `fetch_data.sh` para las estructuras pesadas gitignoreadas.
 
+## Plan PUBLICABLE-COMO-SOFTWARE (meta 2026-09-17) — detalle en INVESTIGACION_REPRODUCIBILIDAD_2026-09-17.md
+Fase A — "instalable" (la más dura; el riesgo real; ahora desbloqueada, daemon OK):
+- [ ] Correr `docker compose build`, ver qué falla, iterar. RIESGO LEGAL: HOLE y NetMHCIIpan NO son redistribuibles → NO hornearlos en imagen pública; el usuario los obtiene aparte.
+- [ ] Completar imagen: hoy faltan hole/idock (no en apt) y GROMACS/SIRAH (Puerta 4). El monorepo pelea con el build-context (Poromania queda fuera).
+- [ ] VLP-11 — `fetch_data.sh` para las estructuras pesadas gitignoreadas (RCSB).
+Fase B — "confiable" (casi todo IA, sin depender de la máquina):
+- [ ] VLP-08 — CI (GitHub Actions): pytest de humo + lint. Motores pesados NO corren en CI (usar stub-run, estándar nf-core).
+- [ ] Pinning de entorno: lock de deps Python (recomendado pip-tools/uv, NO migrar a conda).
+- [ ] VLP-09 — LICENSE **MIT** (recomendada; para tu código, no los motores) + `THIRD_PARTY.md`/NOTICE con licencia de cada motor + arreglar setup.py.
+- [ ] VLP-05 — retirar fósiles (/classic, _temp_backup, prototipos muertos).
+Fase C — "citable/pulido":
+- [ ] README real (el actual es parcialmente fósil) + `CITATION.cff`.
+- [ ] (Opcional) golden file + numpy.allclose (regresión científica); si se va por JOSS, `paper.md`.
+DECISIONES PENDIENTES DE LUCIO: (1) licencia MIT vs Apache-2.0 (IA recomienda MIT); (2) ¿release normal de GitHub o apuntar a JOSS (da DOI + paper citable, pero exige estándar completo)?
+
 ## Humano (solo Lucio — la IA no puede)
-- [ ] Construir la imagen Docker una vez para validar VLP-01: `cd nanocapsule-mvp && docker compose build`.
 - [ ] **CIENCIA-1** — decidir `capsid.py` radio ±1 Å (IA recomienda restar). Ver ESTADO §4b.
 - [ ] **CIENCIA-2** — decidir resolución de `sustratinaitor` (CG vs all-atom), al correr esa MD. Ver ESTADO §4b.
 - [ ] **CIENCIA-3** — decidir protocolo de heat de `PackMan`, al correr esa MD. Ver ESTADO §4b.
