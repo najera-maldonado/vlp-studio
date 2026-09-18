@@ -48,7 +48,7 @@
 - [ ] **Añadir GROMACS** al pipeline empaquetador→MD (hoy PackMan es estilo AMBER).
 - [ ] **Decidir CG: SIRAH vs Martini 3** (apunte Lucio; ya era pregunta abierta en INVESTIGACION_2026-09-17.md).
 - [ ] **Replica-exchange (T-REMD/HREMD)** como sampling avanzado (confirmado por Lucio 2026-09-18; probablemente T-REMD, que unifica con "réplicas a distintas temperaturas").
-- [ ] **uMD** = MD sin sesgo como baseline frente a la steered/push. (confirmar con Lucio: ¿unbiased o µs?)
+- [ ] **"uMD PyMOL"** (apunte de Lucio, un solo ítem — significado POR CONFIRMAR). Conjeturas: visualizar/analizar la trayectoria MD en PyMOL, o un plugin MD de PyMOL. Conecta con "MD → visor". NO era "MD sin sesgo" (mala interpretación previa, corregida).
 
 **Puerta 3 — de-inmunización:**
 - [ ] Motor real (NetMHCIIpan-4.3, ya identificado).
