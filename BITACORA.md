@@ -11,6 +11,25 @@
 
 ---
 
+## 2026-09-17 (18) — Pulido "bien bien" pre-publicación (4 ítems) ✅ CI verde
+
+- ✅ **READMEs de PackMan y sustratinaitor** (antes sin README; ahora los 4 motores
+  documentados con estado honesto).
+- ✅ **`nanocapsule-mvp/scripts/fetch_data.sh`**: baja de RCSB la cápside pesada P22
+  (5UU5, gitignoreada). La biblioteca por defecto (BMV/CCMV/MS2/QB + enzimas) ya viaja en
+  el repo → un clone limpio corre el Studio sin esto; el script es solo para P22.
+- ✅ **Golden test de regresión científica** (`tests/test_golden_science.py`): congela el
+  radio de sección de sustratos (RDKit seed 42, determinista) con tolerancia 0.2 Å. Valores
+  ref: etanol 1.02, glucosa 1.95, aspirina 1.15 Å. Corre en CI (sin motores pesados).
+- ✅ **VLP-10 (ruff):** `pyproject.toml` con config (line 100, E/F/W/I, ignore E501),
+  aplicados 39 fixes seguros + `ruff format` (16 archivos, solo estilo). CI cambió de flake8
+  crítico a `ruff check` + `ruff format --check`. **22 tests verdes** (17 humo + 5 golden), CI verde.
+- Commits f05108d→061cd4e. Quedan pendientes de "bien bien": CI para los otros motores,
+  partir studio.js (VLP-04b). Bloqueante para publicar: hacer repo PÚBLICO (Lucio).
+- ⬜ **Siguiente:** decidir si cerramos los 2 pendientes menores o pasamos a preparar JOSS.
+
+---
+
 ## 2026-09-17 (17) — Fase C + RELEASE v0.1.0 en GitHub ✅ PUBLICABLE-COMO-SOFTWARE HECHO
 
 - ✅ **README de la plataforma** en la raíz del monorepo (antes NO había → portada de
