@@ -11,6 +11,24 @@
 
 ---
 
+## 2026-09-18 (20) — Cerrados los pendientes menores de software ✅
+
+- ✅ **CI para los otros motores:** nuevo job `engines` en ci.yml corre `compileall` sobre
+  Poromania/PackMan/sustratinaitor (verifican que su Python parsea; excluye el bundle de
+  terceros SIRAH). Descubierto: el "test" de Poromania era un script de demo (sin asserts),
+  y PackMan/sustratinaitor no tienen tests → el chequeo honesto es "compila". Ambos jobs verdes.
+- ✅ **VLP-04b — studio.js partido:** 830 líneas → 6 archivos por puerta (studio-core,
+  library, analisis-md, deinmunizacion, pac-pore, packing), cargados en orden en studio.html.
+  Split BYTE-IDÉNTICO (concat de los 6 == original, diff limpio) + cada uno pasa node --check.
+  Seguro pese a <script> separados: todo el arranque (listeners + init) está en packing.js
+  (último) → sin problema de hoisting. VERIFICADO EN NAVEGADOR: render OK, PAC-PORE con
+  Chart.js y HOLE real, 0 errores de consola.
+- 🎯 **TODOS los pendientes menores de software cerrados.** El repo está pulido para publicar.
+  Falta solo lo que depende de Lucio: hacer el repo PÚBLICO → Zenodo DOI → JOSS.
+- ⬜ **Siguiente:** repo público (Lucio) y luego el flujo Zenodo/JOSS; o entrar a la ciencia.
+
+---
+
 ## 2026-09-18 (19) — Relicenciar MIT → AGPLv3 (decisión de Lucio)
 
 - ✅ **Cambio de licencia a GNU AGPLv3 o posterior** (commit 4d064ea). Razón de Lucio:

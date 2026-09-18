@@ -14,8 +14,8 @@
 - [x] **VLP-11 — `fetch_data.sh`** (2026-09-17): baja P22 5UU5 de RCSB; biblioteca por defecto ya viaja en el repo. Sintaxis validada, RCSB 200.
 - [x] **Golden test de regresión científica** (2026-09-17): `tests/test_golden_science.py`, radio de sección RDKit (seed fijo) con tolerancia; corre en CI. 5 tests.
 - [x] **VLP-10 — Linter/formatter** (2026-09-17): ruff (pyproject.toml), 39 fixes + format; CI usa ruff check + format --check.
-- [ ] **CI para los otros motores** (hoy CI solo cubre el Studio; Poromania tiene 1 test sin correr en CI).
-- [ ] **VLP-04b — Partir `studio.js`** (830 líneas) por pestaña. Mantenibilidad; ya con red de navegador.
+- [x] **CI para los otros motores** (2026-09-18): job `engines` corre compileall sobre Poromania/PackMan/sustratinaitor (verifican que su Python parsea; excluye bundle SIRAH). Verde.
+- [x] **VLP-04b — Partir `studio.js`** (2026-09-18): 830 líneas → 6 archivos por puerta (studio-core/library/analisis-md/deinmunizacion/pac-pore/packing). Byte-idéntico, verificado en navegador (PAC-PORE con Chart.js, 0 errores consola).
 
 ## Bloqueante para PUBLICAR de verdad (decisión + acción humana)
 - [ ] **Hacer el repo PÚBLICO** (hoy privado). Necesario para que otros lo usen y para JOSS. — Solo Lucio.
