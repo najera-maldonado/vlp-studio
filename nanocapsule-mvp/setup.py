@@ -51,11 +51,8 @@ setup(
         'dev': dev_requirements,
         'all': core_requirements + dev_requirements,
     },
-    entry_points={
-        'console_scripts': [
-            'nanocapsule=cli.main:cli',
-        ],
-    },
+    # (Sin console_scripts: no existe CLI. El punto de entrada es el servidor web
+    #  `python src/web/app.py`. Se declaraba `cli.main:cli`, que no existe → se retiró.)
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
