@@ -1,0 +1,44 @@
+name: CI
+
+# CI de VLP Studio (VLP-08). Filosofía de la investigación de reproducibilidad:
+# CI valida EJECUCIÓN/cableado, no validez científica. Los motores pesados (HOLE,
+# GROMACS) NO corren aquí; los tests de humo importan lazy y no los ejercen. Solo
+# se necesitan las deps pip (Python 3.12 por rdkit==2025.9.1).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Tests de humo + lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: nanocapsule-mvp
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: nanocapsule-mvp/requirements.txt
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8
+
+      - name: Lint (solo errores reales — sin ruido de estilo)
+        # E9 = errores de sintaxis; F63/F7/F82 = pyflakes (nombres indefinidos, etc.).
+        # El estilo (line length, imports, etc.) se deja para VLP-10.
+        run: flake8 src tests --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Tests de humo (pytest)
+        run: pytest -q
