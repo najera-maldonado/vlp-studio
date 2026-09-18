@@ -11,6 +11,25 @@
 
 ---
 
+## 2026-09-17 (17) — Fase C + RELEASE v0.1.0 en GitHub ✅ PUBLICABLE-COMO-SOFTWARE HECHO
+
+- ✅ **README de la plataforma** en la raíz del monorepo (antes NO había → portada de
+  GitHub vacía). Describe el embudo de 4 puertas con estado HONESTO (1 y 2 reales, 3
+  ilustrativa, 4 sin MD), los 4 motores, inicio rápido Docker, reproducibilidad, licencia.
+- ✅ **CITATION.cff** (v0.1.0, MIT, autor najera-maldonado; validado como YAML). DOI de
+  JOSS se añadirá luego.
+- ✅ **RELEASE v0.1.0 publicado**: https://github.com/najera-maldonado/vlp-studio/releases/tag/v0.1.0
+  Tag `v0.1.0` en el commit bdf8c4b (CI verde en ese commit). Notas con el estado honesto.
+  (Distinto de los tags por-motor studio/v0.1.0 etc.)
+- 🎯 **META "publicable como software" CUMPLIDA:** Fases A+B+C hechas. Repo con LICENSE,
+  THIRD_PARTY, README real, CITATION, CI verde, Docker reproducible, entorno pinneado y
+  release etiquetado. (Repo sigue PRIVADO; hacerlo público es decisión de Lucio.)
+- ⬜ **SIGUIENTE (acordado): preparar publicación en JOSS.** Requiere: paper.md (metadata
+  + statement of need + resumen), docs de instalación/uso completas, tests, y normalmente
+  archivar en Zenodo para DOI. El repo debe ser PÚBLICO para JOSS.
+
+---
+
 ## 2026-09-17 (16) — VLP-05: /classic oculta+deprecated → FASE B COMPLETA ✅
 
 - ✅ **VLP-05 resuelto** (decisión de Lucio: conservar pero ocultar). `/classic` sigue
