@@ -6,7 +6,7 @@
 
 ## 🎯 Meta cumplida: PUBLICABLE COMO SOFTWARE (release v0.1.0)
 - [x] **Fase A — instalable:** Docker construye/arranca (.dockerignore, fix libgl1), engines documentados.
-- [x] **Fase B — confiable:** LICENSE MIT + THIRD_PARTY · CI verde (VLP-08) · pinning requirements.lock · VLP-09 (entry point) · VLP-05 (/classic oculta+deprecated).
+- [x] **Fase B — confiable:** LICENSE (AGPLv3, relicenciada desde MIT el 2026-09-18) + THIRD_PARTY · CI verde (VLP-08) · pinning requirements.lock · VLP-09 (entry point) · VLP-05 (/classic oculta+deprecated).
 - [x] **Fase C — citable:** README de plataforma (raíz) · CITATION.cff · **release v0.1.0 en GitHub**.
 
 ## Para dejarlo "bien bien" ANTES de publicar (pulido recomendado)

@@ -11,6 +11,26 @@
 
 ---
 
+## 2026-09-18 (22) — Plan ampliado con los apuntes de Lucio (hojas)
+
+- ✅ **Vaciados los apuntes sueltos de Lucio al plan** (PENDIENTES.md reorganizado). Clasificados
+  en: ya-está / ya-en-plan / nuevo / no-aplica.
+- **Ciencia nueva por puerta:** P1 → Steered MD/PMF ("push"), pH+tamaño de poro, estabilidad de
+  mutantes vs cápside, metadinámica, MM-PBSA/GBSA. P4 → correr la MD, réplicas por temperatura,
+  dodecaedro rómbico, GROMACS, SIRAH-vs-Martini3, replica-exchange (T-REMD). Validación → buscar
+  nº de enzimas encapsuladas experimental y comparar.
+- **Software nuevo (IA puede):** cápside sola (0 enzimas), carga a %, interfaz bilingüe ES/EN,
+  log, base de datos SQLite, MD→visor, quitar emojis + código a inglés, demo hosteado de lectura.
+- **Frontera QM/MM** (confirmado: catálisis/reacción) = la pieza MÁS limitante → después de la MD,
+  no bloquea. **Grande/visión:** combinar los 4 motores (embudo end-to-end), BD comunitaria.
+- **Ya existían:** interfaz, arcoíris por enzima, motor↔visor, especificar enzimas. **Descartado:**
+  "uMD PyMOL" (ni Lucio recuerda qué era).
+- Fix menor: PENDIENTES decía "LICENSE MIT" en Fase B → aclarado que ya es AGPLv3.
+- ⬜ **Siguiente (sin cambios):** software está publicable; el plan de ciencia/publicación está
+  cargado. Empezar cuando Lucio decida: Zenodo/JOSS, o ciencia (correr la MD desbloquea casi todo).
+
+---
+
 ## 2026-09-18 (21) — 🌍 REPO PÚBLICO
 
 - ✅ **Repo hecho PÚBLICO** (petición de Lucio): https://github.com/najera-maldonado/vlp-studio
