@@ -267,7 +267,8 @@ Cada experimento ejecuta 7 réplicas independientes:
 
 ## Licencia
 
-MIT License - Software de investigación académica
+GNU AGPLv3 o posterior — copyleft fuerte, cubre también el uso como servicio web. Ver
+[`LICENSE`](../LICENSE) y [`THIRD_PARTY.md`](../THIRD_PARTY.md). Copyright (C) 2026 najera-maldonado.
 
 ## Autores
 

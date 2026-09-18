@@ -2,7 +2,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://python.org)
 [![PyMOL](https://img.shields.io/badge/PyMOL-2.5%2B-green)](https://pymol.org)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-AGPLv3-blue.svg)](../LICENSE)
 
 Pipeline completo automatizado para el análisis de poros proteicos, generación sistemática de mutantes, análisis geométrico con HOLE2 y docking molecular desde códigos SMILES.
 
@@ -307,7 +307,8 @@ import matplotlib.pyplot as plt
 
 ## 📄 Licencia
 
-Este proyecto está bajo la licencia MIT. Ver [LICENSE](LICENSE) para detalles.
+Parte de VLP Studio, bajo **GNU AGPLv3 o posterior**. Ver [LICENSE](../LICENSE) (raíz del
+monorepo) y [THIRD_PARTY.md](../THIRD_PARTY.md). Copyright (C) 2026 najera-maldonado.
 
 ## 📚 Citas
 

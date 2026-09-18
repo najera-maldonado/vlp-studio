@@ -64,10 +64,13 @@ Instalación local (pip + binarios del sistema) documentada en el
 
 ## Licencia
 
-Código propio bajo **MIT** (ver [`LICENSE`](LICENSE)). Los motores científicos de
-terceros que el Studio **invoca** (no redistribuye) conservan su propia licencia; algunos
-(HOLE, NetMHCIIpan) no son redistribuibles y los aporta el usuario — detalle en
-[`THIRD_PARTY.md`](THIRD_PARTY.md).
+Código propio bajo **GNU AGPLv3 o posterior** (ver [`LICENSE`](LICENSE)) — copyleft
+fuerte: cualquier versión modificada debe permanecer abierta, **incluso si se ofrece como
+servicio web** (AGPL cubre el caso de red). Copyright (C) 2026 najera-maldonado.
+
+Los motores científicos de terceros que el Studio **invoca** (no redistribuye) conservan
+su propia licencia; algunos (HOLE, NetMHCIIpan) no son redistribuibles y los aporta el
+usuario — detalle en [`THIRD_PARTY.md`](THIRD_PARTY.md).
 
 ## Cómo citar
 

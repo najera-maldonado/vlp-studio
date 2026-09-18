@@ -1,13 +1,13 @@
 # Software de terceros (motores externos)
 
-VLP Studio (el código propio) se distribuye bajo licencia **MIT** (ver `LICENSE`).
-Ese código **invoca** motores científicos de terceros como procesos externos; NO los
-incorpora ni los redistribuye. Cada motor conserva su propia licencia. Este archivo las
-lista para transparencia y para dejar claro qué debes obtener por tu cuenta.
+VLP Studio (el código propio) se distribuye bajo licencia **GNU AGPLv3 o posterior**
+(ver `LICENSE`). Ese código **invoca** motores científicos de terceros como procesos
+externos; NO los incorpora ni los redistribuye. Cada motor conserva su propia licencia.
+Este archivo las lista para transparencia y para dejar claro qué debes obtener por tu cuenta.
 
 Llamar a un binario externo por línea de comandos no crea obra derivada, por lo que la
-licencia MIT del código propio es compatible con motores GPL/LGPL que se invocan sin
-enlazarlos.
+licencia AGPLv3 del código propio no impone obligaciones sobre esos motores ni ellos sobre
+él; AGPLv3 es además compatible con GPL/LGPL.
 
 ## Motores incluidos en la imagen Docker (redistribuibles)
 
