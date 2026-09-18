@@ -11,6 +11,20 @@
 
 ---
 
+## 2026-09-18 (21) — 🌍 REPO PÚBLICO
+
+- ✅ **Repo hecho PÚBLICO** (petición de Lucio): https://github.com/najera-maldonado/vlp-studio
+  Antes: escaneo de secretos en archivos trackeados → limpio (matches eran falsos positivos:
+  texto de licencia, campos CIF, logs APBS; `.env.example` solo placeholders, sin valores reales).
+- Método: `gh api --method PATCH repos/najera-maldonado/vlp-studio -F private=false` (el flag
+  `--accept-visibility-change-consequences` de `gh repo edit` no existe en gh 2.45 → usar la API).
+- 🎯 **Desbloqueado el flujo de publicación:** ahora se puede Zenodo (activar integración →
+  release → DOI) y luego JOSS. Recordar: cuenta gh activa debe ser najera-maldonado.
+- ⬜ **Siguiente:** Zenodo DOI (Lucio activa la integración en zenodo.org; yo preparo el repo:
+  añadir badge/DOI al README y CITATION cuando llegue) → JOSS (paper.md). O entrar a la ciencia.
+
+---
+
 ## 2026-09-18 (20) — Cerrados los pendientes menores de software ✅
 
 - ✅ **CI para los otros motores:** nuevo job `engines` en ci.yml corre `compileall` sobre
