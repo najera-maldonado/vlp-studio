@@ -31,7 +31,8 @@ def studio():
 
 @app.route("/classic")
 def classic():
-    """Interfaz original NGL, conservada intacta."""
+    """Interfaz original NGL. DEPRECATED (VLP-05, 2026-09-17): se conserva funcional
+    pero ya NO se enlaza desde el Studio; puede retirarse en el futuro. Ver README."""
     return render_template("index.html")
 
 
@@ -547,6 +548,6 @@ if __name__ == "__main__":
     debug = (env_debug == "1") if env_debug is not None else svc._config.get("web.debug", False)
     print("Iniciando servidor web VLP Studio...")
     print(f"Studio (nuevo):  http://localhost:{port}/")
-    print(f"Clásico (NGL):   http://localhost:{port}/classic")
+    print(f"Clásico (NGL):   http://localhost:{port}/classic  (deprecated)")
     print(f"Salud:           http://localhost:{port}/api/health")
     app.run(debug=debug, host=host, port=port)

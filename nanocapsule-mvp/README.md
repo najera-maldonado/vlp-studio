@@ -214,6 +214,11 @@ sudo apt-get install packmol pymol openbabel autodock-vina   # Linux
 python src/web/app.py         # http://localhost:5000
 ```
 
+> **Interfaz `/classic` (deprecated):** existe un visor NGL antiguo servido en
+> `/classic`. Se conserva funcional por compatibilidad, pero **está deprecado**: ya no
+> se enlaza desde el Studio y puede retirarse en el futuro. Usa la interfaz principal
+> del Studio en `/`.
+
 ## Uso Básico
 
 1. **Preparar Estructuras**:

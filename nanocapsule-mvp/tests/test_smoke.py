@@ -29,7 +29,7 @@ def test_studio_page(client):
 
 
 def test_classic_page(client):
-    # /classic todavía se sirve (VLP-05 lo retirará). Hoy debe responder.
+    # /classic se conserva funcional pero DEPRECATED (VLP-05: no se enlaza, no se retira).
     assert client.get("/classic").status_code == 200
 
 
