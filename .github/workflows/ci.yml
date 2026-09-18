@@ -44,3 +44,20 @@ jobs:
 
       - name: Tests de humo + golden (pytest)
         run: pytest -q
+
+  engines:
+    name: Los otros motores compilan
+    runs-on: ubuntu-latest
+    # Poromania/PackMan/sustratinaitor no tienen tests (son scripts + protocolos). Como
+    # mínimo, CI verifica que TODO su Python parsea (compileall no importa, solo compila,
+    # así que no necesita sus deps ni los motores pesados). Excluye la librería de terceros
+    # SIRAH (bundle del force field, no es código propio).
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compilar Python de los motores
+        run: |
+          python -m compileall -q -x 'sirah_x2\.3' \
+            "Poromania.v.1.2." "PackMan.v.1.2" "sustratinaitor"
