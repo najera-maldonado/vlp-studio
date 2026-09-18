@@ -2,6 +2,11 @@
 # Pines alineados con el entorno que REALMENTE funciona (Python 3.12), no con los
 # fósiles anteriores (que fijaban Flask 2.3.2 y NO declaraban RDKit → irreproducible).
 # Actualizado en VLP-01 (2026-09-17). Ver ESTADO.md §4.
+#
+# Este archivo son las deps DIRECTAS (legible por humanos). Para reproducir el entorno
+# EXACTO (incl. transitivas pinneadas) usa `requirements.lock` (generado con pip-compile):
+#   pip install -r requirements.lock
+# Regenerar el lock tras cambiar algo aquí:  pip-compile --strip-extras requirements.txt
 
 # --- Núcleo usado por el código (src/) ---
 Flask==3.1.3
