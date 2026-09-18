@@ -11,6 +11,24 @@
 
 ---
 
+## 2026-09-18 (23) — Revisión estratégica + decisión: verificar TODOS los motores
+
+- **Revisión estratégica del proyecto** (no cambios de código). Conclusión de prioridad:
+  "cerrar la historia" = JOSS en paralelo (no depende de la MD) + réplicas → condición de
+  6 enzimas → all-atom del sitio activo. Cuello de botella = GPU. Estimación ~1 mes JOSS,
+  ~3-4 meses la ciencia.
+- **DECISIÓN DE LUCIO:** antes de extender, hacer una **pasada de verificación científica
+  de los 4 motores** en la próxima sesión. Motivo: **las corridas de MD pueden estar mal**
+  → tratar los resultados de dinámica como PROVISIONALES hasta auditarlos. Registrado como
+  callout ⏭️ arriba en PENDIENTES.md.
+- Nota de terreno: el packing (geométrico, determinista, con golden test) es más firme que
+  la MD; si la MD flaquea, packing + JOSS siguen en pie.
+- No se registró contenido de la tesis de Lucio (leída solo para contexto de esa plática,
+  por petición suya). La memoria se mantuvo conservadora (no afirma "MD validada").
+- ⬜ **Siguiente:** sesión de verificación de motores; y arrancar JOSS (no espera a nada).
+
+---
+
 ## 2026-09-18 (22) — Plan ampliado con los apuntes de Lucio (hojas)
 
 - ✅ **Vaciados los apuntes sueltos de Lucio al plan** (PENDIENTES.md reorganizado). Clasificados
