@@ -65,6 +65,12 @@
 - [ ] **Sistema de log** (estaba "fuera de alcance"; ahora encaja con provenance).
 - [ ] **Base de datos** (SQLite) para historial de experimentos.
 - [ ] Conectar la **MD de PackMan al visor 3D** (extensión de motor↔visualizador).
+- [ ] **Quitar emojis del código + comentarios/strings a INGLÉS** (pulido pro/JOSS; también los READMEs públicos). Se solapa con "repo/docs en inglés".
+- [ ] **Demo hosteado de solo lectura** (a): sitio que muestra el Studio + resultados precomputados usando los endpoints ligeros (sin motores pesados). Deployable (Vercel); la app completa con HOLE/GROMACS no. Para visibilidad/JOSS.
+
+## Grande / a scopear (visión del embudo — no bloquea publicar)
+- [ ] **Combinar los motores**: que el Studio orqueste el embudo COMPLETO end-to-end (packing → poro → de-inmunización → MD) desde una interfaz. Hoy solo Pac-Pore está cableado (vía Poromania). Software + ciencia; es la dirección natural del proyecto.
+- [ ] **Base de datos comunitaria** (b): que otros conecten SUS resultados a la BD. Multiusuario (login/moderación/seguridad/hosting). Grande, a futuro. AGPL cubre el caso de servicio web.
 
 ## Ya existía — apuntes de Lucio ya cubiertos (confirmado 2026-09-18)
 - [x] Interfaz del Studio (app Flask + visor 3D). — nota "interfaz (antes no había)".
