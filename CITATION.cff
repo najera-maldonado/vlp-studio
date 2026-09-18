@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "Si usas VLP Studio en tu investigación, por favor cítalo así."
+title: "VLP Studio"
+abstract: >-
+  Plataforma computacional para el diseño de nanocápsulas de tipo virus-like particle
+  (VLP) cargadas con enzimas terapéuticas, organizada como un embudo de cuatro filtros:
+  transporte por el poro, empaquetamiento interno, de-inmunización y supervivencia por
+  dinámica molecular coarse-grained.
+type: software
+authors:
+  - name: "najera-maldonado"
+version: "0.1.0"
+date-released: "2026-09-17"
+license: MIT
+repository-code: "https://github.com/najera-maldonado/vlp-studio"
+url: "https://github.com/najera-maldonado/vlp-studio"
+keywords:
+  - virus-like-particle
+  - enzyme-encapsulation
+  - capsid-engineering
+  - molecular-dynamics
+  - pore-analysis
+  - structural-biology
