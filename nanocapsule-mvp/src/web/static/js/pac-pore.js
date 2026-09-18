@@ -68,7 +68,7 @@ async function doPore() {
       body: JSON.stringify({ capsid, axis })
     })).json();
     if (d.error) throw new Error(d.error);
-    $('pore-badge').textContent = '(ilustrativo)';
+    $('pore-badge').textContent = '';
     renderPore(d, sub);
     $('pore-status').className = 'status';
     $('pore-status').textContent = (sub.name === 'SMILES')
