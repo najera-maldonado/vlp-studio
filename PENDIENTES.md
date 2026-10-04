@@ -36,10 +36,27 @@ sospecha sin verificar, para cross-check solo DESPUÉS de la propia pasada — n
 - [x] **Repo PÚBLICO** (2026-09-18): https://github.com/najera-maldonado/vlp-studio
 
 ## Siguiente objetivo acordado: publicación en JOSS
-- [ ] **Repo/docs en INGLÉS** (JOSS exige inglés): README + paper + docs en inglés. (La interfaz del Studio se hará bilingüe ES/EN aparte — ver Software.)
-- [ ] `paper.md` (metadata + *statement of need* + resumen + referencias).
-- [ ] Docs de instalación/uso completas (JOSS las exige explícitas).
+> **Estado completo y accionable en [`JOSS_CHECKLIST.md`](JOSS_CHECKLIST.md)** (en inglés).
+> Resumen: el paquete de documentación está hecho; quedan 4 cosas que SOLO puede hacer Lucio.
+- [x] **Repo/docs en INGLÉS** (2026-10-04): README de la raíz + los 4 READMEs de motores +
+      `docs/installation.md` + `docs/usage.md` + `CONTRIBUTING.md` + `paper.md` + `CITATION.cff`.
+      Los documentos internos (ESTADO/PENDIENTES/BITACORA/REVISION/INVESTIGACION) se quedan en
+      español a propósito: son bitácora de decisiones, no documentación de usuario.
+      (La interfaz del Studio se hará bilingüe ES/EN aparte — ver Software.)
+- [x] **`paper.md` + `paper.bib`** (2026-10-04): metadata YAML de JOSS, *statement of need*,
+      resumen del software, sección honesta de alcance/limitaciones, 19 referencias.
+      **Pendiente: verificar los DOI contra Crossref** (§4.1 de la checklist).
+- [x] **Docs de instalación/uso explícitas** (2026-10-04): `docs/installation.md` (Docker +
+      local, motores externos, verificación, troubleshooting) y `docs/usage.md` (recorrido
+      puerta por puerta sobre el caso Gaucher, con comandos ejecutables).
+- [x] **Guías de comunidad** (2026-10-04): `CONTRIBUTING.md` — requisito de JOSS que no
+      estaba en esta lista (cómo reportar bugs, cómo contribuir, fronteras de alcance).
+- [ ] **Identidad de autor** — nombre legal exacto + ORCID + afiliación. Marcado con `TODO`
+      en `paper.md` y `CITATION.cff`. **Solo Lucio.**
+- [ ] **Tag de release** (`v0.1.0`) — no hay tags en el repo. **Solo Lucio.**
 - [ ] Archivar en Zenodo → DOI (añadir a README y CITATION.cff). [repo público ✅ — falta que Lucio active la integración]
+- [ ] **Enviar** en <https://joss.theoj.org/papers/new>, declarando la cronología real de
+      desarrollo (el git log son 2 días; la ciencia es muy anterior). **Solo Lucio.**
 
 ## Diferido / cosmético (no bloquea publicar)
 - [ ] Renombrar `nanocapsule-mvp/` → `studio/` (nombre fósil). RIESGOSO: toca rutas, build-context de Docker, imports → hacerlo con red y verificación.

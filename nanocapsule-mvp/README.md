@@ -1,275 +1,240 @@
-# Nanocapsule Designer MVP
+# VLP Studio (`nanocapsule-mvp`)
 
-Sistema profesional para el diseño y empaquetamiento de enzimas terapéuticas en cápsides virales mediante optimización computacional.
+The **Studio** is the web front end of [VLP Studio](../README.md): a Flask application with
+an integrated 3D viewer (NGL) that drives the enzyme-in-capsid packing engine and the
+Pac-Pore analysis engine, and presents the four gates of the design funnel as five tabs.
 
-## Arquitectura del Sistema
+> **Status (v0.1.0).** The directory name `nanocapsule-mvp` is historical; this is the live
+> Studio. Two gates are real and two are illustrative — see *Status per tab*. The Studio is
+> a **single-user local research server**: it is not hardened, authenticated or queued for
+> multi-user or internet-facing deployment.
 
-### Estructura Modular
+## Status per tab
+
+| Tab | What it does | Status |
+|-----|--------------|--------|
+| **LIBRARY** | Capsid and enzyme catalogue with computed geometry (radius, chains, residues) | Real |
+| **STUDIO 3D** | Packmol packing of enzymes inside the capsid, multi-replica, with 3D preview | Real. The "substrate around the capsid" builder and the MD input preparer generate real geometry and real input files but **do not run** the simulation |
+| **PAC-PORE** | HOLE pore profile on the symmetry axis, substrate cross-section (RDKit), mutant screening (PyMOL), docking (Vina) and radius/affinity correlation | **Real, end to end** — the most mature part. One exception: the quick radius-versus-axis sketch (`/api/pore/profile`) is an analytic placeholder and says so in its own response; the real measurement is `/api/pore/run_hole` |
+| **DE-IMMUNISATION** | Epitope display | **Illustrative**: a static dictionary (`_DEIMMUNO`). No real predictor is wired in. Labelled as illustrative in the interface |
+| **MD ANALYSIS** | RMSD/RMSF-style curves | **Illustrative**: synthetic curves. The real engine ([PackMan](../PackMan.v.1.2)) exists, but its MD has never been run, so there are no trajectories to read |
+
+## Architecture
+
 ```
 nanocapsule-mvp/
 ├── src/
-│   ├── core/           # Lógica de negocio principal
-│   │   ├── capsid.py   # Manejo de cápsides y cálculo de radio
-│   │   ├── cargo.py    # Manejo de enzimas y preparación
-│   │   ├── config.py   # Gestión centralizada de configuración
-│   │   └── experiment.py # Sistema de réplicas experimentales
-│   ├── io/
-│   │   └── structure_fetcher.py # Gestión de estructuras PDB
-│   ├── packing/
-│   │   └── packmol_engine.py    # Motor de empaquetamiento
+│   ├── core/                    # Domain layer
+│   │   ├── capsid.py            # Capsid handling, internal-radius calculation (PyMOL)
+│   │   ├── cargo.py             # Enzyme preparation and centring
+│   │   ├── config.py            # Centralised YAML configuration
+│   │   ├── experiment_manager.py / experiment_runner.py   # Multi-replica experiments
+│   │   └── paths.py             # Single source of truth for paths, incl. the Poromania bridge
+│   ├── services/                # One module per gate (the science orchestration)
+│   │   ├── packing_service.py   # Facade: re-exports the public service API
+│   │   ├── common.py            # Shared helpers and subprocess infrastructure
+│   │   ├── library.py           # LIBRARY tab
+│   │   ├── packing.py           # STUDIO 3D tab
+│   │   ├── pore.py              # PAC-PORE tab (HOLE, screening, docking, cross-section)
+│   │   ├── deimmuno.py          # DE-IMMUNISATION tab (illustrative)
+│   │   └── md.py                # MD ANALYSIS tab (illustrative) + MD input preparation
+│   ├── io/structure_fetcher.py  # Structure library access
+│   ├── packing/parallel_packer.py
 │   └── web/
-│       ├── app.py       # Backend Flask
-│       └── templates/
-│           └── index.html # Interface web con NGL.js
-├── config/
-│   └── default.yaml     # Configuración del sistema
-├── Input/               # Estructuras de entrada
-│   ├── Capsides/       # Cápsides virales
-│   └── Enzimas/        # Enzimas terapéuticas
-└── Output/             # Resultados generados
-    ├── Experiments/    # Experimentos con réplicas
-    └── Generated_PDBs/ # Estructuras empaquetadas
+│       ├── app.py               # Thin HTTP adapter: routes only, no science
+│       ├── templates/studio.html
+│       └── static/js/           # One module per tab
+├── config/default.yaml          # All tunable parameters
+├── Input/{Capsides,Enzimas}/    # Structure library (ships with the repository)
+├── Output/                      # Generated structures and experiments
+├── scripts/fetch_data.sh        # Downloads the heavy structures that are not in git
+└── tests/                       # Smoke tests + scientific golden test
 ```
 
-## Características Principales
+The layering is deliberate: `app.py` is a thin HTTP adapter, all orchestration lives in
+`services/`, and the domain logic lives in `core/`. Adding a gate means adding a module in
+`services/` and re-exporting it from the facade.
 
-### 1. Sistema de Empaquetamiento Molecular
-- **Motor Packmol**: Optimización de posiciones moleculares con restricciones geométricas
-- **Cálculo Automático de Radio Interno**: Análisis PyMOL para determinar espacio disponible
-- **Validación de Colisiones**: Prevención de superposición molecular con exclusión de 10Å
-- **Sistema de 7 Réplicas**: Múltiples intentos con selección del mejor resultado
+**Known architectural overlap:** the Studio reimplemented in Python the pore/screening/
+docking logic that also lives in Poromania (`pore_analyzer.py` and the shell scripts). Both
+work, but the same science exists in two places and can diverge. Any correction has to be
+made deliberately on one side.
 
-### 2. Interfaz Web Interactiva
-- **Visualización 3D en Tiempo Real**: Motor NGL.js integrado
-- **Control de Transparencia**: Ajuste dinámico de opacidad de cápside
-- **Visualización Interior**: Sistema de clipping para explorar el interior
-- **Panel de Secuencias**: Visualización estilo PyMOL de cadenas y residuos
+## Installation
 
-### 3. Gestión de Estructuras
-- **Carga Dinámica**: Soporte para cualquier combinación cápside-enzima
-- **Detección Automática**: Escaneo de directorios Input para estructuras disponibles
-- **Asignación de Cadenas**: IDs únicos para diferenciación visual por colores
-
-### 4. Sistema de Archivos
-- **Anti-Basura**: Limpieza automática de archivos temporales
-- **Descargas ZIP**: Empaquetado de resultados para el usuario
-- **Organización Jerárquica**: Estructura clara de experimentos y réplicas
-
-## Configuración del Sistema
-
-### Parámetros de Empaquetamiento (config/default.yaml)
-```yaml
-packing:
-  internal_radius_default: 90.0  # Radio interno por defecto
-  collision_margin: 2.0          # Margen de colisión
-  exclusion_radius: 10.0         # Distancia mínima entre enzimas
-  tolerance: 2.0                 # Tolerancia Packmol
-  max_violation_threshold: 0.05  # Umbral máximo de violación
-```
-
-### Parámetros de Motores
-```yaml
-engines:
-  packmol:
-    executable: 'packmol'
-    timeout: 300
-  pymol:
-    headless: true
-    quiet: true
-```
-
-## Flujo de Trabajo
-
-### 1. Preparación de Estructuras
-```python
-# Cálculo de radio interno
-capsid = Capsid("capside.pdb")
-radius = capsid.calculate_internal_radius()
-
-# Preparación de enzima
-cargo = Cargo("enzima.pdb")
-cargo.center_structure()
-```
-
-### 2. Empaquetamiento con Réplicas
-```python
-# Sistema de 7 réplicas
-experiment = ExperimentManager("Output/Experiments")
-best_result = experiment.run_experiment(
-    capsid_file="capside.pdb",
-    enzyme_file="enzima.pdb",
-    n_replicas=7
-)
-```
-
-### 3. Visualización Web
-- Acceder a http://localhost:5001
-- Seleccionar cápside y enzima
-- Ajustar número de enzimas a empaquetar
-- Visualizar resultado con controles interactivos
-
-## Controles de Visualización
-
-### Panel Principal
-- **Carga de Estructuras**: Selección de cápside y enzima
-- **Número de Enzimas**: Control deslizante (1-50)
-- **Generar PDB**: Creación de estructura empaquetada
-
-### Visualización Interior
-- **Profundidad de Corte**: Control deslizante (0-100%)
-- **Transparencia**: Ajuste de opacidad de cápside
-- **Rotación Automática**: Activación de giro continuo
-
-### Panel de Secuencias
-- **Mostrar/Ocultar**: Toggle superior estilo PyMOL
-- **Separación por Enzima**: Cada enzima con color único
-- **Información Detallada**: Residuos, átomos, rangos
-
-## Mejoras Implementadas
-
-### Correcciones Técnicas
-- Radio interno con sustracción de 1Å para margen de seguridad
-- Recentrado automático de estructuras antes del cálculo
-- Secuencia correcta de comandos PyMOL para unidades biológicas
-- Prevención de colisiones con validación de distancias
-
-### Optimizaciones de UI
-- Eliminación completa de emojis del sistema
-- Colores únicos por cadena/enzima
-- Panel de secuencias con separación clara
-- Controles simplificados de visualización
-
-## API REST
-
-### Endpoints Principales
-```
-GET  /api/structures        # Lista estructuras disponibles
-GET  /api/radius/{capsid}   # Calcula radio interno
-POST /api/generate_pdb      # Genera PDB empaquetado
-POST /api/experiment/run    # Ejecuta experimento con réplicas
-GET  /api/download/{exp_id} # Descarga resultados en ZIP
-```
-
-## Requisitos del Sistema
-
-### Dependencias Python
-- Flask >= 2.0
-- PyMOL (pymol-open-source)
-- NumPy
-- BioPython
-- PyYAML
-
-### Motores externos (software de terceros)
-
-El Studio **invoca** estos motores como procesos externos (no los redistribuye). Se
-dividen en dos grupos según se puedan o no empaquetar en la imagen Docker:
-
-| Motor | Puerta / uso | Instalación | Licencia | ¿En la imagen Docker? |
-|-------|--------------|-------------|----------|-----------------------|
-| Packmol | Empaquetamiento | `apt install packmol` | libre | ✅ incluido |
-| PyMOL (open-source) | Geometría, mutagénesis | `apt install pymol` | permisiva | ✅ incluido |
-| Open Babel (`obabel`) | Preparación de ligandos | `apt install openbabel` | GPL-2.0 | ✅ incluido |
-| AutoDock Vina (`vina`) | Docking | `apt install autodock-vina` | Apache-2.0 | ✅ incluido |
-| **HOLE** | Pac-Pore (perfil de poro) | manual (Oxford) | **académica, NO redistribuible** | ❌ apórtalo tú |
-| **idock** | Docking alternativo | manual | verificar | ❌ apórtalo tú |
-| **GROMACS** (`gmx`) | Puerta 4 (MD SIRAH) | `apt`/manual | LGPL-2.1 | ❌ no incluido |
-
-> **Por qué HOLE e idock no vienen en la imagen:** su licencia académica **no permite
-> redistribuirlos**, así que hornearlos en una imagen pública violaría sus términos.
-> Debes obtenerlos tú mismo bajo su licencia y aportarlos al contenedor (ver abajo).
-> HOLE: https://www.holeprogram.org/ · GROMACS: https://www.gromacs.org/
-
-Sin HOLE, la puerta **Pac-Pore** no funciona; sin GROMACS, la puerta **Análisis MD**
-(Puerta 4) no corre. El resto del Studio (empaquetamiento, docking Vina) sí funciona.
-
-## Instalación
-
-### Opción A — Docker (recomendada, reproducible)
+Full instructions, including how to supply the non-redistributable engines, are in
+[`docs/installation.md`](../docs/installation.md). In short:
 
 ```bash
-git clone <repository>
-cd nanocapsule-mvp
-docker compose build          # construye nanocapsule-mvp:latest
-docker compose up -d          # arranca en http://localhost:5000
-# verificar: curl http://localhost:5000/api/health  -> {"status":"ok", ...}
+# Docker (recommended, reproducible)
+docker compose build && docker compose up -d     # http://localhost:5000
+
+# Local
+pip install -r requirements.lock
+sudo apt-get install packmol pymol openbabel autodock-vina
+FLASK_DEBUG=0 python3 src/web/app.py             # http://localhost:5000
 ```
 
-La imagen trae Packmol, PyMOL, Open Babel y Vina. Para habilitar Pac-Pore / Puerta 4,
-monta tus binarios de HOLE / GROMACS por volumen (tú aportas la licencia), p.ej. añade
-en `docker-compose.yml` bajo `volumes:`:
+Verify with `curl http://localhost:5000/api/health`, which reports which engines and Python
+dependencies are actually present.
 
-```yaml
-      - /ruta/a/tu/hole:/usr/local/bin/hole:ro     # HOLE que instalaste bajo su licencia
-      - /ruta/a/tu/gmx:/usr/local/bin/gmx:ro        # GROMACS
-```
+### External engines
 
-### Opción B — Local (pip + binarios del sistema)
+The Studio **invokes** these as external processes; it does not redistribute them.
+
+| Engine | Gate / use | Install | Licence | In the Docker image? |
+|--------|------------|---------|---------|----------------------|
+| Packmol | Packing | `apt install packmol` | free (MIT-like) | Yes |
+| PyMOL (open source) | Geometry, mutagenesis | `apt install pymol` | permissive | Yes |
+| Open Babel (`obabel`) | Ligand preparation | `apt install openbabel` | GPL-2.0 | Yes |
+| AutoDock Vina (`vina`) | Docking | `apt install autodock-vina` | Apache-2.0 | Yes |
+| RDKit | SMILES, 3D geometry | pip (in the lock file) | BSD-3-Clause | Yes |
+| **HOLE** | Pac-Pore profile | manual (Oxford) | academic, **not redistributable** | No — you supply it |
+| **idock** | Alternative docking | manual | check terms | No — you supply it |
+| **GROMACS** (`gmx`) | Gate 4 MD | `apt`/manual | LGPL-2.1 | No |
+
+HOLE and idock are not baked into the image because their academic licences do not permit
+redistribution. Without HOLE the Pac-Pore gate does not run; without GROMACS and SIRAH gate
+4 does not run. The rest of the Studio (packing, Vina docking, cross-sections) works without
+them. See [`THIRD_PARTY.md`](../THIRD_PARTY.md).
+
+## Usage
+
+A gate-by-gate walkthrough with concrete commands and payloads is in
+[`docs/usage.md`](../docs/usage.md). The short version:
+
+1. Put capsids in `Input/Capsides/<NAME>/capside.pdb` and enzymes in
+   `Input/Enzimas/<NAME>/enzima.pdb` (the repository already ships BMV, CCMV, MS2 and QB
+   capsids plus four enzymes, including glucocerebrosidase `GCase_1OGS`).
+2. Start the server and open <http://localhost:5000>.
+3. Pick a capsid and an enzyme in **LIBRARY**, pack them in **STUDIO 3D**, then analyse the
+   pore in **PAC-PORE**.
+
+## REST API
+
+All endpoints return JSON unless stated otherwise. Errors return
+`{"error": "<message>"}` with status 400, 404 or 500.
+
+### Health and pages
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/` | Studio interface |
+| GET | `/classic` | Legacy NGL viewer. **Deprecated**: still functional, no longer linked |
+| GET | `/api/health` | `{"status":"ok","engines":{...},"deps":{...}}` — which binaries and Python modules are present |
+
+### Library
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/api/library/capsides` | Available capsids |
+| GET | `/api/library/enzymes` | Available enzymes |
+| GET | `/api/library/combinations` | Valid capsid/enzyme pairs |
+| GET | `/api/library/detail` | Computed detail (radius, chains, residues) for the catalogue |
+
+### Gate 1 — Pac-Pore
+
+| Method | Endpoint | Body / query | Purpose |
+|--------|----------|--------------|---------|
+| GET | `/api/pore/config` | — | Pore analysis configuration |
+| POST | `/api/pore/profile` | `{"capsid": …, "axis": "3-fold"}` | Quick radius-versus-axis sketch. **Illustrative** (an analytic Gaussian constriction) and flagged as `"illustrative": true` in the response. Use `/api/pore/run_hole` for a real profile |
+| GET | `/api/pore/channels` | — | Precomputed channels available from Poromania |
+| GET | `/api/pore/channel` | `?id=…` | Channel geometry as plain text (for the viewer) |
+| GET | `/api/pore/structures` | — | Structures that HOLE can be run on |
+| POST | `/api/pore/run_hole` | `{"structure": "BMV/poronatural"}` | **Runs HOLE for real** on a Poromania model and returns the measured profile (`"illustrative": false`) |
+| POST | `/api/pore/screen` | `{"structure": …, "substrate_radius": …}` | Screen pore mutants against a substrate radius |
+| POST | `/api/pore/mutant` | `{"structure": …, "mutations": …}` | Build and evaluate one specific mutant |
+| POST | `/api/pore/dock` | `{"structure": …, "smiles": …}` | Dock a substrate and correlate affinity with pore radius |
+| POST | `/api/pore/section` | `{"smiles": …}` | Minimum cross-section radius of a substrate (RDKit) |
+
+### Gate 2 — packing
+
+| Method | Endpoint | Body | Purpose |
+|--------|----------|------|---------|
+| POST | `/api/capsid/radius` | `{"capsid": …}` | Internal radius via PyMOL (cached) |
+| POST | `/api/experiment/run` | `{"capsid": …, "enzyme": …, "n_replicas": …, "run_packing": false}` | With `run_packing=false` it only confirms parameters; with `true` it runs the multi-replica Packmol experiment and returns best/mean/stdev/median/worst |
+| POST | `/api/preview/enzymes` | `{"capsid": …, "enzyme": …, "n_enzymes": 10, "radius": 50.0, "save_file": false}` | Geometry preview without running Packmol. Returns a PDB as **plain text**, not JSON |
+| POST | `/api/preview/substrate` | `{"capsid": …, "n": 60, "smiles": …, "save_file": false}` | Substrate shell preview (RDKit). Returns a PDB as **plain text** |
+
+### Gates 3 and 4 (illustrative) and MD preparation
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/api/deimmuno/data` | Epitope data — **static dictionary, illustrative** |
+| GET | `/api/md/examples` | Example MD curves — **synthetic, illustrative** |
+| GET | `/api/md/box` | `?capsid=…` — simulation box dimensions for a capsid (real geometry) |
+| POST | `/api/md/prepare` | `{"capsid": …, "n_substrate": 40, "smiles": …}` — writes real MD input files; **does not run the simulation** |
+
+### Structures, files and downloads
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/api/structure/<type>/<name>` | Structure metadata |
+| GET | `/api/file/<type>/<name>` | Raw structure file |
+| GET | `/api/result/pdb` | Last generated packed structure |
+| GET | `/api/files/generated` | List generated files |
+| POST | `/api/files/cleanup` | Delete temporary files |
+| GET | `/api/download/single/<filename>` | Download one file |
+| POST | `/api/download/experiment-zip` | `{"capsid": …, "enzyme": …}` — ZIP of every generated structure for that pair plus the input structures |
+
+## Configuration
+
+Every tunable parameter lives in `config/default.yaml`; nothing scientific is hard-coded in
+the routes. The values that matter most:
+
+| Key | Default | Meaning |
+|-----|---------|---------|
+| `packing.internal_radius_default` | 90.0 Å | Fallback radius when PyMOL cannot compute one |
+| `packing.collision_margin` | 2.0 Å | Subtracted from the internal radius before packing |
+| `packing.exclusion_radius` | 5.0 Å | Minimum distance between packed enzymes |
+| `packing.tolerance` | 2.0 Å | Packmol tolerance |
+| `packing.max_violation_threshold` | 0.10 Å | Above this, a replica counts as a collision |
+| `engines.packmol.seed_base` | 1234567 | Seed base; replica *n* uses `seed_base + n`, which makes packing reproducible |
+| `engines.packmol.timeout` | 300 s | Packmol timeout |
+| `experiments.n_replicas` | 10 | Replicas per experiment |
+| `web.port` / `web.host` | 5000 / 0.0.0.0 | Flask bind address |
+
+`engines.packmol.use_random_seeds: false` is what keeps experiments reproducible; setting it
+to `true` trades reproducibility for independent sampling.
+
+## Testing
 
 ```bash
-git clone <repository>
-cd nanocapsule-mvp
-pip install -r requirements.txt
-sudo apt-get install packmol pymol openbabel autodock-vina   # Linux
-# HOLE, idock y GROMACS: instálalos aparte bajo su licencia y ponlos en el PATH
-python src/web/app.py         # http://localhost:5000
+python -m pytest -q
 ```
 
-> **Interfaz `/classic` (deprecated):** existe un visor NGL antiguo servido en
-> `/classic`. Se conserva funcional por compatibilidad, pero **está deprecado**: ya no
-> se enlaza desde el Studio y puede retirarse en el futuro. Usa la interfaz principal
-> del Studio en `/`.
+22 fast tests: 17 smoke tests (the app boots, every route is wired, service functions return
+the expected shape) and 5 golden tests that freeze known numerical results of the substrate
+cross-section calculation, so a scientific regression is caught even when nothing crashes.
 
-## Uso Básico
+The suite deliberately **does not** exercise the slow binary engines (HOLE, PyMOL, Vina,
+Packmol): it validates wiring and shape, not scientific validity. Both jobs run in CI.
 
-1. **Preparar Estructuras**:
-   - Colocar cápsides en `Input/Capsides/`
-   - Colocar enzimas en `Input/Enzimas/`
+## Reproducibility notes
 
-2. **Iniciar Servidor**:
-   ```bash
-   python src/web/app.py
-   ```
+- `requirements.lock` pins exact versions, including transitive ones; Docker and CI install
+  from it. `requirements.txt` holds the human-readable direct dependencies. Regenerate the
+  lock with `pip-compile --strip-extras requirements.txt`.
+- Packing is geometric and deterministic under a fixed seed base, which makes it the most
+  trustworthy numerical output in the project.
+- `scripts/fetch_data.sh` downloads the heavy P22 capsid (RCSB 5UU5) that is excluded from
+  git, so a fresh clone can be brought to a complete state.
 
-3. **Acceder a Interface**:
-   - Abrir navegador en http://localhost:5000
+## Known limitations
 
-4. **Generar Empaquetamiento**:
-   - Seleccionar estructuras
-   - Ajustar parámetros
-   - Generar y visualizar resultado
+Recorded honestly rather than hidden; the authoritative list is [`ESTADO.md`](../ESTADO.md).
 
-## Estadísticas del Sistema
+- Gates 3 and 4 are illustrative in the interface; their real engines are not wired in.
+- Gate 4's MD has never been run, so there are no trajectories or analysis data.
+- Three open scientific decisions (`CIENCIA-1/2/3` in `ESTADO.md` §4b) are deliberately
+  unresolved pending the author's judgement and an MD run: the ±1 Å internal-radius margin,
+  the coarse-grained vs all-atom resolution in `sustratinaitor`, and PackMan's heating
+  protocol.
+- The internal radius is only cached for some capsids; others fall back to 90 Å.
+- Single-user server: no authentication, no job queue, no sandboxing of subprocess inputs.
 
-- **Líneas de Código**: ~2,500 (refactorizado desde 1,113)
-- **Módulos**: 8 componentes independientes
-- **Cobertura**: Cápsides virales y enzimas terapéuticas
-- **Performance**: 7 réplicas en <5 minutos típicamente
+## License
 
-## Notas Técnicas
-
-### Cálculo de Radio Interno
-El sistema utiliza PyMOL para calcular el radio interno disponible:
-1. Recentra la cápside en origen
-2. Calcula centro de masa
-3. Encuentra radio máximo de átomos
-4. Resta 1Å de margen de seguridad
-
-### Sistema de Réplicas
-Cada experimento ejecuta 7 réplicas independientes:
-- Diferentes semillas aleatorias
-- Selección automática del mejor resultado
-- Estadísticas de convergencia
-
-### Prevención de Colisiones
-- Exclusión radius: 10Å entre enzimas
-- Validación pre-empaquetamiento
-- Detección de superposiciones
-
-## Licencia
-
-GNU AGPLv3 o posterior — copyleft fuerte, cubre también el uso como servicio web. Ver
-[`LICENSE`](../LICENSE) y [`THIRD_PARTY.md`](../THIRD_PARTY.md). Copyright (C) 2026 najera-maldonado.
-
-## Autores
-
-Sistema desarrollado para investigación en nanocápsulas terapéuticas.
+GNU AGPLv3 or later — strong copyleft that also covers use as a network service. See
+[`LICENSE`](../LICENSE) and [`THIRD_PARTY.md`](../THIRD_PARTY.md). Copyright (C) 2026
+najera-maldonado.
