@@ -1,5 +1,10 @@
 # Arquitectura de Comunicación Backend-Frontend
 
+> ⚠️ **DOCUMENTO FÓSIL / NO NORMATIVO (aviso añadido el 2026-10-05).** Anterior a la auditoría
+> de motores del 2026-10-04 y puede describir endpoints o módulos que no existen. Mapa
+> vigente: `ESTADO.md`; correcciones: `CORRECCIONES_DOCUMENTACION.md`. Se conserva como
+> registro histórico.
+
 ## Resumen General
 
 El sistema utiliza una arquitectura REST tradicional con Flask (backend) y JavaScript vanilla (frontend). No hay WebSockets ni polling, toda la comunicación es mediante llamadas HTTP síncronas request-response.

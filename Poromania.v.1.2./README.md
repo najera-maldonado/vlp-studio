@@ -5,12 +5,18 @@ pipeline that identifies the residues lining a capsid pore, generates mutants of
 positions systematically, measures the resulting pore geometry with HOLE2, and docks a
 substrate into every variant so that pore radius can be correlated with binding affinity.
 
-> **Status:** this is the **most mature engine in the project — real and end to end.** The
-> pore profile, the mutant screen and the docking all run on real structures and produce
-> real numbers. Two caveats are recorded honestly: the pipeline carries known dead code
-> (`pore_analyzer_backup.py`, `1run_hole_old.sh`, `test_*.pml`, a hand-duplicated HOLE
-> runner inside each `mutants/*/scripts/`), and the analysis parameters are **tuned for the
-> target structure**, not auto-detected for arbitrary input (see *Fixed parameters*).
+> **Status: the pipeline runs end to end, but its only committed result is not valid and the
+> pipeline is not reproducible as committed.** An independent audit (2026-10-04) found that
+> the one pore profile in this repository, `mutants/mut_129HIS_132GLY/` (minimum radius
+> 1.92 Å), was measured on a structure that is **byte-identical to the wild type**
+> (`cmp mutants/WT.pdb mutants/mut_129HIS_132GLY/receptor.pdb` → identical; positions 129 and
+> 132 are still SER and VAL in all five subunits), with the HOLE seed point **7.59 Å off the
+> pentamer's symmetry axis** and the axis vector **19.3° off**, so the constriction it reports
+> lies 11.8 Å from the real pore axis. That 1.92 Å value must not be cited as a mutant result
+> or as the pore radius. See *Audit findings* below and the `INVALIDO.md` file in that
+> mutant's directory. Dead code is also present (`pore_analyzer_backup.py`, `test_*.pml`, a
+> hand-duplicated HOLE runner inside each `mutants/*/scripts/`); note that `1run_hole_old.sh`
+> is **not** merely dead code: it is the version that validated the channel (see below).
 
 The Studio consumes this engine directly: it reads `modelos/` and `mutants/*/hole/` through
 `paths.POROMANIA_DIR`. Note that the Studio also **reimplements** part of this science in
@@ -19,25 +25,41 @@ diverge. See the architectural note in [the Studio README](../nanocapsule-mvp/RE
 
 ## What it does
 
-**Pore identification.** Loads a capsid pore structure, computes the geometric pore centre
-from CA atoms, and uses an expandable probe sphere to select the residues lining the pore by
-radial distance. Equivalent positions are detected across all protein chains so that
-mutations stay symmetric. Works either through the PyMOL GUI or from the terminal.
+**Pore identification.** Loads a capsid pore structure, computes a pore centre from CA atoms
+of the user-selected residues, and uses an expandable probe sphere to select the residues
+lining the pore by radial distance. Equivalent positions are detected across all protein
+chains so that mutations stay symmetric. Works either through the PyMOL GUI or from the
+terminal. **Known defect:** the centre is the mean of the selected CA atoms of *one*
+subunit (`pore_analyzer.py:415-442` keeps only the first match of `resi + chain`, which is
+ambiguous when subunits share a chain ID), and the axis is the 4.4 Å chord from the first CA
+to that centroid (`:485-497`). On the committed run this put the HOLE seed 7.59 Å off the
+symmetry axis and the axis 19.3° off. The Studio's `_pore_axis` (second-moment tensor) gets
+the pentamer axis exactly and is the implementation to converge on.
 
 **Systematic mutagenesis.** A PyMOL script applies each mutation set simultaneously to every
 chain and writes one `mutants/mut_*/` directory per variant, each with its own `receptor.pdb`
 and its own copy of the analysis scripts, so variants can be processed independently and in
 parallel. Mutations can be random (exploratory) or specified by hand (hypothesis-driven).
+**Known defect:** nothing checks that the mutation was applied. The committed mutant was not
+mutated (see *Status*), and the pipeline carried on and produced a profile for it.
 
-**Quantitative HOLE2 analysis.** Runs HOLE2 on every mutant with identical parameters, which
-is what makes the variants comparable, and produces a pore radius profile, the minimum radius
-and the location of the constriction, plus publication-quality plots.
+**Quantitative HOLE2 analysis.** Runs HOLE2 on every mutant with the same `cpoint`, `cvect`,
+`sample 0.2` and `endrad 10`, and produces a pore radius profile, the minimum radius and the
+location of the constriction, plus plots. **Known defects:** the HOLE deck sets no `rseed`
+(the committed `hole_out.txt` records a clock-chosen seed, 2093611), so two runs on the same
+input need not agree; the parsers drop every point with radius ≤ 0.5 Å, so an occluded pore
+is reported as open; and the current `scripts/1run_hole.sh` lost the channel-validation
+check that `1run_hole_old.sh:118-151` had (constriction farther than 5 Å from the declared
+centre → warning). On the committed run that distance is 10.18 Å.
 
 **Docking from SMILES.** Converts a SMILES string to an optimised 3D structure with RDKit,
-protonates and converts it with Open Babel, and docks it into every mutant. It handles
-large, flexible ligands — glucosylceramide, the Gaucher substrate, has 125 atoms. The result
-is a comparison of binding affinities across variants, which can be correlated against the
-HOLE2 geometry.
+protonates and converts it with Open Babel, and docks it into every mutant with idock. It
+handles large, flexible ligands — glucosylceramide, the Gaucher substrate, has 125 atoms. The
+result is a comparison of binding affinities across variants. **Known defects:** idock runs
+without a seed and with `threads = $(nproc)`, so results are not reproducible; the Studio
+uses AutoDock Vina (`--seed 1`) instead, and idock and Vina scores are **not comparable**;
+`smiles_docking_pipeline.py` reports the first line of `poses.txt` as the best score, which
+is not always the minimum.
 
 **Figures.** Electrostatic surface images (APBS) and automatically assembled comparative
 triptychs.
@@ -153,7 +175,12 @@ Affinity scores appear in `mutants/*/docking/Results/poses.txt`, and the best po
 
 ```
 Poromania.v.1.2./
-├── poronatural.pdb                 # Reference pore structure
+├── poronatural.pdb                 # Structure loaded by 1crear_mutantes.pml. NOTE: this is the
+│                                   # CCMV trimer (3574 atoms, chains A/B/C, identical to
+│                                   # modelos/CCMV/poronatural.pdb), NOT the structure that produced
+│                                   # the committed result (which is modelos/BMV/poro5fold.pdb
+│                                   # centred: 5735 atoms, chains A/B). The script's
+│                                   # `chains = ['A','B']` only makes sense for poro5fold.
 ├── modelos/                        # Capsid models consumed by the Studio
 │   ├── BMV/                        # capside.pdb, poronatural.pdb, poro3fold, poro5fold
 │   └── CCMV/
@@ -171,8 +198,9 @@ Poromania.v.1.2./
 ├── 5imagenescargasporo.sh          # APBS images
 ├── 6generador_triptico.sh          # Comparative figures
 ├── mutants/                        # Output, one directory per variant
-│   ├── WT.pdb                      # Wild-type reference
-│   └── mut_*/
+│   ├── WT.pdb                      # Wild-type reference (= modelos/BMV/poro5fold.pdb centred)
+│   └── mut_*/                      # Only mut_129HIS_132GLY is committed, and it is INVALID:
+│       │                           # its receptor.pdb is byte-identical to WT.pdb (see INVALIDO.md)
 │       ├── receptor.pdb            # Mutant structure
 │       ├── pore_center.txt, pore_vector.txt, selected_positions.txt
 │       ├── hole/resultados/        # hole_profile.tsv, perfil_*.png
@@ -204,15 +232,44 @@ Inputs: protein structures in PDB format, ligands as SMILES strings. Outputs: st
 The pipeline was tuned for one target structure, and some parameters are hard-coded rather
 than derived from the input:
 
-- The pore centre and the HOLE axis vector are fixed per mutant
-  (`pore_center.txt`, `pore_vector.txt`), which is exactly what makes variants comparable
-  but means a new structure needs them re-derived.
-- The mutagenesis script assumes the target's chain architecture.
-- The pore axis is currently defined in more than one place in the codebase; see the dead
-  code note at the top and `ESTADO.md` §4.
+- The pore centre and the HOLE axis vector are written per mutant
+  (`pore_center.txt`, `pore_vector.txt`). Using the same values across mutants is what makes
+  variants comparable, **provided the values are right**: on the committed run they are not
+  (centre 7.59 Å off axis, vector 19.3° off; see *Audit findings*).
+- The mutagenesis script assumes the target's chain architecture, and `resi + chain` does not
+  identify a residue on `poro5fold`, where the five subunits all carry chain `A` and differ
+  only in `segi`.
+- The pore axis is defined in four places in the codebase (`pore_analyzer.py`,
+  `1run_hole.sh`, `1run_hole_old.sh`, Studio `pore.py`); see `ESTADO.md` §4.
 
 Keeping HOLE2 parameters identical across mutants is a requirement, not a convenience: a
 profile computed on a different axis is not comparable with the others.
+
+## Audit findings (2026-10-04)
+
+From `AUDITORIA_PORO.md` (branch `claude/audit-poro-engine-giea7e`), all reproducible without
+HOLE or PyMOL; the consolidated repair plan is `HOJA_DE_RUTA.md` (branch
+`claude/consolidate-audit-roadmap-k82rek`), tasks PO-1 to PO-11.
+
+| ID | Finding | Check it yourself |
+|----|---------|-------------------|
+| PORO-01 | The committed "mutant" is the wild type: `mut_129HIS_132GLY/receptor.pdb` ≡ `WT.pdb`; residues 129/132 are SER/VAL in all 5 subunits | `cmp mutants/WT.pdb mutants/mut_129HIS_132GLY/receptor.pdb` |
+| PORO-02 | The result cannot be regenerated from the committed inputs: `1crear_mutantes.pml` loads `poronatural.pdb` (CCMV trimer), but `WT.pdb` is `modelos/BMV/poro5fold.pdb` centred | `grep -c ^ATOM poronatural.pdb mutants/WT.pdb modelos/BMV/poro5fold.pdb` → 3574 / 5735 / 5735 |
+| PORO-03 | HOLE seed point 7.59 Å off the C5 axis, axis vector 19.29° off, constriction traced 11.76 Å off axis | script in the audit, §3.3 |
+| PORO-04 | Channel validation existed in `1run_hole_old.sh:118-151` and is absent from the live `1run_hole.sh` | `diff scripts/1run_hole.sh scripts/1run_hole_old.sh` |
+| PORO-05 | No `rseed` in the HOLE deck | `grep rseed scripts/1run_hole.sh` → nothing |
+| PORO-10 | `radio > 0.5` filter in `2out_tsv.py:22` hides occlusion (93 of 268 sphere records are ≤ 0.5 Å) | `awk` over `hole_spheres.pdb` |
+| PORO-12 | `1run_hole.sh:55` never prints the minimum radius (`$NF` is `angstroms.`) | run the line on `hole_out.txt` |
+| PORO-14 | idock without seed; `threads=$(nproc)`; idock vs Vina not comparable | `5docking.sh:56-72` |
+| PORO-17 | `CLAUDE.md` here documents a `cpoint (219.21, 171.38, 312.96)` that matches no committed run, and cites `automated_test.py` / `clickaqui.sh`, which do not exist | `ls` |
+
+The audit also notes what is right and should be kept: the shared `scripts/vdwradii.lib`,
+the Studio's `rseed 1`, both profile parsers agreeing on the committed file (1.915 Å at
+z = −15.382), and `substrate_section` in the Studio as the pattern to imitate.
+
+Until PO-3/PO-4/PO-7 of the repair plan are done (verified mutagenesis, a single channel
+definition, and a real re-screen on `BMV/poro5fold` with provenance), **no pore radius or
+mutant effect from this engine should be quoted**.
 
 ## Contributing and support
 

@@ -265,9 +265,9 @@ and its honest execution status:
 
 | Engine | Requirements | Status |
 |--------|--------------|--------|
-| [Poromania](../Poromania.v.1.2./README.md) | PyMOL, RDKit, Open Babel, HOLE2, idock, pandas, matplotlib; APBS for figures | Real, end to end |
-| [PackMan](../PackMan.v.1.2/README.md) | AMBER (`pmemd.cuda`, `tleap`), SIRAH, cpptraj, CUDA GPU | Protocol complete, MD never run |
-| [sustratinaitor](../sustratinaitor/README.md) | Packmol, AmberTools (`antechamber`, `sqm`, `tleap`), SIRAH | Stages 1–3 done, stage 4 not run |
+| [Poromania](../Poromania.v.1.2./README.md) | PyMOL, RDKit, Open Babel, HOLE2, idock, pandas, matplotlib; APBS for figures | Runs end to end; its only committed result is invalid (see its README) |
+| [PackMan](../PackMan.v.1.2/README.md) | AMBER (`pmemd.cuda`, `tleap`), SIRAH, cpptraj, CUDA GPU | MD never run; committed inputs are 10 ps stubs and the preparation path is broken (see its README) |
+| [sustratinaitor](../sustratinaitor/README.md) | Packmol, AmberTools (`antechamber`, `sqm`, `tleap`), SIRAH | Stages 1–3 ran; stage 4 not run and not runnable as committed |
 
 Continuous integration verifies that all three engines' Python parses (`compileall`), which
 catches syntax breakage without needing the heavy binaries.
@@ -290,16 +290,19 @@ does.
 **Pac-Pore returns an error about HOLE.** Expected without HOLE on the `PATH`. Confirm with
 `/api/health`, then install or mount it as described above.
 
-**Packmol times out.** The default timeout is 300 s (`engines.packmol.timeout` in
-`config/default.yaml`). Whole capsids with many enzymes can exceed it; raise the value or
-reduce the number of replicas.
+**Packmol times out.** `engines.packmol.timeout` in `config/default.yaml` says 300 s, but the
+code does not read it: the timeout is hard-coded to 90 s in
+`src/packing/parallel_packer.py` (audit P-19), and a timed-out attempt is counted as "does
+not fit", so the capacity you get depends on your CPU. Until task PK-4 is done, change the
+value in the source if you need a longer timeout.
 
 **Port 5000 is already in use.** Change the `web.port` value in `config/default.yaml` for a
 local install, or the port mapping in `docker-compose.yml` for Docker.
 
-**A packing experiment gives different results between runs.** Check
-`engines.packmol.use_random_seeds` in `config/default.yaml`. It must be `false` for
-reproducible packing; with `seed_base: 1234567`, replica *n* uses `seed_base + n`.
+**A packing experiment gives different results between runs.** Expected today:
+`engines.packmol.use_random_seeds` and `seed_base` in `config/default.yaml` are not read by
+the code (audit P-05), so every replica draws a random seed. The seed each replica used is in
+its `metadata.json`. Fixing this is task PK-4 of the repair plan.
 
 ## Uninstalling
 

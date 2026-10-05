@@ -6,21 +6,31 @@ organised as a **four-filter funnel**: each gate asks whether a candidate surviv
 physical criterion before it is allowed through to the next.
 
 > **Status:** research software under early development (v0.1.0), maintained by a single
-> author. Part of the science is implemented end to end and part is illustrative only
-> (see *Status per gate* below). This is **not** a clinical product.
+> author. The engines are wired and run, but **no scientific result in this repository is
+> validated yet** (see *Status per gate* below and the audit note that follows). This is
+> **not** a clinical product.
+
+> **Audit note (2026-10-04/05).** Four independent audits of the engines, run after the
+> first version of this documentation was written, found that several earlier claims were
+> not supported by the code and data in the repository. The claims have been corrected
+> throughout the public documentation; every correction, with its evidence, is listed in
+> [`CORRECCIONES_DOCUMENTACION.md`](CORRECCIONES_DOCUMENTACION.md). The repair plan
+> consolidating all audit findings lives in `HOJA_DE_RUTA.md` on the branch
+> `claude/consolidate-audit-roadmap-k82rek`.
 
 ## The four-gate funnel
 
 | Gate | Question | Engine | Status |
 |------|----------|--------|--------|
-| **1 · Through** | Does the substrate fit through the capsid pore? | HOLE2 + mutant screening (PyMOL) + docking (Vina) — [Poromania](Poromania.v.1.2.) | Real, end to end |
-| **2 · Inside** | Does the enzyme pack inside the capsid? | Packmol + PyMOL — [Studio](nanocapsule-mvp) | Real (multi-replica packing) |
+| **1 · Through** | Does the substrate fit through the capsid pore? | HOLE2 + mutant screening (PyMOL) + docking (Vina) — [Poromania](Poromania.v.1.2.) | Engine runs end to end; **result under review**. The only committed pore profile was measured on an unmutated structure with the HOLE seed point 7.6 Å off the symmetry axis, so it does not describe the pore it is filed under |
+| **2 · Inside** | Does the enzyme pack inside the capsid? | Packmol + PyMOL — [Studio](nanocapsule-mvp) | Engine runs; **capacity number under review**. The acceptance criterion never fires (it looks for a line Packmol does not write) and the fallback accepts the capsid alone, so the reported capacity is not yet a measurement. Seeds are random in the production path |
 | **3 · Outside** | Can the enzyme be de-immunised? | (real engine pending; illustrative today) | Illustrative |
-| **4 · Survives** | Does the assembly hold up under molecular dynamics? | Coarse-grained SIRAH MD — [PackMan](PackMan.v.1.2) | Protocol complete, MD never run |
+| **4 · Survives** | Does the assembly hold up under molecular dynamics? | Coarse-grained SIRAH MD — [PackMan](PackMan.v.1.2) | **MD never run, and not runnable as committed**: the automated path builds an invalid topology (no hydrogens, no `TER` records) and the committed inputs total ~240 ps, not the 15/35 ns their titles state |
 
 The **Studio** (3D web interface) wires gates 1 and 2 together interactively. Gates 3 and 4
 are represented in the interface in illustrative form while their real engines are being
-connected; the interface labels them as such.
+connected; the interface labels them as such. The MD tab's synthetic curves carry numeric
+captions ("RMSD 2.8 Å", "17 666 K") that do not come from any simulation.
 
 ## Components (engines)
 
@@ -75,11 +85,17 @@ user-facing documentation. `ESTADO.md` is the authoritative map of what actually
 
 - **Pinned environment:** `nanocapsule-mvp/requirements.lock` (exact versions, generated
   with `pip-compile`; Docker and CI both install from it).
-- **Continuous integration:** GitHub Actions runs smoke tests, a scientific golden test
-  and lint on every push and pull request
-  ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
-- **Deterministic packing:** Packmol runs with a fixed seed base (`config/default.yaml`),
-  so a packing experiment repeats bit for bit on the same inputs.
+- **Continuous integration:** GitHub Actions runs smoke tests, a golden test and lint on
+  every push and pull request ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
+  The golden test freezes the substrate cross-section calculation of gate 1
+  (`substrate_section`, RDKit). **No test covers the packing engine** (radius, Packmol
+  input, acceptance criterion, statistics or seeds).
+- **Packing seeds are not yet deterministic.** `config/default.yaml` declares
+  `engines.packmol.seed_base` and `use_random_seeds`, but no module reads them: the
+  production path (`experiment_runner.py` → `run_parallel_replicas`) passes no seed base and
+  each replica draws a random seed. The seed actually used is written to each replica's
+  `metadata.json`, so a past run can be identified, but a run cannot be declared in advance
+  from the configuration. Fixing this is task PK-4 of the repair plan.
 - **Heavy input data:** the default structure library travels in the repository; the large
   P22 capsid is fetched on demand with `nanocapsule-mvp/scripts/fetch_data.sh`.
 
@@ -89,6 +105,9 @@ user-facing documentation. `ESTADO.md` is the authoritative map of what actually
 cd nanocapsule-mvp
 python -m pytest -q      # 22 fast tests; does not exercise the heavy engines
 ```
+
+The 22 tests pass with every defect listed in the audit note above present: they validate
+wiring and the gate 1 cross-section, not the packing or pore engines.
 
 ## Contributing and support
 
@@ -105,9 +124,13 @@ later** (see [`LICENSE`](LICENSE)) — strong copyleft: any modified version mus
 **including when it is offered as a network service**. Copyright (C) 2026
 najera-maldonado.
 
-The third-party scientific engines that the Studio **invokes** (and does not redistribute)
-keep their own licences; some of them (HOLE, NetMHCIIpan) are not redistributable and must
-be supplied by the user — details in [`THIRD_PARTY.md`](THIRD_PARTY.md).
+The third-party scientific engines that the Studio **invokes** keep their own licences;
+some of them (HOLE, NetMHCIIpan) are not redistributable and must be supplied by the user —
+details in [`THIRD_PARTY.md`](THIRD_PARTY.md). One exception to "not redistributed" must be
+stated: the repository currently versions a copy of the **SIRAH 2.3** force-field
+distribution (146 files under `PackMan.v.1.2/archivos_dm_cg/sirah_x2.3_24-07.amber/`,
+including its GPL-licensed `tools/`). Whether to keep that bundle or replace it with a
+download step is an open licensing decision (DC-5 in the repair plan).
 
 ## How to cite
 

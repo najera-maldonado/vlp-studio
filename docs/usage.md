@@ -30,14 +30,17 @@ an assembly that the substrate cannot even enter.
 
 | Gate | Question | Where you run it | Status |
 |------|----------|------------------|--------|
-| 1 · Through | Does the substrate fit through the capsid pore? | Studio PAC-PORE tab, or [Poromania](../Poromania.v.1.2./README.md) directly | Real, end to end |
-| 2 · Inside | Does the enzyme pack inside the capsid? | Studio STUDIO 3D tab | Real |
+| 1 · Through | Does the substrate fit through the capsid pore? | Studio PAC-PORE tab, or [Poromania](../Poromania.v.1.2./README.md) directly | Engine runs end to end; result under review (see the Poromania README's audit findings) |
+| 2 · Inside | Does the enzyme pack inside the capsid? | Studio STUDIO 3D tab | Engine runs; the capacity number is not yet a validated measurement (see the Studio README's audit findings) |
 | 3 · Outside | Can the enzyme be de-immunised? | Studio DE-IMMUNISATION tab | Illustrative only |
-| 4 · Survives | Does it hold up under molecular dynamics? | [PackMan](../PackMan.v.1.2/README.md) and [sustratinaitor](../sustratinaitor/README.md) | Protocol complete, MD never run |
+| 4 · Survives | Does it hold up under molecular dynamics? | [PackMan](../PackMan.v.1.2/README.md) and [sustratinaitor](../sustratinaitor/README.md) | MD never run; committed inputs are stubs, not a runnable protocol |
 
-Gates 1 and 2 give you real numbers today. Gate 3 is a placeholder. Gate 4 has a complete,
-runnable protocol, but nobody has executed it yet, so the Studio tab shows example curves
-rather than results.
+Gates 1 and 2 run real engines and return numbers today, but **do not quote those numbers as
+results yet**: an independent audit (2026-10-04) found that gate 2's convergence check never
+fires and gate 1's only committed profile is invalid. Gate 3 is a placeholder. Gate 4 has
+never been executed and cannot be from the committed files, so the Studio tab shows
+example curves rather than results. The corrections, with evidence, are in
+[`CORRECCIONES_DOCUMENTACION.md`](../CORRECCIONES_DOCUMENTACION.md).
 
 ## Telling real output from illustrative output
 
@@ -124,7 +127,7 @@ curl -s -X POST http://localhost:5000/api/pore/section \
 
 RDKit embeds the molecule in 3D with a fixed seed, aligns it by principal component
 analysis and reports the minimum cross-sectional radius in ångström. The seed is fixed, so
-this number is reproducible; the project's golden tests pin it to 0.2 Å precisely so that a
+this number is reproducible; the project's golden tests pin it to 0.2 Å so that a
 future change cannot move it silently.
 
 Glucose is used here as the headgroup proxy. For the real substrate, pass the full
@@ -277,8 +280,10 @@ curl -s -X POST http://localhost:5000/api/experiment/run \
   -d '{"capsid": "BMV_IJS9", "enzyme": "GCase_1OGS", "n_replicas": 10, "run_packing": true}'
 ```
 
-Packmol is stochastic, so one run is not an answer. The experiment runs *n* replicas, each
-with seed `seed_base + n`, and reports the distribution rather than a single figure:
+Packmol is stochastic, so one run is not an answer. The experiment runs *n* replicas and
+reports the distribution rather than a single figure. **Seeds:** today each replica draws a
+random seed (`experiment_runner.py` does not pass the configured `seed_base`); the seed used
+is written to `replica_N/metadata.json`, so keep that file if you need to repeat a run.
 
 | Field | Meaning |
 |-------|---------|
@@ -289,14 +294,26 @@ with seed `seed_base + n`, and reports the distribution rather than a single fig
 | `experiment_dir`, `best_file` | Where the output was written |
 | `all_results` | Per-replica detail |
 
-Report the distribution, not just `best_result`: the spread is what tells you whether the
-packing number is robust. A replica counts as converged only if its worst distance violation
-stays under `packing.max_violation_threshold` (0.10 Å) and enzymes keep at least
-`packing.exclusion_radius` (5 Å) between them.
+Report the distribution, not just `best_result`: `best_result` is a maximum over replicas
+and grows with the number of replicas you ask for.
 
-Because seeding is deterministic by default, re-running the same experiment on the same
-inputs reproduces the same numbers. This is the most trustworthy quantitative output in the
-project: the calculation is geometric, deterministic and covered by a golden test.
+**Read this before trusting the numbers.** The audit of 2026-10-04 found that the
+convergence check does not work as the configuration implies: the code looks for the log
+line `Maximum distance violation:`, which Packmol never writes (it writes `Maximum violation
+of target distance:`), so `packing.max_violation_threshold` has no effect; the fallback then
+accepts any output with at least 10 000 atom lines, which the capsid alone satisfies; and the
+number of enzymes actually placed is never counted. With a Packmol double that places zero
+enzymes the engine reported 100 enzymes, σ = 0.00. Until tasks PK-2 to PK-5 of the repair
+plan are done, verify a result yourself: count the atoms of `best_packing.pdb` against
+`capsid + n × enzyme`, read the real violation in the replica's Packmol log, and treat a
+σ of 0.00 across replicas as a warning sign, not as convergence. `packing.exclusion_radius`
+(5 Å) is a per-atom radius, so Packmol enforces 10 Å between atoms of different enzymes;
+the capacity depends strongly on that choice.
+
+Re-running the same experiment does **not** currently reproduce the same numbers, because
+the seeds are random (see above). The calculation is geometric, but it is not deterministic
+in the production path and it is not covered by any test; the golden test in the repository
+covers the gate 1 cross-section.
 
 ### Step 4 — retrieve the structure
 
@@ -416,8 +433,10 @@ recoverable.
 2. **Configuration.** `config/default.yaml` holds every scientific parameter. Keep a copy of
    it alongside your results; it is a small text file and it is the difference between a
    reproducible run and a number with no provenance.
-3. **Seeding.** Keep `engines.packmol.use_random_seeds: false`. Replica *n* then uses
-   `seed_base + n` (`seed_base: 1234567` by default), and the whole experiment repeats.
+3. **Seeding.** `engines.packmol.seed_base` and `use_random_seeds` exist in the YAML but are
+   **not read by the code yet** (task PK-4). Until then, the only record of a replica's seed
+   is `replica_N/metadata.json`; keep it with the results. Passing `seed_base` explicitly to
+   `ParallelPacker.run_parallel_replicas` from Python does give `seed_base + n` per replica.
 4. **Data.** The default library is in the repository; `scripts/fetch_data.sh` recovers the
    heavy structures that are not.
 
@@ -427,7 +446,10 @@ Then verify the installation still behaves as expected:
 cd nanocapsule-mvp && python -m pytest -q
 ```
 
-The golden tests in `tests/test_golden_science.py` are the relevant ones for scientific
-reproducibility: they freeze known substrate cross-section values with a 0.2 Å tolerance,
-which absorbs platform noise in RDKit's 3D embedding but catches a real regression. If those
-fail, numbers from this installation are not comparable with previously published ones.
+The golden tests in `tests/test_golden_science.py` freeze known substrate cross-section
+values (gate 1, `substrate_section`) with a 0.2 Å tolerance. Two caveats: they cover only
+that function (nothing in the test suite exercises the packing engine), and the frozen value
+is the semi-axis of atomic centres without van der Waals radii, about half the physical
+cross-section (glucose: 1.95 Å frozen vs 3.49 Å with vdW). If those tests fail, numbers from
+this installation are not comparable with previous ones; if they pass, that says nothing
+about packing.

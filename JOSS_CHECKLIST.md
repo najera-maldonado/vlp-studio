@@ -12,8 +12,29 @@ requirements and reviewer checklist, as of **2026-10-04**.
 | **OPEN** | Can be finished without Lucio, but is not done yet |
 
 Nothing in the **AUTHOR** list can be done by a collaborator or an assistant. Everything in
-that list is blocking except where it says otherwise, and the list is short on purpose:
-four items stand between this repository and a submission.
+that list is blocking except where it says otherwise.
+
+---
+
+## 0. Revision of 2026-10-05 — what the engine audits changed
+
+This checklist was first written on 2026-10-04 **from the documentation**, before the four
+independent engine audits of the same day had concluded. Several of its **DONE** marks were
+not true of the code. They are corrected below; the evidence for each is in
+[`CORRECCIONES_DOCUMENTACION.md`](CORRECCIONES_DOCUMENTACION.md), and the consolidated repair
+plan is `HOJA_DE_RUTA.md` (branch `claude/consolidate-audit-roadmap-k82rek`).
+
+| Earlier claim | Reality | Status now |
+|---|---|---|
+| "Reproducibility: fixed Packmol seeds, golden regression test" | The configured seed base is read by no module; production draws random seeds. The golden test covers gate 1's `substrate_section`, not packing. Packing-engine test coverage is zero | **OPEN** (PK-4, PK-5) |
+| "Gates 1 and 2 are real" / "Functionality works as described" | Both engines run, but gate 2's acceptance criterion never fires and its fallback accepts the capsid alone (a Packmol double placing 0 enzymes yields "100, σ = 0"); gate 1's only committed result is the wild type measured off-axis | **OPEN**: either repair first (PK-1…PK-5, PO-1, PO-3, PO-6, PO-7: ~6 days) or submit with both gates labelled "engine wired, result under review", as the documentation now does. Decision DC-1, author only |
+| "Licence is clearly stated" | `THIRD_PARTY.md` listed SIRAH among engines not redistributed; the repository versions 146 files of SIRAH 2.3 including GPL `tools/`. Now disclosed; the decision to keep or remove the bundle is open | **AUTHOR** (DC-5) |
+| "No git tags exist in this clone" (§1.2) | Tags exist on the remote: `v0.1.0`, `studio/v0.1.0`, `poromania/v1.2.0`, `packman/v1.2.0`, `sustratinaitor/v0.1.0` (`git ls-remote --tags origin`). Only the Zenodo archive is pending | corrected in §1.2 |
+| Gate 4 "complete, runnable protocol" | The committed inputs are 10 ps stubs titled 15/35 ns (≈ 240 ps total) plus eight all-atom files; the automated preparation path yields a topology without hydrogens or `TER`. Not runnable as committed | documented as such everywhere |
+
+**Minimum before submitting**, whichever way DC-1 goes: this checklist, `paper.md`, the root
+README and the engine READMEs must say the same thing, and today they do (this revision).
+If the choice is to repair first, re-run this table after PK-5 and PO-7.
 
 ---
 
@@ -35,13 +56,16 @@ match the released version exactly.
    cause of a submission being bounced before review.
 4. Add the DOI badge to `README.md` and the `doi:` field to `CITATION.cff`.
 
-### 1.2 Tagged release — **AUTHOR, blocking**
+### 1.2 Tagged release — **AUTHOR, partly done**
 
-The repository has a v0.1.0 GitHub release but **no git tags exist in this clone**. The
-engine-level tag convention is already decided (`studio/vX.Y.Z`, `poromania/vX.Y.Z`,
-`packman/vX.Y.Z`, `sustratinaitor/vX.Y.Z`), and a platform-level tag is what the Zenodo
-archive should point at. Decide the submission version — `v0.1.0` is consistent with the
-current `VERSION` files — tag it, and push the tag.
+The repository has a v0.1.0 GitHub release and the tags **do exist on the remote**
+(`git ls-remote --tags origin`: `v0.1.0`, `studio/v0.1.0`, `poromania/v1.2.0`,
+`packman/v1.2.0`, `sustratinaitor/v0.1.0`); an earlier version of this checklist said
+otherwise because the clone it was written from had not fetched them. What remains is to
+decide whether `v0.1.0` (which predates the documentation corrections of 2026-10-05) is the
+version to archive, or whether to cut a new tag after the corrections and, if DC-1 says
+"repair first", after the packing and pore repairs. The Zenodo archive must point at the tag
+that is submitted.
 
 ### 1.3 Author identity — **AUTHOR, blocking**
 
@@ -77,13 +101,13 @@ sentence, because the git log understates the work.
 |-------------|--------|------|
 | Public repository with version control | **DONE** | <https://github.com/najera-maldonado/vlp-studio> |
 | OSI-approved open source licence | **DONE** | AGPLv3-or-later, `LICENSE` at the root, full text |
-| Licence is clearly stated | **DONE** | Root `README.md`, every engine README, `THIRD_PARTY.md` |
+| Licence is clearly stated | **DONE, with an open item** | Root `README.md`, every engine README, `THIRD_PARTY.md`. **Open (DC-5, AUTHOR):** the repository versions a copy of SIRAH 2.3 (146 files, including GPLv2 `tools/`) while describing SIRAH as user-supplied. Either remove the bundle (and have `fetch_data.sh` download it) or verify SIRAH's academic terms and declare the redistribution. Disclosed in the README and `THIRD_PARTY.md` as of 2026-10-05 |
 | `paper.md` in the repository | **DONE** | Repository root |
 | `paper.bib` with references | **DONE** | Repository root; **DOIs need verifying**, see §4.1 |
 | Obvious research application | **DONE** | Enzyme-loaded VLP design; Gaucher disease case study |
 | Substantial scholarly effort | **DONE** | ~15,000 lines of the project's own code, see below |
 | Not a minor utility or thin wrapper | **DONE** | Four engines, an integrating funnel abstraction and a web application |
-| Version-tagged release | **AUTHOR** | §1.2 |
+| Version-tagged release | **partly DONE** | Tags exist on the remote; which one to archive is the author's call, §1.2 |
 | Archive with DOI | **AUTHOR** | §1.1 |
 | Author name and ORCID | **AUTHOR** | §1.3 |
 
@@ -112,8 +136,8 @@ This is well above the roughly 1,000-line guideline JOSS uses as a rough floor.
 | Licence present and OSI-approved | **DONE** | |
 | Contribution and authorship | **DONE** | `CONTRIBUTING.md`; authorship pending §1.3 |
 | Substantial scholarly effort | **DONE** | See §2 |
-| Data sharing | **DONE** | Default structure library ships in the repository; the heavy P22 capsid is fetched from RCSB by `nanocapsule-mvp/scripts/fetch_data.sh` |
-| Reproducibility | **DONE** | `requirements.lock`, fixed Packmol seeds, golden regression test, CI |
+| Data sharing | **DONE, with a caveat** | Default structure library ships in the repository; the heavy P22 capsid is fetched from RCSB by `nanocapsule-mvp/scripts/fetch_data.sh`. Caveat: 3 of the 4 enzyme inputs in `Input/Enzimas/` were overwritten in place by the centring step (with `.original` backups); `GCase_1OGS` has no backup (audit P-17) |
+| Reproducibility | **OPEN** | `requirements.lock` and CI are in place. **Not in place:** the Packmol seed base in `config/default.yaml` is not read (production seeds are random, recorded per replica after the fact); the golden regression test covers the gate 1 cross-section only; the packing engine has no tests. Tasks PK-4 and PK-5 |
 | Human or animal research | **DONE** | Not applicable: no human or animal subjects, no patient data |
 
 ### Functionality
@@ -121,9 +145,9 @@ This is well above the roughly 1,000-line guideline JOSS uses as a rough floor.
 | Item | Status | Note |
 |------|--------|------|
 | Installation instructions | **DONE** | `docs/installation.md`: Docker and local routes, requirements, troubleshooting, uninstall |
-| Functionality works as described | **DONE, with a caveat** | Gates 1 and 2 are real. Gates 3 and 4 are documented as illustrative and flag themselves `"illustrative": true` at runtime. A reviewer must be able to see that the claims match the behaviour — they do, but see §5.1 |
+| Functionality works as described | **OPEN** | Gates 3 and 4 are documented as illustrative / never run and flag themselves `"illustrative": true`. Gates 1 and 2 **run but do not yet deliver what the earlier description promised**: a reviewer with Packmol installed who runs gate 2 obtains a capacity number that the acceptance criterion cannot distinguish from "no enzyme placed", and seeds they cannot declare in advance. The description has been corrected to match (README, engine READMEs, `paper.md`); the behaviour is the repair plan's Fase 0 (PK-1…PK-5) and PO-1/PO-3/PO-6/PO-7. See §5.1 |
 | Performance claims | **DONE** | No performance claims are made in the paper, so none need substantiating |
-| Automated tests | **DONE** | 22 tests (17 smoke, 5 scientific golden), run in CI on every push and pull request, plus a `compileall` pass over the other three engines |
+| Automated tests | **DONE, with a caveat** | 22 tests (17 smoke, 5 golden on `substrate_section`), run in CI on every push and pull request, plus a `compileall` pass over the other three engines. **Caveat a reviewer will see:** none of the 22 tests touches the packing engine, and all 22 pass with the audit's blocking defects present. Task PK-5 adds engine tests with a Packmol double |
 
 ### Documentation
 
@@ -223,18 +247,28 @@ software, and they serve no purpose now.
 Prepared answers, so none of these is a surprise. All of them are honest positions rather
 than things to hide.
 
-### 5.1 "Two of your four gates do not work"
+### 5.1 "Two of your four gates do not work" — now: "none of the four is validated"
 
-The accurate statement is that gates 1 and 2 are real, gate 3 is a placeholder, and gate 4
-is a complete protocol that has not been executed. This is stated in the paper, the README,
-every affected engine README, the usage documentation, and at runtime through the
+The accurate statement, after the audits of 2026-10-04, is: gates 1 and 2 have real engines
+wired end to end whose headline numbers are **not yet validated** (gate 2's acceptance
+criterion is broken and seeds are random; gate 1's only committed result is the wild type
+measured off-axis and is marked invalid in place); gate 3 is a placeholder; gate 4 has never
+run and its committed inputs are stubs. This is now stated consistently in the paper, the
+README, every engine README, the usage documentation, and at runtime through the
 `"illustrative": true` flag.
 
 JOSS asks that functionality match its description, not that software be finished. The
-defensible position is that the real parts — the reproducible geometric filters, the HOLE and
-docking pipeline, the engine wrappers — are useful on their own, and that labelling the rest
-honestly is better practice than the alternative. Do not soften this during review; the
-labelling is a feature of the submission.
+defensible position is therefore one of two, and it is decision DC-1 of the repair plan:
+
+- **Repair first** (recommended by the audits, ~6 days: PK-1…PK-5, PO-1, PO-3, PO-6, PO-7),
+  then describe gates 1 and 2 as real; or
+- **Submit now**, describing gates 1 and 2 as "engine wired, result under review" — which
+  is what the documentation says today — and the engine wrappers, the composed workflow, the
+  pinned environment and the explicit status reporting as the contribution.
+
+What is no longer defensible is the earlier wording ("real, end to end", "deterministic
+packing with golden test"), because the repository itself refutes it. Do not soften the
+current labelling during review; it is the feature of the submission.
 
 ### 5.2 "The git history is two days long"
 
@@ -270,17 +304,31 @@ Deliberate: the project anticipates being offered as a web service, and AGPL's n
 clause keeps modified versions open in that case. It is OSI-approved, so it satisfies JOSS,
 and it is compatible with the GPL and LGPL engines the project calls.
 
-### 5.6 "No molecular dynamics results"
+### 5.6 "No molecular dynamics results" — and "the inputs are stubs"
 
-Correct, and the author's own standing instruction is that **no dynamics result from this
-project should be treated as validated until the simulation has been run and checked**. That
-instruction is reproduced in the PackMan README, the usage documentation and the paper.
-Running it is the project's next step and depends on GPU access.
+Correct on both counts, and the author's own standing instruction is that **no dynamics
+result from this project should be treated as validated**. A reviewer who opens
+`PackMan.v.1.2/archivos_dm_cg/*.in` will find `nstlim = 500` under titles reading "15ns" and
+"35ns", and eight all-atom inputs in a coarse-grained protocol; the PackMan README now says
+so first. The honest answer is that the committed files are the scaffold of a protocol, that
+the audit identified exactly what is wrong (`AUDITORIA_MD.md`, tasks MD-1…MD-10 with the
+corrected inputs written out in `PLAN_REPARACION_MD.md`), and that running it depends on
+repairing the preparation path first and on GPU access second.
+
+### 5.7 "Your own documentation contradicted your code"
+
+It did, and the repository says so rather than hiding it: `CORRECCIONES_DOCUMENTACION.md`
+lists every overturned claim with file, line, evidence and replacement. The audits were
+commissioned by the author before the submission and their findings were applied to the
+documentation before submitting. That is the defensible position; do not remove the record.
 
 ---
 
 ## 6. Suggested order of work
 
+0. **Lucio:** decide DC-1 (repair gates 1 and 2 before submitting, or submit with them
+   labelled "under review") and DC-5 (SIRAH bundle). Everything below is the same either way;
+   only the timing changes.
 1. **Lucio:** confirm the name, register or supply the ORCID, decide the affiliation and the
    author list (§1.3).
 2. **Anyone:** verify the `paper.bib` DOIs against Crossref (§4.1).

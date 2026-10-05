@@ -11,6 +11,35 @@
 
 ---
 
+## 2026-10-05 (25) — Reconciliar la documentación con las auditorías (RP-1, parte doc)
+
+- ✅ **Leídas las 4 ramas de auditoría** (`consolidate-audit-roadmap-k82rek` = `HOJA_DE_RUTA.md`,
+  `audit-packing-engine-wwph45`, `audit-packman-dynamics-engine-52svym`, `audit-poro-engine-giea7e`;
+  más las otras 5 que la hoja de ruta consolida). Veredicto: ningún resultado del repo está
+  validado; el packing no es "terreno firme"; el 1,92 Å de poro es del WT medido fuera del eje;
+  la MD no puede correr con lo commiteado (stubs de 10 ps rotulados 15/35 ns; topología sin H ni `TER`).
+- ✅ **Rama de trabajo = paquete JOSS (`prepare-joss-submission-29k493`) + correcciones.** Se
+  avanzó la rama sobre el commit JOSS (fast-forward limpio desde `main`) y se corrigieron, con
+  evidencia verificada aquí mismo: README raíz, los 4 READMEs de motores, `paper.md`,
+  `JOSS_CHECKLIST.md`, `docs/usage.md`, `docs/installation.md`, `CONTRIBUTING.md`,
+  `THIRD_PARTY.md`, PENDIENTES, ESTADO y esta bitácora. Nuevo
+  `Poromania.v.1.2./mutants/mut_129HIS_132GLY/INVALIDO.md`. Banners de "documento fósil" en los
+  planes internos que contradicen al software.
+- ✅ **Informe `CORRECCIONES_DOCUMENTACION.md`:** cada frase falsa con archivo y línea, la
+  evidencia (informe + comando reproducible) y el texto que la sustituye.
+- **Correcciones a entradas anteriores de esta bitácora** (se dejan tal cual, con marca):
+  (23) "el packing es geométrico, determinista, con golden test" → falso, ver abajo.
+  (18) el golden test cubre `substrate_section` (puerta 1), no el packing. (17) "1 y 2
+  reales" → motores cableados, resultados en revisión. (20) "PAC-PORE con HOLE real" en
+  navegador → se verificó que corre, no que mida el poro correcto.
+- ⬜ **Siguiente:** DC-1 (Lucio: reparar packing/poro antes de enviar a JOSS, ~6 días, o
+  enviar reetiquetado) y DC-5 (SIRAH). Luego Ola 1–2 de `HOJA_DE_RUTA.md` (T1, PK-1…PK-5).
+  Pendiente de RP-1: fusionar en `main` los 9 informes (`auditorias/2026-10-04/`) y esta rama.
+  Fuera de este pase (código, no docs): los anclajes sintéticos de `md.py` ("el fallo real",
+  `source: packmanreplicas1/1_2`) → MD-10; el badge "(ilustrativo)" vaciado en `40f4b03` → PO-6.
+
+---
+
 ## 2026-09-18 (23) — Revisión estratégica + decisión: verificar TODOS los motores
 
 - **Revisión estratégica del proyecto** (no cambios de código). Conclusión de prioridad:
@@ -23,6 +52,11 @@
   callout ⏭️ arriba en PENDIENTES.md.
 - Nota de terreno: el packing (geométrico, determinista, con golden test) es más firme que
   la MD; si la MD flaquea, packing + JOSS siguen en pie.
+  **[CORREGIDO 2026-10-05, auditoría del 2026-10-04: esta nota era falsa. No hay semilla
+  fija en la ruta de producción (`experiment_runner.py:160` no pasa `seed_base`; la config
+  no se lee), el golden test es de `substrate_section` (poro), no del packing, y el criterio
+  de aceptación del packing no mide el empaquetamiento (regex muerta + fallback ciego).
+  Ver entrada (25) y `CORRECCIONES_DOCUMENTACION.md`.]**
 - No se registró contenido de la tesis de Lucio (leída solo para contexto de esa plática,
   por petición suya). La memoria se mantuvo conservadora (no afirma "MD validada").
 - ⬜ **Siguiente:** sesión de verificación de motores; y arrancar JOSS (no espera a nada).
@@ -75,6 +109,9 @@
   Seguro pese a <script> separados: todo el arranque (listeners + init) está en packing.js
   (último) → sin problema de hoisting. VERIFICADO EN NAVEGADOR: render OK, PAC-PORE con
   Chart.js y HOLE real, 0 errores de consola.
+  **[NOTA 2026-10-05: "HOLE real" aquí significa que el endpoint ejecutó HOLE, no que el
+  perfil esté validado; el cribado del Studio falla sobre `poro5fold` y el eje está mal
+  condicionado en trímeros (PORO-07/08). Ver entrada (25).]**
 - 🎯 **TODOS los pendientes menores de software cerrados.** El repo está pulido para publicar.
   Falta solo lo que depende de Lucio: hacer el repo PÚBLICO → Zenodo DOI → JOSS.
 - ⬜ **Siguiente:** repo público (Lucio) y luego el flujo Zenodo/JOSS; o entrar a la ciencia.
@@ -122,6 +159,8 @@
 - ✅ **README de la plataforma** en la raíz del monorepo (antes NO había → portada de
   GitHub vacía). Describe el embudo de 4 puertas con estado HONESTO (1 y 2 reales, 3
   ilustrativa, 4 sin MD), los 4 motores, inicio rápido Docker, reproducibilidad, licencia.
+  **[CORREGIDO 2026-10-05: "1 y 2 reales" se leía desde la documentación, no desde el
+  código. Tras la auditoría: motores cableados, resultados en revisión. Ver entrada (25).]**
 - ✅ **CITATION.cff** (v0.1.0, MIT, autor najera-maldonado; validado como YAML). DOI de
   JOSS se añadirá luego.
 - ✅ **RELEASE v0.1.0 publicado**: https://github.com/najera-maldonado/vlp-studio/releases/tag/v0.1.0

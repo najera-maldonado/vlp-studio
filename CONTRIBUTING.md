@@ -108,8 +108,8 @@ the repository, however convenient that would be.
 
 **Open scientific decisions are the author's to make.** Three issues are recorded as
 deliberately unresolved in [`ESTADO.md`](ESTADO.md) §4b, and pull requests that resolve them
-unilaterally will not be merged, because each needs a simulation to be run before a choice is
-defensible:
+unilaterally will not be merged. The engine audits of 2026-10-04 give a recommendation for
+each (recorded in `ESTADO.md` §4b); the choice is still the author's:
 
 - `CIENCIA-1` — the sign of the ±1 Å internal-radius safety margin.
 - `CIENCIA-2` — coarse-grained versus all-atom resolution of the substrate system.
@@ -117,8 +117,11 @@ defensible:
 
 Reporting them more clearly, or adding a test that pins current behaviour, is welcome.
 
-**No molecular dynamics result is validated yet.** Gate 4's simulation has never been run.
-Please do not add documentation, figures or claims that imply otherwise.
+**No scientific result in the repository is validated yet.** Gate 4's simulation has never
+been run; gate 2's capacity number and gate 1's committed pore profile are under review (see
+`CORRECCIONES_DOCUMENTACION.md`). Please do not add documentation, figures or claims that
+imply otherwise, and when you fix one of the audited defects, say which audit item it
+closes.
 
 **Deferred by design, not forgotten:** cloud deployment, multi-user support, a job queue and
 security hardening. They become relevant when someone other than the author runs a shared

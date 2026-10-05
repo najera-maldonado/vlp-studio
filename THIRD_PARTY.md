@@ -30,7 +30,7 @@ mismo bajo sus términos y móntalos en el contenedor / ponlos en el PATH (ver R
 | **idock** | Docking alternativo | verificar términos antes de usar | (fuente del autor) |
 | **NetMHCIIpan** | De-inmunización (Puerta 3) | **académica DTU, no comercial, NO redistribuible** | https://services.healthtech.dtu.dk/services/NetMHCIIpan-4.3/ |
 | **GROMACS** | MD (Puerta 4) | LGPL-2.1 | https://www.gromacs.org/ |
-| **SIRAH** | Campo de fuerza CG (Puerta 4) | académica; verificar términos | http://www.sirahff.com/ |
+| **SIRAH** | Campo de fuerza CG (Puerta 4) | académica; verificar términos. **Atención:** pese a figurar en esta tabla, el repo **sí versiona** una copia de SIRAH 2.3 (146 ficheros en `PackMan.v.1.2/archivos_dm_cg/sirah_x2.3_24-07.amber/`, incluido `tools/` bajo GPLv2). Decidir si se retira del repo o se declara (DC-5 de la hoja de ruta de auditoría) | http://www.sirahff.com/ |
 
 > Sin HOLE no funciona la puerta Pac-Pore; sin GROMACS/SIRAH no corre la Puerta 4
 > (Análisis MD); NetMHCIIpan es opcional (de-inmunización). El resto del Studio
