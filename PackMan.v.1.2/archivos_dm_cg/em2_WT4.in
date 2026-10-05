@@ -1,11 +1,13 @@
-Minimización 2
+SIRAH capside+enzima: minimizacion 2, sin restricciones
 &cntrl
   imin = 1,
-  maxcyc = 5000, ntmin=1, ncyc = 2500, ntpr = 250, ntxo=2,
+  maxcyc = 5000, ntmin=1, ncyc = 100, ntpr = 50, ntxo=2,
 
   ntb = 1, ntp = 0,
   cut = 12,
-
-  ntr = 0,
-
 &end
+/
+&ewald
+  chngmask=0,
+&end
+/

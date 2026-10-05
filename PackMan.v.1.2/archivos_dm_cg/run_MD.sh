@@ -1,334 +1,176 @@
 #!/bin/bash
+#
+# run_MD.sh — protocolo SIRAH de 5 etapas para sistemas capside-*-cg-WAT
+#
+#   em1 (min, esqueleto restringido) -> em2 (min libre)
+#   -> eq1 (5 ns NPT, todo el soluto restringido 2.4)
+#   -> eq2 (25 ns NPT, esqueleto GN,GO restringido 0.24)
+#   -> prod (NCHUNKS trozos de 10 ns, reiniciables; 10 trozos = 100 ns)
+#
+# Patron: sirah_x2.3_24-07.amber/tutorial/5 (proteina en WT4). Los .in se
+# validan estaticamente con ../verificar_protocolo_md.py; no editar a mano
+# sin volver a correr el verificador.
+#
+# Uso: run_MD.sh [engine] [system_name] [topology_file]
+#   engine        : 'cuda' (pmemd.cuda, por defecto) o 'sander'
+#   system_name   : nombre base (autodetectado de capside-*-cg-WAT.prmtop)
+#   topology_file : por defecto system_name.prmtop
+#
+# Variables de entorno:
+#   NCHUNKS=10    numero de trozos de produccion de 10 ns (10 -> 100 ns)
+#   DRY_RUN=1     imprime los comandos sin ejecutar ni exigir archivos
+#   MD_EXE=...    fuerza el ejecutable (p. ej. MD_EXE=pmemd.cuda.MPI)
+#
+# Reanudable: una etapa cuyo mdout ya termina en "Total wall time" y cuyo
+# .ncrst existe se salta. Las semillas (ig) de cada etapa quedan en SEMILLAS.txt.
 
-# Universal Flexible MD script for both pmemd.cuda and sander
-# Auto-detects capside-*-cg-WAT pattern files or allows manual specification
+set -u
 
-# Usage function
 show_usage() {
-    echo "Universal MD Simulation Script for capside-*-cg-WAT systems"
-    echo ""
-    echo "Usage: $0 [engine] [system_name] [topology_file]"
-    echo ""
-    echo "Parameters:"
-    echo "  engine       : 'cuda' (default) or 'sander'"
-    echo "  system_name  : System name (auto-detected if not provided)"
-    echo "  topology_file: Topology file (defaults to system_name.prmtop)"
-    echo ""
-    echo "Examples:"
-    echo "  $0                                           # Auto-detect capside-*-cg-WAT files"
-    echo "  $0 cuda                                      # Use CUDA with auto-detection"
-    echo "  $0 cuda capside-1_5-cg-WAT                  # Specify system name"
-    echo "  $0 sander capside-3_1-cg-WAT                # Use sander with specific system"
-    echo "  $0 cuda capside-2_3-cg-WAT capside-2_3-cg-WAT.prmtop  # Full specification"
-    echo ""
-    echo "File Requirements:"
-    echo "  - Topology file: [system_name].prmtop"
-    echo "  - Coordinates: [system_name].ncrst (or .rst, .rst7, .inpcrd)"
-    echo "  - Input files: em1_WT4.in, em2_WT4.in, eq1_WT4.in, eq2_WT4.in, prod_md_WT4.in"
-    echo ""
+    sed -n '2,27p' "$0" | sed 's/^# \{0,1\}//'
 }
 
-# Check for help flag
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
     show_usage
     exit 0
 fi
 
-# Function to auto-detect capside-*-cg-WAT files
-auto_detect_system() {
-    local detected_files=($(ls capside-*-cg-WAT.prmtop 2>/dev/null))
+ENGINE=${1:-cuda}
+NCHUNKS=${NCHUNKS:-10}
+DRY_RUN=${DRY_RUN:-0}
+INPUTS=(em1_WT4.in em2_WT4.in eq1_WT4.in eq2_WT4.in prod_md_WT4.in)
 
-    if [ ${#detected_files[@]} -eq 0 ]; then
-        echo "No capside-*-cg-WAT.prmtop files found in current directory" >&2
+auto_detect_system() {
+    local detected=( $(ls capside-*-cg-WAT.prmtop 2>/dev/null) )
+    if [ ${#detected[@]} -eq 0 ]; then
+        echo "No se encontro ningun capside-*-cg-WAT.prmtop en el directorio actual" >&2
         return 1
-    elif [ ${#detected_files[@]} -eq 1 ]; then
-        local prmtop_file="${detected_files[0]}"
-        local system_name="${prmtop_file%.prmtop}"
-        echo "Auto-detected system: $system_name" >&2
-        echo "$system_name"
-        return 0
-    else
-        echo "Multiple capside-*-cg-WAT.prmtop files found:" >&2
-        for i in "${!detected_files[@]}"; do
-            echo "  $((i+1)): ${detected_files[i]}" >&2
+    elif [ ${#detected[@]} -gt 1 ]; then
+        echo "Hay varios capside-*-cg-WAT.prmtop; indica el sistema como 2o argumento:" >&2
+        printf '  %s\n' "${detected[@]}" >&2
+        return 1
+    fi
+    echo "${detected[0]%.prmtop}"
+}
+
+if [ -n "${2:-}" ]; then
+    NAME="$2"
+elif [ "$DRY_RUN" = "1" ]; then
+    NAME="capside-DRY-cg-WAT"
+else
+    NAME=$(auto_detect_system) || exit 1
+    echo "Sistema autodetectado: $NAME"
+fi
+PRMTOP=${3:-${NAME}.prmtop}
+
+if [ -z "${MD_EXE:-}" ]; then
+    case "$ENGINE" in
+        cuda)   MD_EXE="pmemd.cuda" ;;
+        sander) MD_EXE="sander" ;;
+        *) echo "Error: engine debe ser 'cuda' o 'sander' (recibido: $ENGINE)"; exit 1 ;;
+    esac
+fi
+export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
+
+# ---------- validacion de archivos (se omite en DRY_RUN) ----------
+COORD_FILE="${NAME}.ncrst"
+if [ "$DRY_RUN" != "1" ]; then
+    if [ ! -f "$PRMTOP" ]; then
+        echo "Error: no existe la topologia $PRMTOP"; exit 1
+    fi
+    if [ ! -f "$COORD_FILE" ]; then
+        for ext in rst rst7 inpcrd; do
+            [ -f "${NAME}.${ext}" ] && COORD_FILE="${NAME}.${ext}" && break
         done
-        echo "Please specify which system to use as second argument" >&2
-        return 1
+        [ -f "$COORD_FILE" ] || { echo "Error: no existen coordenadas iniciales ${NAME}.ncrst"; exit 1; }
+    fi
+    for f in "${INPUTS[@]}"; do
+        [ -f "$f" ] || { echo "Error: falta el archivo de entrada $f"; exit 1; }
+    done
+fi
+
+echo "Protocolo SIRAH (em1 -> em2 -> eq1 5 ns -> eq2 25 ns -> prod ${NCHUNKS} x 10 ns)"
+echo "  Motor:       $MD_EXE"
+echo "  Sistema:     $NAME"
+echo "  Topologia:   $PRMTOP"
+echo "  Coordenadas: $COORD_FILE"
+[ "$DRY_RUN" = "1" ] && echo "  (DRY_RUN: solo se imprimen los comandos)"
+echo ""
+
+# ---------- utilidades ----------
+stage_done() {   # stage_done <out> <ncrst>
+    [ -f "$1" ] && [ -f "$2" ] && grep -q "Total wall time" "$1"
+}
+
+leer_ig() {      # leer_ig <archivo.in>  -> valor de ig
+    sed -nE 's/.*[[:space:]]ig[[:space:]]*=[[:space:]]*(-?[0-9]+).*/\1/p' "$1" | head -1
+}
+
+anotar_semilla() {  # anotar_semilla <etapa> <input> <ig>
+    if [ "$DRY_RUN" = "1" ]; then
+        echo "  [semilla] $1 ($2): ig = $3"
+    else
+        printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> SEMILLAS.txt
     fi
 }
 
-# Set default parameters
-ENGINE=${1:-cuda}  # cuda or sander
+run_stage() {    # run_stage <etiqueta> <input> <coords> <ref|-> <traj|->
+    local label=$1 input=$2 coords=$3 ref=$4 traj=$5
+    local out="${NAME}_${label}.out" rst="${NAME}_${label}.ncrst"
+    local cmd=( "$MD_EXE" -O -i "$input" -p "$PRMTOP" -c "$coords" )
+    [ "$ref" != "-" ]  && cmd+=( -ref "$ref" )
+    cmd+=( -o "$out" -r "$rst" )
+    [ "$traj" != "-" ] && cmd+=( -x "$traj" )
 
-# Auto-detect or use provided system name
-if [ -z "$2" ]; then
-    echo "Attempting to auto-detect capside-*-cg-WAT system..."
-    DETECTED_NAME=$(auto_detect_system)
-    if [ $? -ne 0 ]; then
-        echo "Auto-detection failed. Please specify system name as second argument."
-        exit 1
+    echo "=== Etapa $label ==="
+    if [ "$DRY_RUN" = "1" ]; then
+        echo "  ${cmd[*]}"
+        return 0
     fi
-    NAME="$DETECTED_NAME"
-    PRMTOP="${NAME}.prmtop"
-else
-    NAME="$2"
-    PRMTOP=${3:-${NAME}.prmtop}
-fi
-
-# Export GPU device for CUDA
-export CUDA_VISIBLE_DEVICES="0"
-
-# Determine which executable to use
-if [ "$ENGINE" = "cuda" ]; then
-    MD_EXE="pmemd.cuda"
-    echo "Using pmemd.cuda (GPU acceleration)"
-elif [ "$ENGINE" = "sander" ]; then
-    MD_EXE="sander"
-    echo "Using sander (CPU)"
-else
-    echo "Error: Engine must be 'cuda' or 'sander'"
-    exit 1
-fi
-
-# Enhanced file validation
-echo "Validating required files..."
-
-# Check topology file
-if [ ! -f "$PRMTOP" ]; then
-    echo "Error: Topology file $PRMTOP not found"
-    echo "Looking for available topology files:"
-    ls -la *.prmtop 2>/dev/null || echo "  No .prmtop files found in current directory"
-    exit 1
-fi
-
-# Check initial coordinate file
-COORD_FILE="${NAME}.ncrst"
-if [ ! -f "$COORD_FILE" ]; then
-    echo "Error: Initial coordinate file $COORD_FILE not found"
-    echo "Looking for available coordinate files:"
-    ls -la *.ncrst *.rst *.rst7 *.inpcrd 2>/dev/null || echo "  No coordinate files found in current directory"
-
-    # Try alternative coordinate file extensions
-    for ext in rst rst7 inpcrd; do
-        if [ -f "${NAME}.${ext}" ]; then
-            COORD_FILE="${NAME}.${ext}"
-            echo "Found alternative coordinate file: $COORD_FILE"
-            break
-        fi
-    done
-
-    if [ ! -f "$COORD_FILE" ]; then
-        exit 1
+    if stage_done "$out" "$rst"; then
+        echo "  ya completada ($out termina en 'Total wall time'); se salta"
+        return 0
     fi
-fi
+    "${cmd[@]}" || { echo "Error en la etapa $label (ver $out)"; exit 1; }
+    echo "  completada"
+}
 
-# Validate input files exist
-echo "Checking input files..."
-missing_inputs=()
-for input_file in em1_WT4.in em2_WT4.in heat1_0to50.in heat2_50to100.in heat3_100to150.in heat4_150to200.in heat5_200to250.in heat6_250to300.in density_eq.in eq1_WT4.in eq2_WT4.in final_eq.in prod_md_WT4.in; do
-    if [ ! -f "$input_file" ]; then
-        missing_inputs+=("$input_file")
+# ---------- 1-2: minimizaciones ----------
+run_stage em1 em1_WT4.in "$COORD_FILE"      "$COORD_FILE"      -
+run_stage em2 em2_WT4.in "${NAME}_em1.ncrst" -                 -
+
+# ---------- 3-4: equilibracion NPT con restricciones (2.4 -> 0.24) ----------
+if [ "$DRY_RUN" != "1" ]; then
+    [ -f SEMILLAS.txt ] || printf 'etapa\tinput\tig\n' > SEMILLAS.txt
+    anotar_semilla eq1 eq1_WT4.in "$(leer_ig eq1_WT4.in)"
+    anotar_semilla eq2 eq2_WT4.in "$(leer_ig eq2_WT4.in)"
+fi
+run_stage eq1 eq1_WT4.in "${NAME}_em2.ncrst" "${NAME}_em2.ncrst" "${NAME}_eq1.nc"
+run_stage eq2 eq2_WT4.in "${NAME}_eq1.ncrst" "${NAME}_eq1.ncrst" "${NAME}_eq2.nc"
+
+# ---------- 5: produccion en trozos de 10 ns, semilla distinta por trozo ----------
+# Con irest=1 y Langevin cada trozo vuelve a sembrar el generador; por eso cada
+# trozo lleva un ig propio (100100 + k) y queda anotado en SEMILLAS.txt.
+prev="${NAME}_eq2.ncrst"
+for (( k=1; k<=NCHUNKS; k++ )); do
+    kk=$(printf '%02d' "$k")
+    ig=$((100100 + k))
+    input="prod_md_WT4_k${kk}.in"
+    if [ "$DRY_RUN" = "1" ]; then
+        echo "  [gen] $input <- prod_md_WT4.in con ig = $ig"
+    else
+        sed -E "s/^([[:space:]]*.*[[:space:]]ig[[:space:]]*=[[:space:]]*)-?[0-9]+,/\1${ig},/" prod_md_WT4.in > "$input"
+        [ "$(leer_ig "$input")" = "$ig" ] || { echo "Error: no se pudo fijar ig=$ig en $input"; exit 1; }
     fi
+    anotar_semilla "prod_k${kk}" "$input" "$ig"
+    run_stage "prod_k${kk}" "$input" "$prev" - "${NAME}_prod_k${kk}.nc"
+    prev="${NAME}_prod_k${kk}.ncrst"
 done
 
-if [ ${#missing_inputs[@]} -gt 0 ]; then
-    echo "Warning: Missing input files: ${missing_inputs[*]}"
-    echo "Available .in files:"
-    ls -la *.in 2>/dev/null || echo "  No .in files found"
-    echo "Continuing with available input files..."
-fi
-
-echo "Starting MD simulation with:"
-echo "  Engine: $MD_EXE"
-echo "  System: $NAME"
-echo "  Topology: $PRMTOP"
-echo "  Initial coordinates: $COORD_FILE"
 echo ""
-
-# Step 1: Energy minimization 1
-echo "=== Step 1: Energy Minimization 1 ==="
-if [ -f "em1_WT4.in" ]; then
-    $MD_EXE -O -i em1_WT4.in -p $PRMTOP -c $COORD_FILE -ref $COORD_FILE -o ${NAME}_em1.out -r ${NAME}_em1.ncrst
-    if [ $? -ne 0 ]; then
-        echo "Error in minimization step 1"
-        exit 1
-    fi
-    echo "Minimization 1 completed successfully"
-else
-    echo "Warning: em1_WT4.in not found, skipping minimization 1"
-fi
-
-# Step 2: Energy minimization 2
-echo "=== Step 2: Energy Minimization 2 ==="
-if [ -f "em2_WT4.in" ]; then
-    $MD_EXE -O -i em2_WT4.in -p $PRMTOP -c ${NAME}_em1.ncrst -o ${NAME}_em2.out -r ${NAME}_em2.ncrst
-    if [ $? -ne 0 ]; then
-        echo "Error in minimization step 2"
-        exit 1
-    fi
-    echo "Minimization 2 completed successfully"
-else
-    echo "Warning: em2_WT4.in not found, skipping minimization 2"
-fi
-
-# Step 3: Gradual Heating (0K to 300K in 6 steps)
-echo "=== Step 3a: Gradual Heating 0K to 50K ==="
-if [ -f "heat1_0to50.in" ]; then
-    $MD_EXE -O -i heat1_0to50.in -p $PRMTOP -c ${NAME}_em2.ncrst -ref ${NAME}_em2.ncrst -o ${NAME}_heat1.out -r ${NAME}_heat1.ncrst
-    if [ $? -ne 0 ]; then
-        echo "Error in heating step 1"
-        exit 1
-    fi
-    echo "Heating 1 (0K->50K) completed successfully"
-else
-    echo "Warning: heat1_0to50.in not found, skipping gradual heating"
-fi
-
-echo "=== Step 3b: Gradual Heating 50K to 100K ==="
-if [ -f "heat2_50to100.in" ]; then
-    $MD_EXE -O -i heat2_50to100.in -p $PRMTOP -c ${NAME}_heat1.ncrst -ref ${NAME}_heat1.ncrst -o ${NAME}_heat2.out -r ${NAME}_heat2.ncrst
-    if [ $? -ne 0 ]; then
-        echo "Error in heating step 2"
-        exit 1
-    fi
-    echo "Heating 2 (50K->100K) completed successfully"
-else
-    echo "Warning: heat2_50to100.in not found, skipping heating step 2"
-fi
-
-echo "=== Step 3c: Gradual Heating 100K to 150K ==="
-if [ -f "heat3_100to150.in" ]; then
-    $MD_EXE -O -i heat3_100to150.in -p $PRMTOP -c ${NAME}_heat2.ncrst -ref ${NAME}_heat2.ncrst -o ${NAME}_heat3.out -r ${NAME}_heat3.ncrst
-    if [ $? -ne 0 ]; then
-        echo "Error in heating step 3"
-        exit 1
-    fi
-    echo "Heating 3 (100K->150K) completed successfully"
-else
-    echo "Warning: heat3_100to150.in not found, skipping heating step 3"
-fi
-
-echo "=== Step 3d: Gradual Heating 150K to 200K ==="
-if [ -f "heat4_150to200.in" ]; then
-    $MD_EXE -O -i heat4_150to200.in -p $PRMTOP -c ${NAME}_heat3.ncrst -ref ${NAME}_heat3.ncrst -o ${NAME}_heat4.out -r ${NAME}_heat4.ncrst
-    if [ $? -ne 0 ]; then
-        echo "Error in heating step 4"
-        exit 1
-    fi
-    echo "Heating 4 (150K->200K) completed successfully"
-else
-    echo "Warning: heat4_150to200.in not found, skipping heating step 4"
-fi
-
-echo "=== Step 3e: Gradual Heating 200K to 250K ==="
-if [ -f "heat5_200to250.in" ]; then
-    $MD_EXE -O -i heat5_200to250.in -p $PRMTOP -c ${NAME}_heat4.ncrst -ref ${NAME}_heat4.ncrst -o ${NAME}_heat5.out -r ${NAME}_heat5.ncrst
-    if [ $? -ne 0 ]; then
-        echo "Error in heating step 5"
-        exit 1
-    fi
-    echo "Heating 5 (200K->250K) completed successfully"
-else
-    echo "Warning: heat5_200to250.in not found, skipping heating step 5"
-fi
-
-echo "=== Step 3f: Gradual Heating 250K to 300K ==="
-if [ -f "heat6_250to300.in" ]; then
-    $MD_EXE -O -i heat6_250to300.in -p $PRMTOP -c ${NAME}_heat5.ncrst -ref ${NAME}_heat5.ncrst -o ${NAME}_heat6.out -r ${NAME}_heat6.ncrst
-    if [ $? -ne 0 ]; then
-        echo "Error in heating step 6"
-        exit 1
-    fi
-    echo "Heating 6 (250K->300K) completed successfully"
-else
-    echo "Warning: heat6_250to300.in not found, skipping heating step 6"
-fi
-
-# Step 4: Density Equilibration
-echo "=== Step 4: Density Equilibration ==="
-if [ -f "density_eq.in" ]; then
-    $MD_EXE -O -i density_eq.in -p $PRMTOP -c ${NAME}_heat6.ncrst -ref ${NAME}_heat6.ncrst -o ${NAME}_density.out -r ${NAME}_density.ncrst
-    if [ $? -ne 0 ]; then
-        echo "Error in density equilibration"
-        exit 1
-    fi
-    echo "Density equilibration completed successfully"
-else
-    echo "Warning: density_eq.in not found, skipping density equilibration"
-fi
-
-# Step 5: Equilibration 1
-echo "=== Step 5: Equilibration 1 ==="
-if [ -f "eq1_WT4.in" ]; then
-    # Use density output if available, otherwise fall back to em2
-    PREV_COORD="${NAME}_density.ncrst"
-    if [ ! -f "$PREV_COORD" ]; then
-        PREV_COORD="${NAME}_em2.ncrst"
-        echo "Density coordinates not found, using ${NAME}_em2.ncrst"
-    fi
-    $MD_EXE -O -i eq1_WT4.in -p $PRMTOP -c $PREV_COORD -ref $PREV_COORD -o ${NAME}_eq1.out -r ${NAME}_eq1.ncrst -x ${NAME}_eq1.nc
-    if [ $? -ne 0 ]; then
-        echo "Error in equilibration step 1"
-        exit 1
-    fi
-    echo "Equilibration 1 completed successfully"
-else
-    echo "Warning: eq1_WT4.in not found, skipping equilibration 1"
-fi
-
-# Step 6: Equilibration 2
-echo "=== Step 6: Equilibration 2 ==="
-if [ -f "eq2_WT4.in" ]; then
-    $MD_EXE -O -i eq2_WT4.in -p $PRMTOP -c ${NAME}_eq1.ncrst -ref ${NAME}_eq1.ncrst -o ${NAME}_eq2.out -r ${NAME}_eq2.ncrst -x ${NAME}_eq2.nc
-    if [ $? -ne 0 ]; then
-        echo "Error in equilibration step 2"
-        exit 1
-    fi
-    echo "Equilibration 2 completed successfully"
-else
-    echo "Warning: eq2_WT4.in not found, skipping equilibration 2"
-fi
-
-# Step 7: Final Equilibration
-echo "=== Step 7: Final Equilibration ==="
-if [ -f "final_eq.in" ]; then
-    $MD_EXE -O -i final_eq.in -p $PRMTOP -c ${NAME}_eq2.ncrst -ref ${NAME}_eq2.ncrst -o ${NAME}_final_eq.out -r ${NAME}_final_eq.ncrst -x ${NAME}_final_eq.nc
-    if [ $? -ne 0 ]; then
-        echo "Error in final equilibration"
-        exit 1
-    fi
-    echo "Final equilibration completed successfully"
-else
-    echo "Warning: final_eq.in not found, skipping final equilibration"
-fi
-
-# Step 8: Production MD
-echo "=== Step 8: Production MD ==="
-if [ -f "prod_md_WT4.in" ]; then
-    # Use final_eq output if available, otherwise fall back to eq2
-    PROD_COORD="${NAME}_final_eq.ncrst"
-    if [ ! -f "$PROD_COORD" ]; then
-        PROD_COORD="${NAME}_eq2.ncrst"
-        echo "Final equilibration coordinates not found, using ${NAME}_eq2.ncrst"
-    fi
-    $MD_EXE -O -i prod_md_WT4.in -p $PRMTOP -c $PROD_COORD -o ${NAME}_prod.out -r ${NAME}_prod.ncrst -x ${NAME}_prod.nc
-    if [ $? -ne 0 ]; then
-        echo "Error in production MD"
-        exit 1
-    fi
-    echo "Production MD completed successfully"
-else
-    echo "Warning: prod_md_WT4.in not found, skipping production MD"
-fi
-
-echo ""
-echo "=== MD Simulation Complete ==="
-echo "Output files generated:"
-echo "  Minimization: ${NAME}_em1.out, ${NAME}_em2.out"
-echo "  Gradual Heating: ${NAME}_heat1.out -> ${NAME}_heat6.out"
-echo "  Density: ${NAME}_density.out"
-echo "  Equilibration: ${NAME}_eq1.out, ${NAME}_eq2.out"
-echo "  Final Equilibration: ${NAME}_final_eq.out"
-echo "  Production: ${NAME}_prod.out"
-echo "  Trajectories: ${NAME}_eq1.nc, ${NAME}_eq2.nc, ${NAME}_final_eq.nc, ${NAME}_prod.nc"
-echo "  Final coordinates: ${NAME}_prod.ncrst"
+echo "=== Protocolo completo ==="
+echo "  Minimizacion:  ${NAME}_em1.out, ${NAME}_em2.out"
+echo "  Equilibracion: ${NAME}_eq1.{out,nc} (5 ns), ${NAME}_eq2.{out,nc} (25 ns)"
+echo "  Produccion:    ${NAME}_prod_k01..k$(printf '%02d' "$NCHUNKS").{out,nc} ($((NCHUNKS * 10)) ns)"
+echo "  Semillas:      SEMILLAS.txt"
+echo "  Coordenadas finales: $prev"

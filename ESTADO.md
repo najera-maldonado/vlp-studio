@@ -113,10 +113,14 @@ decida la dirección y, en su caso, se corra la MD correspondiente (con la red d
   todo CG (rehacer empaquetado con `GYE_cg_manual.pdb`, 17 beads — coherente con PackMan,
   pero mapeo CG sin validar) o todo all-atom (inviable para cápside entera). **Estado:
   aplazado hasta correr esa MD.**
-- **CIENCIA-3 — `PackMan` protocolo de heat.** Los `heat*.in` estáticos son all-atom
-  (`dt=0.002`, SHAKE, `@CA,C,N,O`) sobre topología CG SIRAH. `configurar_simulacion.sh`
-  ya genera los `.in` correctos en CG. Decidir protocolo y retirar los estáticos.
-  **Estado: aplazado hasta correr esa MD.**
+- **CIENCIA-3 — `PackMan` protocolo de heat.** Los `heat*.in` estáticos eran all-atom
+  (`dt=0.002`, SHAKE, `@CA,C,N,O`) sobre topología CG SIRAH. **Estado: resuelto
+  (2026-10-05, PackMan v1.3.0).** Se eliminaron los 8 `.in` all-atom y
+  `configurar_simulacion.sh` (su `eq1` restringía también el solvente); los 5 `.in`
+  siguen el tutorial 5 de SIRAH (sin etapa de calentamiento: `eq1` arranca de 0 K bajo
+  Langevin) y `verificar_protocolo_md.py` falla en CI si divergen de la referencia. Ver
+  `PackMan.v.1.2/CHANGELOG.md`. Queda pendiente la preparación del sistema (hidrógenos,
+  `TER`, disulfuros) antes de correr: `PLAN_REPARACION_MD.md` fases 1 y 3.
 
 ---
 

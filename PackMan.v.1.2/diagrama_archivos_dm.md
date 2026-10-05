@@ -13,22 +13,21 @@ PackMan.v.1.2/
 │   │   ├── 1calcula_radio_interno.py       # Cálculo del radio interno del cápside
 │   │   ├── 2Empaquetador_Manual.py         # Empaquetamiento manual controlado
 │   │   └── 2Empaquetador_Maximo.py         # Empaquetamiento óptimo automático
-│   ├── archivos de entrada de simulación:
-│   │   ├── em1_WT4.in, em2_WT4.in         # Minimización de energía
-│   │   ├── eq1_WT4.in, eq2_WT4.in         # Equilibración del sistema
-│   │   ├── heat1_0to50.in ... heat6_250to300.in # Calentamiento gradual
-│   │   ├── density_eq.in                   # Equilibración de densidad
-│   │   ├── final_eq.in                     # Equilibración final
-│   │   └── prod_md_WT4.in                  # Producción MD
+│   ├── archivos de entrada de simulación (patrón SIRAH tutorial/5):
+│   │   ├── em1_WT4.in, em2_WT4.in         # Minimización (esqueleto restringido / libre)
+│   │   ├── eq1_WT4.in                      # 5 ns NPT, todo el soluto restringido (2.4)
+│   │   ├── eq2_WT4.in                      # 25 ns NPT, esqueleto GN,GO restringido (0.24)
+│   │   └── prod_md_WT4.in                  # Producción NPT, trozos de 10 ns (10 → 100 ns)
 │   ├── gensystem.leap                       # Script LEaP para generación del sistema
-│   ├── run_MD.sh                           # Script maestro de ejecución MD
+│   ├── run_MD.sh                           # Orquestador de las 5 etapas (reanudable)
+│   ├── prod-q_gpu.bsub                     # Lanzador LSF de run_MD.sh
 │   └── setup_universal.sh                  # Configuración universal del sistema
 ├── ReplicaExtra/                           # Simulaciones adicionales/réplicas
 │   └── 1_1/                               # Réplica específica (sistema 1, réplica 1)
 │       └── empaquetador/
 │           └── enzimas_individuales/       # Enzimas separadas para análisis
 ├── Scripts de configuración general:
-│   ├── configurar_simulacion.sh            # Configurador principal
+│   ├── verificar_protocolo_md.py           # Verificación estática de los .in vs referencia SIRAH
 │   ├── convert_to_cg.sh                    # Conversor all-atom → CG
 │   ├── copy_md_files.sh                    # Distribuidor de archivos MD
 │   ├── fix_pdb_serial.py                   # Corrector de numeración PDB
@@ -46,10 +45,10 @@ PackMan.v.1.2/
 
 ### 2. Pipeline de Simulación MD
 1. **Preparación**: LEaP genera topología y coordenadas del sistema
-2. **Minimización**: Dos etapas (em1, em2) para relajación inicial
-3. **Calentamiento**: Gradual 0→300K en 6 etapas de 50K
-4. **Equilibración**: Densidad, presión y equilibración final
-5. **Producción**: Simulación MD de alta precisión
+2. **Minimización**: Dos etapas (em1 con esqueleto restringido, em2 libre)
+3. **Equilibración NPT**: eq1 (5 ns, todo el soluto restringido; arranca de 0 K bajo
+   Langevin, sin etapa de calentamiento separada, como SIRAH) y eq2 (25 ns, esqueleto)
+4. **Producción NPT**: trozos reiniciables de 10 ns con semilla propia (10 → 100 ns)
 
 ### 3. Sistema de Réplicas
 - **Organización**: Estructura jerárquica para estudios estadísticos
@@ -59,7 +58,7 @@ PackMan.v.1.2/
 ## Flujo de Trabajo Principal
 
 ```
-Estructuras PDB → Empaquetador → LEaP → Minimización → Calentamiento → Equilibración → Producción MD
+Estructuras PDB → Empaquetador → cgconv → LEaP → em1 → em2 → eq1 (5 ns) → eq2 (25 ns) → prod (10 × 10 ns)
 ```
 
 Este sistema proporciona una plataforma automatizada para el estudio de sistemas de encapsulación enzimática mediante simulaciones de dinámica molecular coarse-grained.

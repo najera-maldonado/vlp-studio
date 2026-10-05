@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script universal para copiar archivos de MD coarse-grained a directorios #N_#N
-# Basado en archivos del 26 de agosto en ../archivos_dm_cg
+# Fuente de verdad: los 5 .in de archivos_dm_cg (validados por verificar_protocolo_md.py)
 
 SOURCE_DIR="./archivos_dm_cg"
 
