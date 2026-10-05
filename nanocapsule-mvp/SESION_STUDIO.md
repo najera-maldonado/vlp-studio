@@ -1,5 +1,11 @@
 # SESIÓN · Studio PAC-ZYME — registro y cambios
 
+> ⚠️ **DOCUMENTO FÓSIL / NO NORMATIVO (aviso añadido el 2026-10-05).** Registro de sesión
+> anterior a la auditoría de motores del 2026-10-04. Las cifras de poro que cita (p. ej.
+> "3-fold ≈2.47 Å, 5-fold ≈1.68 Å" en la línea ~39, "TRP cierra el poro −1.97 Å") **no tienen
+> artefacto que las respalde** y, donde lo hay, es inválido (ver `CORRECCIONES_DOCUMENTACION.md`
+> y `INVALIDO.md`). Mapa vigente: `ESTADO.md`. Se conserva como registro histórico.
+
 Registro de la sesión **2026-07-23 → 2026-07-24**. Complementa `LO_APRENDIDO.md`
 (la visión) con el estado real del código. Arranque:
 

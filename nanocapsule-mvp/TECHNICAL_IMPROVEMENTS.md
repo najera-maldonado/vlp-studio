@@ -1,5 +1,11 @@
 # Technical Improvements Plan - Nanocapsule Designer
 
+> ⚠️ **FOSSIL / NON-NORMATIVE DOCUMENT (notice added 2026-10-05).** Pre-dates the engine
+> audit of 2026-10-04. `ESTADO.md` §4 records that this file marks seven modules as done that
+> were never created. Do not cite it as project state: the authoritative map is `ESTADO.md`,
+> corrections are in `CORRECCIONES_DOCUMENTACION.md`, the repair plan is `HOJA_DE_RUTA.md`.
+> Kept as a historical record.
+
 ## 🎯 Overview
 This document outlines technical improvements to enhance code quality, maintainability, and performance without expanding the scientific scope of the project.
 

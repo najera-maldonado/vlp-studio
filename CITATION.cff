@@ -1,19 +1,25 @@
 cff-version: 1.2.0
-message: "Si usas VLP Studio en tu investigación, por favor cítalo así."
+message: "If you use VLP Studio in your research, please cite it as below."
 title: "VLP Studio"
 abstract: >-
-  Plataforma computacional para el diseño de nanocápsulas de tipo virus-like particle
-  (VLP) cargadas con enzimas terapéuticas, organizada como un embudo de cuatro filtros:
-  transporte por el poro, empaquetamiento interno, de-inmunización y supervivencia por
-  dinámica molecular coarse-grained.
+  Computational platform for designing virus-like particle (VLP) nanocapsules loaded with
+  therapeutic enzymes, organised as a four-filter funnel: transport through the capsid pore,
+  internal packing of the enzyme, de-immunisation, and survival under coarse-grained
+  molecular dynamics. The driving use case is glucocerebrosidase for Gaucher disease.
 type: software
 authors:
-  - name: "najera-maldonado"
+  # TODO (author): confirm the exact legal spelling of the name, and add the `orcid:` field
+  # below before submitting to JOSS. The name must match paper.md and the Zenodo record.
+  - given-names: "Lucio"
+    family-names: "Nájera Maldonado"
+    # orcid: "https://orcid.org/0000-0000-0000-0000"
 version: "0.1.0"
 date-released: "2026-09-17"
 license: AGPL-3.0-or-later
 repository-code: "https://github.com/najera-maldonado/vlp-studio"
 url: "https://github.com/najera-maldonado/vlp-studio"
+# TODO (author): add the Zenodo archive DOI once the integration is enabled and the release
+# is tagged, e.g.  doi: "10.5281/zenodo.XXXXXXX"
 keywords:
   - virus-like-particle
   - enzyme-encapsulation
@@ -21,3 +27,4 @@ keywords:
   - molecular-dynamics
   - pore-analysis
   - structural-biology
+  - gaucher-disease

@@ -1,5 +1,13 @@
 # CLAUDE.md
 
+> ⚠️ **FOSSIL / NON-NORMATIVE DOCUMENT (notice added 2026-10-05).** Pre-dates the engine
+> audit of 2026-10-04 and documents endpoints that do not exist (`/api/structures`,
+> `/api/radius/{capsid}`, `/api/generate_pdb`, `/api/download/{exp_id}`), a MIT licence (the
+> project is AGPLv3), tests in `_temp_backup/`, and a "subtract 1 Å" radius margin that the
+> code does not implement (it adds; CIENCIA-1). Do not follow it as guidance: the real API is
+> in `README.md`, the authoritative project map is `../ESTADO.md`, and corrected claims are in
+> `../CORRECCIONES_DOCUMENTACION.md`. Kept as a historical record.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview

@@ -1,5 +1,13 @@
 # CLAUDE.md
 
+> ⚠️ **FOSSIL / NON-NORMATIVE DOCUMENT (notice added 2026-10-05).** Pre-dates the engine
+> audit of 2026-10-04 and contains claims the repository refutes: it documents a fixed pore
+> centre `(219.21, 171.38, 312.96)` that matches **no** committed run (the committed
+> `pore_center.txt` is `9.18 −3.88 2.22`), and it lists `automated_test.py` and `clickaqui.sh`,
+> which do **not** exist in the repository. Do not follow it as guidance: see the Poromania
+> `README.md` (with its audit-findings table), `../ESTADO.md`, `../CORRECCIONES_DOCUMENTACION.md`
+> and the `INVALIDO.md` beside the committed mutant. Kept as a historical record.
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
