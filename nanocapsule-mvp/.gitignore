@@ -67,6 +67,8 @@ env/
 
 # Project specific - Temporary files
 *.log
+# …salvo los logs reales de PACKMOL que son fixtures de los tests del motor de packing
+!tests/fixtures/packmol_logs/*.log
 *.tmp
 temp_*
 _temp_*/

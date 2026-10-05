@@ -15,13 +15,13 @@ packing:
   # Tolerancia para Packmol
   tolerance: 2.0
 
-  # Umbral máximo de violación de distancia (Angstroms)
-  # Si la violación supera este valor, se considera colisión
+  # Umbral máximo de violación de distancia (Angstroms), leído de la línea
+  # "Maximum violation of target distance:" del bloque final del log de Packmol.
+  # Si la violación supera este valor, la corrida se rechaza.
   max_violation_threshold: 0.10
 
-  # Mínimo de líneas en output para considerarlo válido
-  # Usado como fallback cuando no hay info de violación
-  min_lines_threshold: 10000
+  # (Retirado) min_lines_threshold: el antiguo fallback "≥ 10 000 líneas" lo cumplía la
+  # cápside sola. Ahora se cuentan las copias de enzima realmente colocadas.
 
 # Configuración de motores externos
 engines:
@@ -29,15 +29,21 @@ engines:
     # Ejecutable de Packmol
     executable: "packmol"
 
-    # Timeout en segundos para ejecución
+    # Timeout en segundos por corrida de Packmol. Un timeout se registra como causa
+    # de rechazo ("timeout") en metadata.json; no se confunde con "no cabe".
     timeout: 300
 
     # Semilla base para reproducibilidad
-    # Cada réplica usará seed_base + replica_number
+    # Cada réplica usará seed_base + replica_number (y seed + 1000·intento en reintentos)
     seed_base: 1234567
 
     # Si use_random_seeds es true, ignora seed_base y usa semillas aleatorias
+    # (se registran en metadata.json y report.txt para reproducir a posteriori)
     use_random_seeds: false
+
+    # Procesos Packmol simultáneos (null = min(núcleos, 7)). Más procesos compiten por
+    # CPU y, con timeout fijo, pueden convertir un "cabe" en "timeout".
+    max_workers: null
 
   pymol:
     # Ejecutar en modo headless (sin GUI)

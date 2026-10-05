@@ -94,10 +94,15 @@ All parameters externalized in `config/default.yaml`:
 
 #### Internal Radius Calculation
 PyMOL-based calculation with specific order:
-1. Center capsid at origin using center_of_mass
+1. Center capsid at origin using the coordinate centroid
 2. Create expanding pseudoatom to detect collision
-3. **Subtract 1Å safety margin** from collision radius (not add)
+3. The code ADDS 1Å to the collision radius (as the original thesis script); the
+   docstring says subtract. **Pending scientific decision (CIENCIA-1)** — do not
+   "fix" either way without the author.
 4. Store in `radio_interno.txt` for caching
+5. `Capsid.radius_source` is `"calculated"` or `"default"`; `ExperimentRunner`
+   refuses to run an experiment on the default value (pass `internal_radius`
+   explicitly if PyMOL is not available)
 
 #### Multi-Replica System
 - Runs 7-10 replicas with different random seeds (configurable)
@@ -105,11 +110,21 @@ PyMOL-based calculation with specific order:
 - Automatic selection of best result (most enzymes successfully packed)
 - Parallel execution for performance
 
-#### Packing Validation Thresholds
-- Max distance violation: 0.10Å (configurable)
-- Exclusion radius between enzymes: 5.0Å (configurable)
-- Packmol tolerance: 2.0Å
-- Min output lines for valid result: 10000
+#### Packing Validation (acceptance criterion for one Packmol run)
+- Log must contain Packmol's `Success!` marker and must NOT contain
+  `ENDED WITHOUT PERFECT PACKING`; `<output>_FORCED` must not exist
+- Max violation read from the real line `Maximum violation of target distance:`
+  (last value in the log) ≤ 0.10Å (configurable)
+- Output PDB must contain exactly `capsid_atoms + N × enzyme_atoms` atomic lines
+  (placed enzyme copies are counted; the old "≥ 10000 lines" fallback was removed
+  because the capsid alone satisfied it)
+- Each enzyme copy centroid must lie inside the packing sphere around the capsid
+  centroid of the output file (catches an uncentered capsid)
+- Capsid enters the `.inp` as `center` + `fixed 0 0 0 0 0 0`
+- Exclusion radius between enzymes: 5.0Å (configurable); Packmol tolerance: 2.0Å
+- Seeds: `seed_base + replica` from `engines.packmol.seed_base` (fixed by default);
+  timeout and collision margin come from the YAML, not from code constants
+- Engine tests run in CI with a Packmol double: `tests/test_packing_engine.py`
 
 ## API Endpoints
 

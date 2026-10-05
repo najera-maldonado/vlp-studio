@@ -7,16 +7,8 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-try:
-    import numpy as np
-    from pymol import cmd
-
-    PYMOL_AVAILABLE = True
-except ImportError:
-    PYMOL_AVAILABLE = False
-    print("Advertencia: PyMOL/NumPy no disponible. Algunas funciones estarán limitadas.")
-
 from .config import ConfigManager
+from .pdb_geometry import center_pdb
 
 
 class Cargo:
@@ -60,59 +52,36 @@ class Cargo:
         """
         Centra estructura en origen de coordenadas.
 
-        Este método es crítico para el empaquetamiento ya que Packmol
-        espera que las moléculas estén centradas en el origen.
+        Traslación de coordenadas en Python puro (sin PyMOL) que conserva el resto del
+        archivo. Packmol recentra por sí mismo las moléculas móviles, pero un cargo
+        centrado hace el ``.inp`` y los resultados más fáciles de inspeccionar.
 
         Args:
             output_path: Ruta archivo salida (opcional).
-                        Si no se proporciona, usa enzima_centered.pdb
+                        Si no se proporciona, usa <stem>_centered.pdb junto al original.
 
         Returns:
             Ruta al archivo centrado
 
         Raises:
-            RuntimeError: Si PyMOL no está disponible
+            RuntimeError: Si la estructura no se puede centrar (sin átomos, E/S)
         """
-        if not PYMOL_AVAILABLE:
-            raise RuntimeError("PyMOL es requerido para centrar estructura")
-
         if output_path is None:
             # Usar ruta absoluta para el archivo centrado
             base_path = Path(self.pdb_path).resolve()
             output_path = str(base_path.parent / f"{base_path.stem}_centered.pdb")
 
         try:
-            cmd.reinitialize()
-            cmd.load(self.pdb_path, "cargo")
+            written, centroid = center_pdb(self.pdb_path, output_path)
+        except (OSError, ValueError) as e:
+            raise RuntimeError(f"Error centrando cargo: {e}") from e
 
-            # Obtener coordenadas y calcular centro
-            coords = cmd.get_coords("cargo")
-            if coords is not None and len(coords) > 0:
-                # Centro de masa
-                com = np.mean(coords, axis=0)
-
-                # Trasladar al origen
-                cmd.alter_state(1, "cargo", f"x = x - {com[0]}")
-                cmd.alter_state(1, "cargo", f"y = y - {com[1]}")
-                cmd.alter_state(1, "cargo", f"z = z - {com[2]}")
-
-                print(
-                    f"Estructura centrada. Centro original: ({com[0]:.2f}, {com[1]:.2f}, {com[2]:.2f})"
-                )
-            else:
-                print("Advertencia: No se pudieron obtener coordenadas para centrar")
-
-            # Guardar estructura centrada
-            cmd.save(output_path, "cargo")
-            cmd.delete("all")
-
-            self.centered_path = output_path
-            print(f"Cargo centrado guardado en: {output_path}")
-
-            return output_path
-
-        except Exception as e:
-            raise RuntimeError(f"Error centrando cargo: {e}")
+        self.centered_path = written
+        print(
+            f"Cargo centrado guardado en: {written} "
+            f"(centroide original: {centroid[0]:.2f}, {centroid[1]:.2f}, {centroid[2]:.2f})"
+        )
+        return written
 
     def calculate_properties(self) -> Dict[str, Any]:
         """

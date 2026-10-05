@@ -13,14 +13,16 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-sys.path.append(str(Path(__file__).parent.parent))
-
 from .config import ConfigManager
 
 try:
-    from packing.parallel_packer import ParallelPacker
-except ImportError:
-    ParallelPacker = None
+    from ..packing.parallel_packer import ParallelPacker
+except ImportError:  # ejecución como script suelto
+    sys.path.append(str(Path(__file__).parent.parent))
+    try:
+        from packing.parallel_packer import ParallelPacker
+    except ImportError:
+        ParallelPacker = None
 
 
 class ExperimentManager:
@@ -44,23 +46,31 @@ class ExperimentManager:
         """
         self.config = config or ConfigManager()
         self.output_base_dir = Path(output_base_dir)
-        self.n_replicas = 7  # Número de réplicas por experimento
+        # Número de réplicas por experimento: el de la config (antes 7 hardcodeado,
+        # divergente del YAML y de la UI).
+        self.n_replicas = int(self.config.get("experiments.n_replicas", 7))
         self.current_experiment = None
         self.use_parallel = (
             ParallelPacker is not None
         )  # Usar procesamiento paralelo si está disponible
 
-    def setup_experiment(self, capsid_name: str, enzyme_name: str) -> Path:
+    def setup_experiment(
+        self, capsid_name: str, enzyme_name: str, n_replicas: Optional[int] = None
+    ) -> Path:
         """
         Configura la estructura de carpetas para un experimento.
 
         Args:
             capsid_name: Nombre de la cápside (sin extensión)
             enzyme_name: Nombre de la enzima (sin extensión)
+            n_replicas: Réplicas que correrán (None → valor de la config)
 
         Returns:
             Path al directorio del experimento
         """
+        if n_replicas is not None:
+            self.n_replicas = int(n_replicas)
+
         # Limpiar nombres para uso en carpetas
         capsid_clean = Path(capsid_name).stem.replace(" ", "_")
         enzyme_clean = Path(enzyme_name).stem.replace(" ", "_")

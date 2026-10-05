@@ -332,6 +332,7 @@ def run_experiment(
     capsid_name: str,
     enzyme_name: str,
     n_replicas: Optional[int] = None,
+    internal_radius: Optional[float] = None,
 ) -> Dict[str, Any]:
     """
     Ejecuta el empaquetamiento máximo real con Packmol y múltiples réplicas.
@@ -339,6 +340,9 @@ def run_experiment(
     Bloquea hasta terminar (puede tardar minutos). En una versión escalable esto
     se movería a una cola de trabajos en background; aquí es síncrono a propósito
     para el prototipo.
+
+    ``internal_radius`` permite fijar el radio explícitamente (p. ej. desde un CLI);
+    si es None se calcula con PyMOL y el runner falla si no pudo calcularse.
     """
     from src.core.experiment_runner import ExperimentRunner
 
@@ -358,5 +362,6 @@ def run_experiment(
         capsid_name=capsid_name,
         enzyme_name=enzyme_name,
         n_replicas=n_replicas,
+        internal_radius=internal_radius,
     )
     return results
