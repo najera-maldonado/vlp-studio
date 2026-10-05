@@ -31,9 +31,9 @@ an assembly that the substrate cannot even enter.
 | Gate | Question | Where you run it | Status |
 |------|----------|------------------|--------|
 | 1 · Through | Does the substrate fit through the capsid pore? | Studio PAC-PORE tab, or [Poromania](../Poromania.v.1.2./README.md) directly | Engine runs end to end; result under review (see the Poromania README's audit findings) |
-| 2 · Inside | Does the enzyme pack inside the capsid? | Studio STUDIO 3D tab | Engine runs; the capacity number is not yet a validated measurement (see the Studio README's audit findings) |
+| 2 · Inside | Does the enzyme pack inside the capsid? | Studio STUDIO 3D tab | Engine runs; acceptance criterion and seeds repaired on 2026-10-05, but the capacity number is not yet validated against a real Packmol run (see the Studio README's audit findings) |
 | 3 · Outside | Can the enzyme be de-immunised? | Studio DE-IMMUNISATION tab | Illustrative only |
-| 4 · Survives | Does it hold up under molecular dynamics? | [PackMan](../PackMan.v.1.2/README.md) and [sustratinaitor](../sustratinaitor/README.md) | MD never run; committed inputs are stubs, not a runnable protocol |
+| 4 · Survives | Does it hold up under molecular dynamics? | [PackMan](../PackMan.v.1.2/README.md) and [sustratinaitor](../sustratinaitor/README.md) | MD never run. The five-stage SIRAH protocol was repaired on 2026-10-05; the system-preparation path is still broken, so nothing can run end to end yet |
 
 Gates 1 and 2 run real engines and return numbers today, but **do not quote those numbers as
 results yet**: an independent audit (2026-10-04) found that gate 2's convergence check never
@@ -281,9 +281,10 @@ curl -s -X POST http://localhost:5000/api/experiment/run \
 ```
 
 Packmol is stochastic, so one run is not an answer. The experiment runs *n* replicas and
-reports the distribution rather than a single figure. **Seeds:** today each replica draws a
-random seed (`experiment_runner.py` does not pass the configured `seed_base`); the seed used
-is written to `replica_N/metadata.json`, so keep that file if you need to repeat a run.
+reports the distribution rather than a single figure. **Seeds:** since 2026-10-05 replica
+*i* uses `engines.packmol.seed_base + i` (1234567 by default; `use_random_seeds: true` draws
+recorded random seeds instead); every seed is written to `replica_N/metadata.json`,
+`summary/statistics.json` and `report.txt`, so keep those files with the results.
 
 | Field | Meaning |
 |-------|---------|
@@ -298,22 +299,28 @@ Report the distribution, not just `best_result`: `best_result` is a maximum over
 and grows with the number of replicas you ask for.
 
 **Read this before trusting the numbers.** The audit of 2026-10-04 found that the
-convergence check does not work as the configuration implies: the code looks for the log
-line `Maximum distance violation:`, which Packmol never writes (it writes `Maximum violation
-of target distance:`), so `packing.max_violation_threshold` has no effect; the fallback then
-accepts any output with at least 10 000 atom lines, which the capsid alone satisfies; and the
-number of enzymes actually placed is never counted. With a Packmol double that places zero
-enzymes the engine reported 100 enzymes, σ = 0.00. Until tasks PK-2 to PK-5 of the repair
-plan are done, verify a result yourself: count the atoms of `best_packing.pdb` against
-`capsid + n × enzyme`, read the real violation in the replica's Packmol log, and treat a
-σ of 0.00 across replicas as a warning sign, not as convergence. `packing.exclusion_radius`
-(5 Å) is a per-atom radius, so Packmol enforces 10 Å between atoms of different enzymes;
-the capacity depends strongly on that choice.
+convergence check did not work as the configuration implied: the code looked for a log line
+Packmol never writes, the fallback accepted any output with at least 10 000 atom lines (which
+the capsid alone satisfies), and the number of enzymes actually placed was never counted;
+with a Packmol double that placed zero enzymes the engine reported 100 enzymes, σ = 0.00.
+**That was repaired on 2026-10-05** (tasks PK-2 to PK-5): the engine now reads the real
+`Maximum violation of target distance:` line, requires Packmol's `Success!`, rejects forced
+output, counts the enzyme copies in the output file, checks that every copy lies inside the
+capsid, and records the cause of every rejected replica in `metadata.json` and `report.txt`.
+An experiment with no accepted replica now returns `status: "failed"`. What is **not** yet
+done: no experiment has been run with a real Packmol binary since the repair (task PK-1), so
+check the first one yourself — count the atoms of `best_packing.pdb` against
+`capsid + n × enzyme` and read the violation in the replica's Packmol log — and remember that
+`best_result` is the maximum over replicas (decision DC-6; `n_replicas_at_best` says how many
+replicas reached it). `packing.exclusion_radius` (5 Å) is a per-atom radius, so Packmol
+enforces 10 Å between atoms of different enzymes; the capacity depends strongly on that
+choice.
 
-Re-running the same experiment does **not** currently reproduce the same numbers, because
-the seeds are random (see above). The calculation is geometric, but it is not deterministic
-in the production path and it is not covered by any test; the golden test in the repository
-covers the gate 1 cross-section.
+Re-running the same experiment with the same configuration now sends Packmol the same seeds
+(`engines.packmol.seed_base + replica`), so the inputs are reproducible; a timeout on a
+slower machine is recorded as such rather than counted as "does not fit". The engine is
+covered by 39 tests with a Packmol double; there is still no golden test of the internal
+radius, and the golden test in the repository covers the gate 1 cross-section.
 
 ### Step 4 — retrieve the structure
 
@@ -372,18 +379,21 @@ The real protocol lives in two engines, outside the web application, and both ne
 the SIRAH force field and a CUDA GPU:
 
 - **[PackMan](../PackMan.v.1.2/README.md)** — the enzyme-inside-capsid system: packing,
-  conversion to coarse-grained, system building with LEaP, then minimisation, six-stage
-  heating, equilibration and production, followed by cpptraj analysis that emits exactly the
-  two-column `.dat` files the Studio tab is designed to read.
+  conversion to coarse-grained, system building with LEaP, then the five-stage SIRAH protocol
+  (two minimisations, 5 ns + 25 ns restrained NPT equilibration, production in 10 ns chunks;
+  no heating ramp, as in the SIRAH tutorial), followed by cpptraj analysis that emits exactly
+  the two-column `.dat` files the Studio tab is designed to read.
 - **[sustratinaitor](../sustratinaitor/README.md)** — the capsid-plus-substrate system: 200
   copies of glucosylceramide packed around the capsid with Packmol.
 
-Two warnings before you run anything, both recorded as deliberate open decisions rather than
-patched over:
+Two warnings before you run anything:
 
-1. **PackMan's static heating files are written for all-atom dynamics** but would be applied
-   to a coarse-grained topology. Use the inputs generated by `configurar_simulacion.sh`
-   instead, and read `CIENCIA-3` in [`ESTADO.md`](../ESTADO.md) §4b first.
+1. **PackMan's protocol was repaired on 2026-10-05 (v1.3.0) but its system preparation was
+   not.** The old all-atom heating files and `configurar_simulacion.sh` are gone and the five
+   `.in` files are checked against the SIRAH reference in CI (`CIENCIA-3` is closed), but the
+   packed PDB that the automated path hands to `cgconv.pl` still has no hydrogens and no
+   `TER` records, so tLeaP cannot build a valid topology from it. Read the PackMan README's
+   *Status* before running anything.
 2. **sustratinaitor's packed system mixes resolutions**: Packmol packed the 144-atom
    all-atom substrate, not the 17-bead coarse-grained version, giving a coarse-grained
    capsid with an atomistic ligand in coarse-grained water. That system is not physically
@@ -433,10 +443,10 @@ recoverable.
 2. **Configuration.** `config/default.yaml` holds every scientific parameter. Keep a copy of
    it alongside your results; it is a small text file and it is the difference between a
    reproducible run and a number with no provenance.
-3. **Seeding.** `engines.packmol.seed_base` and `use_random_seeds` exist in the YAML but are
-   **not read by the code yet** (task PK-4). Until then, the only record of a replica's seed
-   is `replica_N/metadata.json`; keep it with the results. Passing `seed_base` explicitly to
-   `ParallelPacker.run_parallel_replicas` from Python does give `seed_base + n` per replica.
+3. **Seeding.** `engines.packmol.seed_base` and `use_random_seeds` are read by the code
+   since 2026-10-05 (task PK-4): replica *n* uses `seed_base + n`, a retry adds `1000·k`, and
+   the seeds actually sent to Packmol are recorded in `replica_N/metadata.json` and in
+   `summary/statistics.json` (`run_config`). Keep those with the results.
 4. **Data.** The default library is in the repository; `scripts/fetch_data.sh` recovers the
    heavy structures that are not.
 
@@ -448,8 +458,9 @@ cd nanocapsule-mvp && python -m pytest -q
 
 The golden tests in `tests/test_golden_science.py` freeze known substrate cross-section
 values (gate 1, `substrate_section`) with a 0.2 Å tolerance. Two caveats: they cover only
-that function (nothing in the test suite exercises the packing engine), and the frozen value
-is the semi-axis of atomic centres without van der Waals radii, about half the physical
-cross-section (glucose: 1.95 Å frozen vs 3.49 Å with vdW). If those tests fail, numbers from
-this installation are not comparable with previous ones; if they pass, that says nothing
-about packing.
+that function, and the frozen value is the semi-axis of atomic centres without van der Waals
+radii, about half the physical cross-section (glucose: 1.95 Å frozen vs 3.49 Å with vdW). The
+packing engine has its own 39 tests against a Packmol double (`tests/test_packing_engine.py`),
+but no golden test of the internal radius and no test that runs a real Packmol in CI. If the
+golden tests fail, numbers from this installation are not comparable with previous ones; if
+they pass, that says nothing about the packing radius.

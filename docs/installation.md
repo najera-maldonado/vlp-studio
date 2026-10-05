@@ -243,10 +243,12 @@ cd nanocapsule-mvp
 python -m pytest -q
 ```
 
-22 tests should pass in a couple of seconds: 17 smoke tests that boot the app and check every
-route is wired and returns the expected shape, and 5 golden tests that freeze known numerical
-results of the substrate cross-section calculation so a scientific regression is caught even
-when nothing crashes.
+60 tests should pass in about fifteen seconds (one more is skipped unless a real Packmol is
+installed): 17 smoke tests that boot the app and check every route is wired and returns the
+expected shape, 5 golden tests that freeze known numerical results of the substrate
+cross-section calculation so a scientific regression is caught even when nothing crashes, and
+39 tests of the packing engine and runner that exercise the real Python code against a Packmol
+double emitting the strings of real Packmol logs.
 
 The suite intentionally does **not** exercise the slow binary engines, so it passes on a
 machine without HOLE, Packmol or PyMOL. It validates wiring, not scientific validity.
@@ -266,11 +268,12 @@ and its honest execution status:
 | Engine | Requirements | Status |
 |--------|--------------|--------|
 | [Poromania](../Poromania.v.1.2./README.md) | PyMOL, RDKit, Open Babel, HOLE2, idock, pandas, matplotlib; APBS for figures | Runs end to end; its only committed result is invalid (see its README) |
-| [PackMan](../PackMan.v.1.2/README.md) | AMBER (`pmemd.cuda`, `tleap`), SIRAH, cpptraj, CUDA GPU | MD never run; committed inputs are 10 ps stubs and the preparation path is broken (see its README) |
+| [PackMan](../PackMan.v.1.2/README.md) | AMBER (`pmemd.cuda`, `tleap`), SIRAH, cpptraj, CUDA GPU | MD never run; the five-stage SIRAH protocol was repaired on 2026-10-05 and is checked in CI, but the preparation path is still broken (see its README) |
 | [sustratinaitor](../sustratinaitor/README.md) | Packmol, AmberTools (`antechamber`, `sqm`, `tleap`), SIRAH | Stages 1–3 ran; stage 4 not run and not runnable as committed |
 
 Continuous integration verifies that all three engines' Python parses (`compileall`), which
-catches syntax breakage without needing the heavy binaries.
+catches syntax breakage without needing the heavy binaries, and checks PackMan's five MD
+inputs parameter by parameter against the SIRAH reference (`verificar_protocolo_md.py`).
 
 ## Troubleshooting
 
@@ -290,19 +293,21 @@ does.
 **Pac-Pore returns an error about HOLE.** Expected without HOLE on the `PATH`. Confirm with
 `/api/health`, then install or mount it as described above.
 
-**Packmol times out.** `engines.packmol.timeout` in `config/default.yaml` says 300 s, but the
-code does not read it: the timeout is hard-coded to 90 s in
-`src/packing/parallel_packer.py` (audit P-19), and a timed-out attempt is counted as "does
-not fit", so the capacity you get depends on your CPU. Until task PK-4 is done, change the
-value in the source if you need a longer timeout.
+**Packmol times out.** `engines.packmol.timeout` in `config/default.yaml` (300 s) is read by
+the code since 2026-10-05 (before that it was hard-coded to 90 s, audit P-19). A timed-out
+attempt is recorded as rejection cause `timeout` in the replica's `metadata.json`, not counted
+as "does not fit", but it still removes that replica from the accepted set, so raise the
+timeout or lower `engines.packmol.max_workers` on a slow or busy machine.
 
 **Port 5000 is already in use.** Change the `web.port` value in `config/default.yaml` for a
 local install, or the port mapping in `docker-compose.yml` for Docker.
 
-**A packing experiment gives different results between runs.** Expected today:
-`engines.packmol.use_random_seeds` and `seed_base` in `config/default.yaml` are not read by
-the code (audit P-05), so every replica draws a random seed. The seed each replica used is in
-its `metadata.json`. Fixing this is task PK-4 of the repair plan.
+**A packing experiment gives different results between runs.** Since 2026-10-05 the seeds
+are fixed by default (`seed_base + replica`, read from `config/default.yaml`), so check first
+whether `use_random_seeds` is `true`; then compare the `rejection_reasons` in
+`summary/statistics.json`: a replica rejected for `timeout` on one machine and accepted on
+another changes the accepted set without changing any seed. Raise `engines.packmol.timeout`
+or lower `engines.packmol.max_workers`.
 
 ## Uninstalling
 

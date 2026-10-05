@@ -29,7 +29,7 @@ Qué haría válido un reemplazo: mutante verificado tras `apply()` (resn compro
 cinco `segi`), eje y centro calculados por simetría (`BMV/poro5fold`, método del Studio,
 0.00° de error), `rseed` fijo y sello de procedencia (md5 del PDB de entrada, `cpoint`,
 `cvect`, `sample`, versión de HOLE). Tareas PO-1, PO-3, PO-4 y PO-7 de `HOJA_DE_RUTA.md`
-(rama `claude/consolidate-audit-roadmap-k82rek`).
+(en `main` desde el 2026-10-05).
 
 Si este 1.92 Å llegó a la tesis o a alguna figura, hay que emitir la corrección
 correspondiente.

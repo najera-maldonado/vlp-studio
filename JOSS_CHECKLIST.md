@@ -22,19 +22,20 @@ This checklist was first written on 2026-10-04 **from the documentation**, befor
 independent engine audits of the same day had concluded. Several of its **DONE** marks were
 not true of the code. They are corrected below; the evidence for each is in
 [`CORRECCIONES_DOCUMENTACION.md`](CORRECCIONES_DOCUMENTACION.md), and the consolidated repair
-plan is `HOJA_DE_RUTA.md` (branch `claude/consolidate-audit-roadmap-k82rek`).
+plan is `HOJA_DE_RUTA.md` (merged into `main` on 2026-10-05 together with the audit reports
+and two repairs: the packing engine and the PackMan MD protocol; its §0 is the current state).
 
 | Earlier claim | Reality | Status now |
 |---|---|---|
-| "Reproducibility: fixed Packmol seeds, golden regression test" | The configured seed base is read by no module; production draws random seeds. The golden test covers gate 1's `substrate_section`, not packing. Packing-engine test coverage is zero | **OPEN** (PK-4, PK-5) |
-| "Gates 1 and 2 are real" / "Functionality works as described" | Both engines run, but gate 2's acceptance criterion never fires and its fallback accepts the capsid alone (a Packmol double placing 0 enzymes yields "100, σ = 0"); gate 1's only committed result is the wild type measured off-axis | **OPEN**: either repair first (PK-1…PK-5, PO-1, PO-3, PO-6, PO-7: ~6 days) or submit with both gates labelled "engine wired, result under review", as the documentation now does. Decision DC-1, author only |
+| "Reproducibility: fixed Packmol seeds, golden regression test" | At the time: the configured seed base was read by no module and production drew random seeds; the golden test covers gate 1's `substrate_section`, not packing; packing-engine test coverage was zero. **Since 2026-10-05:** seeds are fixed (`seed_base + replica`) and recorded, and the engine has 39 tests with a Packmol double (PK-4, PK-5 done). Still true: the golden test is gate 1's only; there is no radius golden (PK-6) and no run with a real Packmol since the repair (PK-1) | **OPEN, narrowed** (PK-1, PK-6) |
+| "Gates 1 and 2 are real" / "Functionality works as described" | Both engines run. Gate 2's acceptance criterion never fired and its fallback accepted the capsid alone (a Packmol double placing 0 enzymes yielded "100, σ = 0"); **repaired on 2026-10-05** (PK-2…PK-5), not yet exercised with a real Packmol (PK-1). Gate 1's only committed result is the wild type measured off-axis; **not repaired** | **OPEN**: either repair gate 1 first and run PK-1 (PO-1, PO-3, PO-6, PO-7: ~4 days plus one run on a machine with Packmol) or submit with both gates labelled "engine wired, result under review", as the documentation now does. Decision DC-1, author only |
 | "Licence is clearly stated" | `THIRD_PARTY.md` listed SIRAH among engines not redistributed; the repository versions 146 files of SIRAH 2.3 including GPL `tools/`. Now disclosed; the decision to keep or remove the bundle is open | **AUTHOR** (DC-5) |
 | "No git tags exist in this clone" (§1.2) | Tags exist on the remote: `v0.1.0`, `studio/v0.1.0`, `poromania/v1.2.0`, `packman/v1.2.0`, `sustratinaitor/v0.1.0` (`git ls-remote --tags origin`). Only the Zenodo archive is pending | corrected in §1.2 |
-| Gate 4 "complete, runnable protocol" | The committed inputs are 10 ps stubs titled 15/35 ns (≈ 240 ps total) plus eight all-atom files; the automated preparation path yields a topology without hydrogens or `TER`. Not runnable as committed | documented as such everywhere |
+| Gate 4 "complete, runnable protocol" | The committed inputs were 10 ps stubs titled 15/35 ns (≈ 240 ps total) plus eight all-atom files. **Protocol repaired on 2026-10-05** (PackMan v1.3.0: five SIRAH stages, 5 + 25 + 10 ns per chunk, checked in CI); no 15/35 ns run ever existed. The automated preparation path still yields a topology without hydrogens or `TER`, so it is still not runnable end to end | documented as such everywhere |
 
 **Minimum before submitting**, whichever way DC-1 goes: this checklist, `paper.md`, the root
 README and the engine READMEs must say the same thing, and today they do (this revision).
-If the choice is to repair first, re-run this table after PK-5 and PO-7.
+If the choice is to repair first, re-run this table after PK-1 and PO-7.
 
 ---
 
@@ -137,7 +138,7 @@ This is well above the roughly 1,000-line guideline JOSS uses as a rough floor.
 | Contribution and authorship | **DONE** | `CONTRIBUTING.md`; authorship pending §1.3 |
 | Substantial scholarly effort | **DONE** | See §2 |
 | Data sharing | **DONE, with a caveat** | Default structure library ships in the repository; the heavy P22 capsid is fetched from RCSB by `nanocapsule-mvp/scripts/fetch_data.sh`. Caveat: 3 of the 4 enzyme inputs in `Input/Enzimas/` were overwritten in place by the centring step (with `.original` backups); `GCase_1OGS` has no backup (audit P-17) |
-| Reproducibility | **OPEN** | `requirements.lock` and CI are in place. **Not in place:** the Packmol seed base in `config/default.yaml` is not read (production seeds are random, recorded per replica after the fact); the golden regression test covers the gate 1 cross-section only; the packing engine has no tests. Tasks PK-4 and PK-5 |
+| Reproducibility | **OPEN, narrowed** | `requirements.lock`, CI, fixed and recorded Packmol seeds (`seed_base + replica`, since 2026-10-05) and 39 packing-engine tests with a Packmol double are in place. **Not in place:** a golden test of the internal radius (PK-6) and a reproducibility check with a real Packmol binary (PK-1); the golden regression test still covers the gate 1 cross-section only |
 | Human or animal research | **DONE** | Not applicable: no human or animal subjects, no patient data |
 
 ### Functionality
@@ -145,9 +146,9 @@ This is well above the roughly 1,000-line guideline JOSS uses as a rough floor.
 | Item | Status | Note |
 |------|--------|------|
 | Installation instructions | **DONE** | `docs/installation.md`: Docker and local routes, requirements, troubleshooting, uninstall |
-| Functionality works as described | **OPEN** | Gates 3 and 4 are documented as illustrative / never run and flag themselves `"illustrative": true`. Gates 1 and 2 **run but do not yet deliver what the earlier description promised**: a reviewer with Packmol installed who runs gate 2 obtains a capacity number that the acceptance criterion cannot distinguish from "no enzyme placed", and seeds they cannot declare in advance. The description has been corrected to match (README, engine READMEs, `paper.md`); the behaviour is the repair plan's Fase 0 (PK-1…PK-5) and PO-1/PO-3/PO-6/PO-7. See §5.1 |
+| Functionality works as described | **OPEN** | Gates 3 and 4 are documented as illustrative / never run and flag themselves `"illustrative": true`. Gate 2's engine was repaired on 2026-10-05 (a reviewer with Packmol now gets a counted capacity, declared seeds and a `failed` status when nothing packs), but that behaviour has only been verified with a test double (PK-1 pending). Gate 1 still has the audited defects (PO-1/PO-3/PO-6/PO-7). The description matches this (README, engine READMEs, `paper.md`). See §5.1 |
 | Performance claims | **DONE** | No performance claims are made in the paper, so none need substantiating |
-| Automated tests | **DONE, with a caveat** | 22 tests (17 smoke, 5 golden on `substrate_section`), run in CI on every push and pull request, plus a `compileall` pass over the other three engines. **Caveat a reviewer will see:** none of the 22 tests touches the packing engine, and all 22 pass with the audit's blocking defects present. Task PK-5 adds engine tests with a Packmol double |
+| Automated tests | **DONE, with a caveat** | 60 tests (17 smoke, 5 golden on `substrate_section`, 39 packing engine/runner tests with a Packmol double; 28 of those fail against the pre-repair code) plus one skipped without a real Packmol, run in CI on every push and pull request, with a `compileall` pass over the other three engines and the static check of PackMan's MD inputs against the SIRAH reference. **Caveat a reviewer will see:** nothing in CI runs a real binary, and the pore engine has no tests |
 
 ### Documentation
 
@@ -249,19 +250,21 @@ than things to hide.
 
 ### 5.1 "Two of your four gates do not work" — now: "none of the four is validated"
 
-The accurate statement, after the audits of 2026-10-04, is: gates 1 and 2 have real engines
-wired end to end whose headline numbers are **not yet validated** (gate 2's acceptance
-criterion is broken and seeds are random; gate 1's only committed result is the wild type
+The accurate statement, after the audits of 2026-10-04 and the repairs of 2026-10-05, is:
+gates 1 and 2 have real engines wired end to end whose headline numbers are **not yet
+validated** (gate 2's acceptance criterion and seeds were repaired and tested with a double
+but not yet exercised with a real Packmol; gate 1's only committed result is the wild type
 measured off-axis and is marked invalid in place); gate 3 is a placeholder; gate 4 has never
-run and its committed inputs are stubs. This is now stated consistently in the paper, the
-README, every engine README, the usage documentation, and at runtime through the
-`"illustrative": true` flag.
+run — its protocol is now the SIRAH reference, but its system preparation is still broken.
+This is now stated consistently in the paper, the README, every engine README, the usage
+documentation, and at runtime through the `"illustrative": true` flag.
 
 JOSS asks that functionality match its description, not that software be finished. The
 defensible position is therefore one of two, and it is decision DC-1 of the repair plan:
 
-- **Repair first** (recommended by the audits, ~6 days: PK-1…PK-5, PO-1, PO-3, PO-6, PO-7),
-  then describe gates 1 and 2 as real; or
+- **Repair first** (recommended by the audits; the packing part is done, what remains is
+  PK-1 on a machine with Packmol plus PO-1, PO-3, PO-6, PO-7 for the pore, ~4 days), then
+  describe gates 1 and 2 as real; or
 - **Submit now**, describing gates 1 and 2 as "engine wired, result under review" — which
   is what the documentation says today — and the engine wrappers, the composed workflow, the
   pinned environment and the explicit status reporting as the contribution.
@@ -306,14 +309,16 @@ and it is compatible with the GPL and LGPL engines the project calls.
 
 ### 5.6 "No molecular dynamics results" — and "the inputs are stubs"
 
-Correct on both counts, and the author's own standing instruction is that **no dynamics
-result from this project should be treated as validated**. A reviewer who opens
-`PackMan.v.1.2/archivos_dm_cg/*.in` will find `nstlim = 500` under titles reading "15ns" and
-"35ns", and eight all-atom inputs in a coarse-grained protocol; the PackMan README now says
-so first. The honest answer is that the committed files are the scaffold of a protocol, that
-the audit identified exactly what is wrong (`AUDITORIA_MD.md`, tasks MD-1…MD-10 with the
-corrected inputs written out in `PLAN_REPARACION_MD.md`), and that running it depends on
-repairing the preparation path first and on GPU access second.
+Correct on the first count, and the author's own standing instruction is that **no dynamics
+result from this project should be treated as validated**. On the second: the inputs
+committed before 2026-10-05 were stubs (`nstlim = 500` under titles reading "15ns" and
+"35ns", plus eight all-atom inputs in a coarse-grained protocol), and no 15 ns or 35 ns run
+ever existed. Since PackMan v1.3.0 the five `.in` files are the SIRAH reference protocol
+(5 ns + 25 ns + 10 ns per chunk) with fixed seeds, and CI checks them parameter by parameter
+(`verificar_protocolo_md.py`). The honest answer is that the protocol is now real, that the
+audit identified exactly what is still wrong in the preparation path (`AUDITORIA_MD.md`,
+tasks MD-1…MD-5: no hydrogens, no `TER`, hexadecimal serials, `gensystem.leap`), and that
+running it depends on repairing that path first and on GPU access second.
 
 ### 5.7 "Your own documentation contradicted your code"
 

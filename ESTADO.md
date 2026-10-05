@@ -5,14 +5,16 @@
 > TECHNICAL_IMPROVEMENTS.md, **manda este documento**: esos son planes fósiles de
 > una versión anterior del proyecto.
 >
-> Última revisión: 2026-10-05 (reconciliación con las auditorías del 2026-10-04) · Repo:
-> github.com/najera-maldonado/vlp-studio (público desde 2026-09-18)
+> Última revisión: 2026-10-05 (fusión en `main` de las auditorías del 2026-10-04 y de las dos
+> reparaciones: packing y protocolo MD) · Repo: github.com/najera-maldonado/vlp-studio
+> (público desde 2026-09-18)
 >
-> **Aviso de revisión.** El 2026-10-04 se auditaron los cuatro motores desde cero (9 informes
-> en ramas; consolidación en `HOJA_DE_RUTA.md`, rama `claude/consolidate-audit-roadmap-k82rek`).
-> Varias afirmaciones de este documento quedaron desmentidas y se corrigen abajo, marcadas
-> **[AUDITORÍA 2026-10-04]**. La lista completa de correcciones, con evidencia, está en
-> `CORRECCIONES_DOCUMENTACION.md`. Las secciones §4–§6 conservan el diagnóstico del
+> **Aviso de revisión.** El 2026-10-04 se auditaron los cuatro motores desde cero (9 informes,
+> consolidados en `HOJA_DE_RUTA.md`; todos en `main` desde el 2026-10-05). Varias afirmaciones
+> de este documento quedaron desmentidas y se corrigen abajo, marcadas **[AUDITORÍA
+> 2026-10-04]**; lo que ya se reparó va marcado **[REPARADO 2026-10-05]**. La lista completa de
+> correcciones, con evidencia, está en `CORRECCIONES_DOCUMENTACION.md`; el estado real tras las
+> reparaciones, en `HOJA_DE_RUTA.md §0`. Las secciones §4–§6 conservan el diagnóstico del
 > 2026-09-17 donde sigue vigente.
 
 ---
@@ -25,9 +27,9 @@ como un **embudo de 4 filtros** que un sustrato debe superar:
 | Puerta | Pregunta | Motor real | Estado |
 |--------|----------|------------|--------|
 | A través | ¿Entra el sustrato por el poro? | Poromania (HOLE + idock + PyMOL) / Studio (HOLE + Vina) | Motor cableado de punta a punta; **resultado en revisión** [AUDITORÍA 2026-10-04]: el único perfil commiteado (1,92 Å) es del WT sin mutar, medido con `cpoint` a 7,6 Å del eje y `cvect` 19° desviado (`INVALIDO.md` en la carpeta). El Studio tiene el eje correcto en C5 pero su cribado falla en el pentámero y el eje está mal condicionado en trímeros |
-| Dentro | ¿Cabe la enzima en la cavidad? | Studio (Packmol + PyMOL) | Motor corre; **capacidad en revisión** [AUDITORÍA 2026-10-04]: criterio de aceptación muerto (regex que PACKMOL no escribe) + fallback ciego (la cápside sola supera el umbral) → con un doble de PACKMOL reporta 100 enzimas, σ 0, con 0 colocadas; semillas aleatorias en producción; sin tests del motor. Resto ilustrativo |
+| Dentro | ¿Cabe la enzima en la cavidad? | Studio (Packmol + PyMOL) | Motor corre; **capacidad todavía en revisión**. [AUDITORÍA 2026-10-04] criterio de aceptación muerto + fallback ciego (con un doble de PACKMOL reportaba 100 enzimas, σ 0, con 0 colocadas), semillas aleatorias, sin tests. [REPARADO 2026-10-05] criterio real (línea correcta del log, conteo de copias, rechazo de `_FORCED`, enzimas dentro de la cápside), semilla fija `seed_base + i`, config leída, 39 tests con doble en CI. **Pendiente:** ninguna corrida con PACKMOL real desde la reparación (PK-1); `best` sigue siendo el titular (DC-6); radio ±1 Å (CIENCIA-1). Resto ilustrativo |
 | Fuera | ¿Evita la respuesta inmune? | — (NetMHCIIpan/FEP no integrados) | **Ilustrativo** |
-| Sobrevive | ¿Aguanta la dinámica molecular? | PackMan (SIRAH + AMBER) | **MD sin correr y no ejecutable tal como está** [AUDITORÍA 2026-10-04]: `eq1/eq2/prod` son stubs de 10 ps (títulos "15ns"/"35ns"; ≈ 240 ps en total), 8 de 13 `.in` all-atom, y `run_maestro.sh` entrega a `cgconv.pl` un PDB sin H y sin `TER` |
+| Sobrevive | ¿Aguanta la dinámica molecular? | PackMan (SIRAH + AMBER) | **MD sin correr; nunca hubo corridas de 15 ni 35 ns.** [AUDITORÍA 2026-10-04] `eq1/eq2/prod` eran stubs de 10 ps con esos títulos (≈ 240 ps en total), 8 de 13 `.in` all-atom, y `run_maestro.sh` entrega a `cgconv.pl` un PDB sin H y sin `TER`. [REPARADO 2026-10-05, v1.3.0] protocolo de 5 etapas de `tutorial/5` (5 + 25 + 10 ns/trozo), semillas fijas, verificador estático en CI. **Pendiente:** la preparación del sistema sigue produciendo una topología inválida (MD-1…MD-5), así que el protocolo no puede correr de punta a punta |
 
 El **Studio** (`nanocapsule-mvp`) es la fachada web única; los otros tres proyectos
 son los motores científicos.
@@ -38,8 +40,8 @@ son los motores científicos.
 
 ### `nanocapsule-mvp/` — el Studio (fachada web)
 - App Flask. Arranca: `FLASK_DEBUG=0 python3 src/web/app.py` → http://localhost:5000
-- Backend en capas (bien trazado): `app.py` (adaptador HTTP delgado) → `services/packing_service.py` (toda la lógica, 1225 líneas) → `core/` (dominio) + `core/paths.py` (rutas centralizadas, incluye el puente a Poromania).
-- Frontend: `src/web/templates/studio.html` (1190 líneas, todo el JS inline, NGL + Chart.js por CDN). 5 pestañas.
+- Backend en capas (bien trazado): `app.py` (adaptador HTTP delgado) → `services/` (un módulo por puerta tras VLP-03; `packing_service.py` es la fachada) → `core/` (dominio) + `core/paths.py` (rutas centralizadas, incluye el puente a Poromania).
+- Frontend: `src/web/templates/studio.html` (solo estructura tras VLP-04a/b) + `static/js/` (un módulo por pestaña), NGL + Chart.js por CDN. 5 pestañas.
 - `/classic` sirve `index.html`: interfaz **legada redundante** (duplica el núcleo de packing). Candidata a retirar.
 
 ### `Poromania.v.1.2./` — análisis de poros (motor de la puerta "A través")
@@ -56,15 +58,16 @@ son los motores científicos.
 ### `PackMan.v.1.2/` — dinámica molecular (motor de la puerta "Sobrevive")
 - MD coarse-grained SIRAH de enzima-en-cápside: empaquetado → conversión CG → tleap → pmemd.cuda → cpptraj → gráficas.
 - El subsistema `analisis/` (cpptraj) produce los `.dat` (frame, valor) que la pestaña "Análisis MD" del Studio sabe leer (con bugs propios: máscaras por `resSeq`, RMSF sin `rms` previo, LCPO sin parámetros CG).
-- Solo el empaquetado tiene evidencia de ejecución (1 corrida, n = 1). **MD sin correr** (no hay trayectorias, `mdout`, `leap.log` ni `.dat`).
-- [AUDITORÍA 2026-10-04] **No puede correr con lo commiteado:** `.in` stubs de 10 ps rotulados 15/35 ns; 8 all-atom; topología sin H ni `TER` por `run_maestro.sh`; `gensystem.leap` sin disulfuros ni sal; scripts de setup que invocan plantillas inexistentes. Las cifras de MD del Studio (`md.py`: RMSD 2,8 Å, SASA 41 893 Å², 17 666 K) son sintéticas.
+- Solo el empaquetado tiene evidencia de ejecución (1 corrida, n = 1). **MD sin correr** (no hay trayectorias, `mdout`, `leap.log` ni `.dat`). Nunca existió una corrida de 15 ni 35 ns: eran títulos sobre stubs de 10 ps.
+- [AUDITORÍA 2026-10-04] **No podía correr con lo commiteado:** `.in` stubs de 10 ps rotulados 15/35 ns; 8 all-atom; topología sin H ni `TER` por `run_maestro.sh`; `gensystem.leap` sin disulfuros ni sal; scripts de setup que invocan plantillas inexistentes. Las cifras de MD del Studio (`md.py`: RMSD 2,8 Å, SASA 41 893 Å², 17 666 K) son sintéticas.
+- [REPARADO 2026-10-05, v1.3.0] Los `.in`: 5 etapas copiadas de `tutorial/5` (em1, em2, eq1 5 ns, eq2 25 ns, prod 10 ns/trozo), sin los 8 all-atom ni `configurar_simulacion.sh`; `run_MD.sh` reanudable con semillas fijas; `verificar_protocolo_md.py` en CI. **Sigue roto:** la preparación del sistema (sin H, sin `TER`, seriales hex, `gensystem.leap`, scripts de setup con plantillas inexistentes, `run_maestro.sh` llamando a un script de análisis que no existe) y los defectos del análisis cpptraj. Ver `PackMan.v.1.2/README.md`.
 
 ---
 
 ## 3. Estado real por puerta del Studio
 
 - **BIBLIOTECA** — real. Tablas de cápsides/enzimas con datos calculados (`/api/library/detail`). Pendiente: radio interno solo cacheado para BMV; tabla de sustratos.
-- **STUDIO 3D** — mitad real. Packing Packmol + preview reales como ejecución; **el número de capacidad no es una medición** [AUDITORÍA 2026-10-04] (criterio de aceptación muerto, fallback ciego, `n_packed` no se cuenta, `best` = máximo sobre réplicas, semillas aleatorias, timeout 90 s y `collision_margin` hardcodeados, radio 90 Å por defecto rotulado "calculado"). "Sustrato alrededor" por SMILES (RDKit) y preparador de DM generan geometría/inputs pero **no ejecutan** (y `md_prepare` emite ff19SB + TIP3P all-atom para un motor SIRAH).
+- **STUDIO 3D** — mitad real. Packing Packmol + preview reales como ejecución; **el número de capacidad todavía no es una medición validada**. [AUDITORÍA 2026-10-04] criterio de aceptación muerto, fallback ciego, `n_packed` no se contaba, semillas aleatorias, timeout 90 s y `collision_margin` hardcodeados, radio 90 Å por defecto rotulado "calculado". [REPARADO 2026-10-05] todo lo anterior salvo: `best` sigue siendo el titular (DC-6), `/api/capsid/radius` sigue devolviendo 90 Å rotulado "calculado" (aunque el runner ya se niega a empaquetar con ese valor), y no hay ninguna corrida con PACKMOL real posterior a la reparación (PK-1). "Sustrato alrededor" por SMILES (RDKit) y preparador de DM generan geometría/inputs pero **no ejecutan** (y `md_prepare` emite ff19SB + TIP3P all-atom para un motor SIRAH).
 - **PAC-PORE** — cableado de punta a punta; **no validado** [AUDITORÍA 2026-10-04]. Aciertos: eje por tensor de segundo momento (0,00° en C5), `rseed 1`, `vdwradii.lib` compartido, `substrate_section` con golden. Defectos: `_pore_residues` deja 1 residuo sobre `poro5fold` (las 5 subunidades comparten `chain A`), eje mal condicionado en trímeros (≈ 6°), mutagénesis sin verificar, `except: continue` en cribado y docking, `_AXIS_MIN` guarda el 1,92 (pentámero) como 3-fold con el orden invertido, el badge "(ilustrativo)" se vació en `40f4b03` mientras `/api/pore/profile` sigue siendo una gaussiana. Los "2,47 / 1,68 Å" solo existen en prosa, sin artefacto.
 - **DE-INMUNIZACIÓN** — ilustrativo. Diccionario estático (`_DEIMMUNO`). Marcado "(ilustrativo)" en la UI.
 - **ANÁLISIS MD** — ilustrativo. Curvas sintéticas (`math.sin`) con anclajes numéricos ("RMSD final 2.8 Å", "heat1 → 17.666 K · el fallo real", `source: packmanreplicas1/1_2`) que **no corresponden a ninguna corrida del repo**. El motor real (PackMan) existe pero su MD no se ha corrido.
@@ -80,17 +83,21 @@ existe en dos sitios que pueden divergir. Cualquier corrección debe decidirse e
 > [AUDITORÍA 2026-10-04] Esta sección es el diagnóstico de septiembre. La lista completa y
 > actual de defectos, con severidad, evidencia y tarea de reparación, es `HOJA_DE_RUTA.md`
 > (§4 y §5). Los hallazgos que cambian este documento:
-> - **Packing (CRÍTICO):** regex de aceptación muerta (`parallel_packer.py:35,192`), fallback
->   por líneas ciego (`:303`), `n_packed` asumido, semillas no leídas de la config
->   (`experiment_runner.py:160`), `timeout=90` y `collision_margin=2.0` hardcodeados,
->   fallback silencioso de 90 Å, cápside sin `center` en el `.inp`, pérdida de `TER` (180→3→0),
->   `radio_interno.txt` global atribuido a BMV, experimentos sin timestamp que se sobrescriben,
->   `Input/Enzimas/` mutado (GCase sin respaldo). Cero tests del motor.
+> - **Packing (CRÍTICO → reparado en software el 2026-10-05, `REPARACION_PACKING.md`):** regex
+>   de aceptación muerta, fallback por líneas ciego, `n_packed` asumido, semillas no leídas de
+>   la config, `timeout=90` y `collision_margin=2.0` hardcodeados, cápside sin `center` en el
+>   `.inp`, primera pérdida de `TER` (180→3) por el centrado con PyMOL, cero tests del motor:
+>   **todo eso está corregido** (líneas de código citadas en la auditoría ya no aplican).
+>   **Sigue abierto:** fallback de 90 Å rotulado "calculado" en `/api/capsid/radius` (el
+>   runner ya lo rechaza), pérdida de `TER` y seriales hex por PACKMOL (T1), `radio_interno.txt`
+>   global atribuido a BMV, experimentos sin timestamp que se sobrescriben, `Input/Enzimas/`
+>   mutado antes de la reparación (GCase sin respaldo), PK-1 (PACKMOL real).
 > - **Poro (CRÍTICO):** mutante commiteado = WT; estructura usada ≠ cargada por el script;
 >   `cpoint`/`cvect` fuera del canal; sin `rseed` en Poromania; filtro `radio > 0.5` oculta
 >   oclusión; `1run_hole.sh:55` nunca imprime el radio; idock sin semilla.
-> - **MD (CRÍTICO):** ver §2 PackMan. Además `fix_pdb_serial.py` desplaza columnas desde el
->   átomo 100 000 y ningún script lo invoca.
+> - **MD (CRÍTICO; protocolo reparado el 2026-10-05, preparación del sistema no):** ver §2
+>   PackMan. Además `fix_pdb_serial.py` desplaza columnas desde el átomo 100 000 y ningún
+>   script lo invoca.
 > - **Transversal:** PDB > 99 999 átomos (seriales hex de Packmol) y pérdida de `TER` cruzan
 >   los cuatro motores → una utilidad única (T1).
 > - **Repo:** `THIRD_PARTY.md` decía que SIRAH no se redistribuye y el repo versiona 146
@@ -101,12 +108,12 @@ existe en dos sitios que pueden divergir. Cualquier corrección debe decidirse e
 - **`Poromania/5docking.sh`**: `found_any` se inicializa en 0 y **nunca se pone a 1** → el script termina siempre con `exit 1` aunque el docking funcione, y eso hace fallar a `smiles_docking_pipeline.py`.
 - **`sustratinaitor` — mismatch de resolución (confirmado)**: Packmol empaquetó el GYE **all-atom de 144 átomos** (160.620 = 131.820 + 200×144), no los 17 beads CG. La versión CG (`GYE_cg_manual.pdb`) quedó huérfana. El sistema resultante (cápside-CG + ligando-atomístico + agua-CG) es físicamente incoherente para SIRAH.
 - **`nanocapsule-mvp/src/core/capsid.py`**: el código **suma** `+1.0 Å` al radio de colisión, pero su docstring y el CLAUDE.md dicen **restar** 1 Å. Una de las dos es un bug; hay que decidir cuál.
-- **`PackMan` — `heat1..6*.in` son all-atom** (`dt=0.002`, SHAKE, `@CA,C,N,O`) aplicados a topología CG SIRAH (`dt=0.020`, `@GN,GO`). El calentamiento está pensado para otra resolución.
+- ~~**`PackMan` — `heat1..6*.in` son all-atom** (`dt=0.002`, SHAKE, `@CA,C,N,O`) aplicados a topología CG SIRAH.~~ **Resuelto el 2026-10-05 (v1.3.0):** eliminados; el protocolo sigue `tutorial/5` de SIRAH sin etapa de calentamiento (CIENCIA-3 cerrada).
 
-### Infraestructura desincronizada
-- **Docker roto para el producto real**: los healthchecks (Dockerfile y compose) pegan a `/api/health`, **endpoint que no existe**. Y el Dockerfile **no instala RDKit, HOLE, Vina ni obabel** → Pac-Pore reventaría en el contenedor. El Docker solo sirve al MVP viejo.
-- **`requirements.txt` no declara RDKit**, que es import duro de dos puertas.
-- **`setup.py`** apunta a `cli/main.py` inexistente (entry point roto).
+### Infraestructura desincronizada (diagnóstico de 2026-09-17; corregido en VLP-01/VLP-09, se deja como registro)
+- ~~**Docker roto para el producto real**: los healthchecks pegan a `/api/health`, endpoint que no existe; el Dockerfile no instala RDKit, Vina ni obabel.~~ Corregido en VLP-01 (`/api/health` real; imagen py3.12 con obabel/vina/RDKit; HOLE e idock siguen siendo del usuario).
+- ~~**`requirements.txt` no declara RDKit.**~~ Corregido en VLP-01 (+ `requirements.lock`).
+- ~~**`setup.py`** apunta a `cli/main.py` inexistente.~~ Corregido en VLP-09.
 
 ### Documentación fósil
 - README/CLAUDE describen ~4 endpoints que no existen (`/api/structures`, `/api/generate_pdb`, `/api/radius/{capsid}`, `/api/download/{exp_id}`) y **ninguno** de los ~20 reales.
@@ -224,15 +231,15 @@ cuando se conecten de verdad, y en la etapa rota de `sustratinaitor` (bug de res
 | **VLP-02** | ✅ | **Bug mecánico corregido** (2026-09-17): `5docking.sh` `found_any` ahora se pone a 1 en el loop (antes `exit 1` siempre). Verificado. Los otros 3 "bugs" resultaron ser **decisiones científicas** → reclasificados abajo (CIENCIA-1/2/3), no se tocan ahora por decisión de Lucio. |
 | **VLP-03** | ✅ | **`packing_service.py` partido** (2026-09-17, patrón estrangulador): el monolito de 1225 líneas → 6 módulos por responsabilidad — `common.py` (infra+helpers), `library.py`, `pore.py` (526), `deimmuno.py`, `md.py`, `packing.py`. `packing_service.py` quedó como **fachada** (71 líneas) que re-exporta la API; `app.py` y los tests no cambiaron. 17 tests verdes + boot en vivo (una ruta por puerta → 200). Para añadir puerta: nuevo módulo + re-exportar en la fachada. |
 | **VLP-04a** | ✅ | **Externalizar `studio.html`** (2026-09-17): CSS y JS inline → `static/css/studio.css` (77) y `static/js/studio.js` (830); el template pasó de 1190 a 281 líneas (solo estructura). Extracción byte-idéntica (script Python). Verificado: node --check del JS, servido con content-type correcto, 17 tests backend verdes, y **en navegador** (render, badge PACKMOL LISTO, biblioteca real, cambio de pestaña a PAC-PORE con gráfica Chart.js, cero errores de consola). |
-| **VLP-04b** | ⬜ | **Partir `studio.js`** (830 líneas) en un módulo por pestaña (biblioteca/studio/pore/deimmuno/md) preservando el ámbito global (scripts clásicos en orden). Ya hay red de navegador para verificar. |
+| **VLP-04b** | ✅ | **Partir `studio.js`** (2026-09-18): 830 líneas → 6 archivos por puerta en `static/js/`, byte-idéntico, verificado en navegador. |
 | **VLP-04c** | ❌ | **Portada EMBUDO — DESCARTADA** (2026-09-17): se construyó y se revirtió a petición de Lucio ("no le veo utilidad"). `/` sigue entrando directo al Studio. NO reconstruir. |
 | **VLP-05** | ⬜ | **Retirar fósiles**: `/classic`, prototipos muertos, código muerto de Poromania, docs que mienten. **+ Renombrar `nanocapsule-mvp/` → `studio/`** (el nombre es fósil; contiene el Studio vivo). OJO al renombrar: actualizar `herramientas/vlpstudio.kdl`, `herramientas/salud.sh`, PENDIENTES/BITACORA y docs que citen la ruta (paths.py se resuelve por `__file__`, no se rompe). |
 | **VLP-06** | ✅ | **Tests de humo** (2026-09-17, ADELANTADO antes de VLP-03 para tener red al partir el monolito): `nanocapsule-mvp/tests/test_smoke.py`, 17 tests, ~1.5s. Cubren boot, páginas, biblioteca, Pac-Pore (rutas rápidas), sección RDKit, MD/deimmuno ilustrativos, preview y funciones de servicio. NO ejercen motores lentos (HOLE/PyMOL/Vina/Packmol). Correr: `cd nanocapsule-mvp && python3 -m pytest -q` (o `test` en el pane manual). El tablero `salud.sh` muestra el resultado. |
 | **VLP-07** | ✅ | **Versionado por motor** (2026-09-17): `VERSION` + `CHANGELOG.md` en cada motor, independientes (Studio 0.1.0, Poromania 1.2.0, PackMan 1.2.0, sustratinaitor 0.1.0). Convención de tags git con prefijo por motor: `studio/vX.Y.Z`, `poromania/vX.Y.Z`, `packman/vX.Y.Z`, `sustratinaitor/vX.Y.Z`. Se versiona en archivo, NO en el nombre de carpeta (frágil). Tags baseline creados. |
-| **VLP-08** | ⬜ | **CI (GitHub Actions)**: correr `pytest` en cada push/PR. Lo más valioso: sin CI los tests se pudren. Instalar RDKit + deps; los motores binarios NO van a CI (los tests no los ejercen). Cuidar que `Input/` tenga datos (o mockear). |
-| **VLP-09** | ⬜ | **LICENSE + arreglar `setup.py`**: hoy declara MIT pero no hay archivo LICENSE (incoherencia); el entry point apunta a `cli/main.py` inexistente → añadir LICENSE real y retirar/arreglar el entry point. |
-| **VLP-10** | ⬜ | **Linter/formatter**: `black` + `flake8` (ya en requirements, sin usar) con config (`pyproject.toml`/`setup.cfg`) y, opcional, `pre-commit`. |
-| **VLP-11** | ⬜ | **Script de datos**: `fetch_data.sh` que redescargue las estructuras pesadas gitignoreadas (cápside P22 de RCSB) → clon fresco 100% reproducible. Cierra el hueco de VLP-01. |
+| **VLP-08** | ✅ | **CI (GitHub Actions)** (2026-09-18): ruff + pytest del Studio desde `requirements.lock`; job `engines` con `compileall` de los otros motores y, desde 2026-10-05, `verificar_protocolo_md.py` de PackMan. Los binarios no van a CI. |
+| **VLP-09** | ✅ | **LICENSE + `setup.py`** (2026-09-18): AGPLv3 (relicenciado desde MIT) + `THIRD_PARTY.md`; entry point arreglado. |
+| **VLP-10** | ✅ | **Linter/formatter** (2026-09-17): ruff (`pyproject.toml`); CI corre `ruff check` + `ruff format --check`. |
+| **VLP-11** | ✅ | **`fetch_data.sh`** (2026-09-17): baja la cápside P22 (5UU5) de RCSB; la biblioteca por defecto viaja en el repo. |
 
 Deliberadamente FUERA del plan por ahora (se consideraron): tests de integración de los
 motores (lentos, requieren binarios); type checking (mypy); logging real (sección de
@@ -249,4 +256,4 @@ FLASK_DEBUG=0 python3 src/web/app.py
 # http://localhost:5000
 ```
 
-Requiere en el sistema: `packmol`, `pymol`, `hole`, `vina`, `obabel`, `idock` (binarios) y `rdkit`, `flask`, `numpy`, `pyyaml` (Python). Ver §4: `requirements.txt` está incompleto.
+Requiere en el sistema: `packmol`, `pymol`, `hole`, `vina`, `obabel`, `idock` (binarios) y las dependencias Python de `requirements.lock` (`pip install -r requirements.lock`). Tests: `python -m pytest -q` (60 + 1 saltado sin PACKMOL real).

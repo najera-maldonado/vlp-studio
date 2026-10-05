@@ -4,7 +4,7 @@
 > audit of 2026-10-04 and describes plans the software never implemented. Do not cite it as
 > project state: the authoritative map is `ESTADO.md`, the corrected claims are in
 > `CORRECCIONES_DOCUMENTACION.md`, and the repair plan is `HOJA_DE_RUTA.md`
-> (branch `claude/consolidate-audit-roadmap-k82rek`). Kept as a historical record.
+> (merged into `main` on 2026-10-05). Kept as a historical record.
 
 ## 📋 Project Status Overview
 

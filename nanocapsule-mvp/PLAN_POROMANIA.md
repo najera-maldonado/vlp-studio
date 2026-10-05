@@ -6,7 +6,7 @@
 > con la geometría de HOLE fuera del eje del poro (ver
 > `Poromania.v.1.2./mutants/mut_129HIS_132GLY/INVALIDO.md` y `CORRECCIONES_DOCUMENTACION.md`).
 > Mapa vigente: `ESTADO.md`; plan de reparación: `HOJA_DE_RUTA.md`
-> (rama `claude/consolidate-audit-roadmap-k82rek`). Se conserva como registro histórico.
+> (en `main` desde el 2026-10-05). Se conserva como registro histórico.
 
 Diseño de integración. **No implementado aún** — decidido "solo diseño" el 2026-07-23.
 Objetivo: que la vista **Pac-Pore** del studio use perfiles de poro **reales** de

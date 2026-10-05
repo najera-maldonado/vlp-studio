@@ -247,9 +247,10 @@ profile computed on a different axis is not comparable with the others.
 
 ## Audit findings (2026-10-04)
 
-From `AUDITORIA_PORO.md` (branch `claude/audit-poro-engine-giea7e`), all reproducible without
-HOLE or PyMOL; the consolidated repair plan is `HOJA_DE_RUTA.md` (branch
-`claude/consolidate-audit-roadmap-k82rek`), tasks PO-1 to PO-11.
+From [`AUDITORIA_PORO.md`](../AUDITORIA_PORO.md), all reproducible without HOLE or PyMOL;
+the consolidated repair plan is [`HOJA_DE_RUTA.md`](../HOJA_DE_RUTA.md), tasks PO-1 to PO-11.
+**None of these has been repaired yet** (state as of the merge of 2026-10-05; the repairs of
+that date concern the packing engine and the PackMan protocol, not this engine).
 
 | ID | Finding | Check it yourself |
 |----|---------|-------------------|

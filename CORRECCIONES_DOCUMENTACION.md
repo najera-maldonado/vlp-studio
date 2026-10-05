@@ -12,7 +12,17 @@
 > revisor de JOSS ni un usuario— lea en este repositorio una afirmación que el propio
 > repositorio puede refutar.
 >
-> **Fuentes** (todas del 2026-10-04, un commit sobre `40f4b03`, sin fusionar en `main`):
+> **Adenda de la fusión (2026-10-05).** Este inventario describe el código de `main` en
+> `40f4b03`. El mismo día de la fusión entraron dos reparaciones de código que cierran parte
+> de lo que aquí se da por pendiente (§7): el motor de packing (`nanocapsule-mvp/REPARACION_PACKING.md`:
+> criterio de aceptación, conteo, semillas fijas, config leída, tests con doble — cierra C-01
+> en su mitad "semilla fija" y C-02/C-04, pero **no** C-01 en su mitad "golden test del
+> packing", que sigue sin existir) y el protocolo MD de PackMan (v1.3.0: cierra C-21 y la
+> mitad "stubs" de C-20; la MD sigue sin correr y la preparación del sistema sigue rota). Los
+> documentos vivos ya reflejan ese estado; este archivo queda como registro de lo que decía la
+> documentación y por qué era falso. Las líneas de código citadas abajo son las de `40f4b03`.
+>
+> **Fuentes** (todas del 2026-10-04, un commit sobre `40f4b03`; en `main` desde el 2026-10-05):
 > - `HOJA_DE_RUTA.md` — rama `claude/consolidate-audit-roadmap-k82rek` (consolida las 9)
 > - `AUDITORIA_PACKING.md` — rama `claude/audit-packing-engine-wwph45` (motor ejecutado con doble)
 > - `AUDITORIA_MD.md` — rama `claude/audit-packman-dynamics-engine-52svym`

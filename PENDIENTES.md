@@ -22,6 +22,13 @@ fuentes en `HOJA_DE_RUTA.md §9`). Veredicto, con evidencia reproducible desde e
   target distance:` (0 coincidencias en los dos logs reales del repo); el fallback acepta
   cualquier PDB con ≥ 10 000 líneas, que la cápside sola cumple. Con un doble de PACKMOL que
   coloca 0 enzimas, el motor reporta **100 enzimas, σ = 0**. → PK-1…PK-5.
+  **Reparado el 2026-10-05 (PK-2…PK-5; `nanocapsule-mvp/REPARACION_PACKING.md`):** criterio
+  real (línea correcta del log, `Success!`, rechazo de `_FORCED`, conteo de copias
+  colocadas, enzimas dentro de la cápside), config leída (semilla fija `seed_base + i`,
+  timeout, margen), centrado sin PyMOL que conserva `TER`, 39 tests con doble de PACKMOL en
+  CI. **Sigue pendiente:** PK-1 (medir PACKMOL real), PK-6 (radio: CIENCIA-1), PK-7
+  (estadístico: DC-6), T1 (`TER`/seriales hex en el PDB entregado). Ninguna corrida real
+  desde la reparación.
 - **El único resultado de poro (1.92 Å) es inválido:** `mut_129HIS_132GLY/receptor.pdb` es
   byte-idéntico a `WT.pdb`; el script carga otra estructura (CCMV) que la que lo produjo
   (BMV `poro5fold`); `cpoint` a 7.6 Å del eje y `cvect` 19° desviado. Marcado con
@@ -30,7 +37,12 @@ fuentes en `HOJA_DE_RUTA.md §9`). Veredicto, con evidencia reproducible desde e
   `nstlim = 500` (10 ps cada uno) bajo títulos "15ns"/"35ns"; 8 de 13 `.in` son all-atom;
   `run_maestro.sh` entrega a `cgconv.pl` un PDB sin H y sin `TER` (180 → 3 → 0). Las cifras
   de MD del Studio son `math.sin`. La receta CG correcta ya existe:
-  `sustratinaitor/1_capside/3J7L_cg.pdb`. → MD-1…MD-10.
+  `sustratinaitor/1_capside/3J7L_cg.pdb`. → MD-1…MD-10. **Reparado el 2026-10-05 (MD-6,
+  PackMan v1.3.0):** los 5 `.in` copian `tutorial/5` (5 + 25 + 10 ns por trozo), fuera los 8
+  all-atom y `configurar_simulacion.sh`, `run_MD.sh` de 5 etapas con semillas fijas,
+  `verificar_protocolo_md.py` en CI. **Sigue pendiente:** la preparación del sistema
+  (MD-1…MD-5: H, `TER`, disulfuros, iones), el humo en GPU (MD-7) y todo lo demás. Nunca
+  existió una corrida de 15 ni 35 ns.
 - **sustratinaitor:** conversión CG de la cápside correcta (byte a byte); pero la salida de
   Packmol pierde los 180 `TER`, el GYE empaquetado es all-atom a 20 fs sin SHAKE (no
   integrable), `GYE_cg_manual.pdb` no sirve de punto de partida, y la etapa 4 busca un
@@ -65,7 +77,7 @@ de que el packing y el poro digan lo que afirman (DC-1).
 ## Para dejarlo "bien bien" ANTES de publicar (pulido recomendado)
 - [x] **README de PackMan y sustratinaitor** (2026-09-17): los 4 motores documentados con estado honesto.
 - [x] **VLP-11 — `fetch_data.sh`** (2026-09-17): baja P22 5UU5 de RCSB; biblioteca por defecto ya viaja en el repo. Sintaxis validada, RCSB 200.
-- [x] **Golden test de regresión científica** (2026-09-17): `tests/test_golden_science.py`, radio de sección RDKit (seed fijo) con tolerancia; corre en CI. 5 tests. **Alcance real (auditoría 2026-10-04):** cubre solo `substrate_section` (puerta 1); el packing tiene cero tests; el valor congelado es semieje de centros atómicos sin vdW (×1,8–2,2 por debajo de la sección física). → PK-5, PO-10.
+- [x] **Golden test de regresión científica** (2026-09-17): `tests/test_golden_science.py`, radio de sección RDKit (seed fijo) con tolerancia; corre en CI. 5 tests. **Alcance real (auditoría 2026-10-04):** cubre solo `substrate_section` (puerta 1); el valor congelado es semieje de centros atómicos sin vdW (×1,8–2,2 por debajo de la sección física) → PO-10. El packing tenía cero tests hasta el 2026-10-05: ahora tiene 39 con doble de PACKMOL (PK-5 hecho), pero **sigue sin golden del radio** (PK-6).
 - [x] **VLP-10 — Linter/formatter** (2026-09-17): ruff (pyproject.toml), 39 fixes + format; CI usa ruff check + format --check.
 - [x] **CI para los otros motores** (2026-09-18): job `engines` corre compileall sobre Poromania/PackMan/sustratinaitor (verifican que su Python parsea; excluye bundle SIRAH). Verde.
 - [x] **VLP-04b — Partir `studio.js`** (2026-09-18): 830 líneas → 6 archivos por puerta (studio-core/library/analisis-md/deinmunizacion/pac-pore/packing). Byte-idéntico, verificado en navegador (PAC-PORE con Chart.js, 0 errores consola).
@@ -76,9 +88,10 @@ de que el packing y el poro digan lo que afirman (DC-1).
 ## Siguiente objetivo acordado: publicación en JOSS
 > **Estado completo y accionable en [`JOSS_CHECKLIST.md`](JOSS_CHECKLIST.md)** (en inglés).
 > Resumen: el paquete de documentación está hecho y **corregido tras las auditorías**
-> (2026-10-05, ver su §0). Antes de enviar hay que decidir **DC-1** (reparar packing y poro
-> primero, ~6 días, o enviar con las puertas 1 y 2 etiquetadas "en revisión", como ya dice la
-> documentación) y **DC-5** (bundle de SIRAH). Lo demás sigue siendo solo de Lucio.
+> (2026-10-05, ver su §0). Antes de enviar hay que decidir **DC-1** (reparar el poro primero
+> —el packing ya está reparado en software; falta PK-1 con PACKMOL real— o enviar con las
+> puertas 1 y 2 etiquetadas "en revisión", como ya dice la documentación) y **DC-5** (bundle
+> de SIRAH). Lo demás sigue siendo solo de Lucio.
 - [x] **Repo/docs en INGLÉS** (2026-10-04): README de la raíz + los 4 READMEs de motores +
       `docs/installation.md` + `docs/usage.md` + `CONTRIBUTING.md` + `paper.md` + `CITATION.cff`.
       Los documentos internos (ESTADO/PENDIENTES/BITACORA/REVISION/INVESTIGACION) se quedan en
@@ -120,14 +133,16 @@ de que el packing y el poro digan lo que afirman (DC-1).
 - [ ] Métodos de energía libre del cruce/unión (apuntes Lucio): umbrella sampling (= el push de arriba) · **metadinámica** (alternativa para el PMF) · **MM-PBSA/MM-GBSA** (energía de unión desde trayectoria MD; complementa/sustituye a Vina en `dock_correlate`).
 
 **Puerta 4 — MD (hoy NUNCA corrida; bloque "correr la MD bien"):**
-- [ ] **Antes de correr nada: reparar la preparación del sistema y los `.in`** (MD-1…MD-6 de
-      `HOJA_DE_RUTA.md`; los 5 `.in` correctos están literales en `PLAN_REPARACION_MD.md`,
-      rama `claude/packman-repair-plan-9c287t`). PackMan **no** tiene el protocolo: los `.in`
-      commiteados son stubs de 10 ps (≈ 240 ps en total) y la topología que genera
-      `run_maestro.sh` es inválida (sin H, sin `TER`).
+- [x] **Los 5 `.in` y el orquestador** (MD-6; PackMan v1.3.0, 2026-10-05): protocolo de
+      `tutorial/5` con semillas fijas, verificado en CI. Antes eran stubs de 10 ps con títulos
+      "15ns"/"35ns" (≈ 240 ps en total).
+- [ ] **Antes de correr nada: reparar la preparación del sistema** (MD-1…MD-5 de
+      `HOJA_DE_RUTA.md`): la topología que genera `run_maestro.sh` sigue siendo inválida (sin
+      H, sin `TER`), `convert_to_cg.sh` aborta con los seriales hexadecimales, y
+      `gensystem.leap` no pone disulfuros ni sal.
 - [ ] Humo en GPU (MD-7) y solo después producción 5 + 25 + ≥ 100 ns con `ig` fijo y
       manifiesto (MD-8). Faltan trayectorias/`.dat`.
-- [ ] **Réplicas a distintas temperaturas** (liga con CIENCIA-3, heat).
+- [ ] **Réplicas a distintas temperaturas** (CIENCIA-3 ya cerrada: sin rampa de heat; las réplicas se harían por `ig`/temperatura de `eq1`).
 - [ ] **Solvatar con dodecaedro rómbico** los sistemas icosaédricos (eficiente para ~esféricos).
 - [ ] **Añadir GROMACS** al pipeline empaquetador→MD (hoy PackMan es estilo AMBER).
 - [ ] **Decidir CG: SIRAH vs Martini 3** (apunte Lucio; ya era pregunta abierta en INVESTIGACION_2026-09-17.md).

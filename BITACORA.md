@@ -11,6 +11,45 @@
 
 ---
 
+## 2026-10-05 (26) — Fusión de las 15 ramas `claude/` en una sola rama revisable (RP-1 completo)
+
+- ✅ **Fusionadas sobre `main` (`40f4b03`) las 15 ramas `claude/`** en
+  `claude/merge-reconcile-branches-pgj04l`, con un merge commit por rama y la resolución de
+  cada conflicto explicada en su mensaje. Entran: 7 informes de auditoría (`AUDITORIA_MD`,
+  `AUDITORIA_PACKING` ×2, `AUDITORIA_PORO`, `AUDITORIA_SUSTRATO_Y_CG` ×2,
+  `AUDITORIA_SOFTWARE_STUDIO`), `HALLAZGOS_NO_DOCUMENTADOS` + su depuración
+  `HALLAZGOS_VERIFICADOS`, `PLAN_REPARACION_MD`, `HOJA_DE_RUTA`, el paquete JOSS + la
+  reconciliación documental (25), y **dos reparaciones de código**: el motor de packing
+  (`nanocapsule-mvp/REPARACION_PACKING.md`: PK-2…PK-5) y el protocolo MD de PackMan
+  (v1.3.0: MD-6, cierra CIENCIA-3).
+- **Conflictos y decisiones:** (a) las dos auditorías de packing y las dos de CG tenían el
+  mismo nombre de archivo → se conservan las dos de cada par; la segunda pasa a `_B.md`
+  siguiendo las etiquetas PK-A/PK-B y CG-A/CG-B de `HALLAZGOS_VERIFICADOS.md`; sus
+  contradicciones ya estaban arbitradas en `HOJA_DE_RUTA.md §2`. (b) `ESTADO.md`/`PENDIENTES.md`:
+  texto de la reconciliación + CIENCIA-3 marcada como cerrada por v1.3.0. (c)
+  `PackMan.v.1.2/README.md`: reescrito en inglés (JOSS) con el protocolo reparado y la
+  preparación del sistema todavía rota. (d) La cifra "199 de 200 sustratos fuera" de la
+  pasada de errores no documentados era un falso positivo (`HALLAZGOS_VERIFICADOS` §7.1).
+- ✅ **Corregida la documentación viva para el estado post-reparación** (README raíz, README del
+  Studio, PENDIENTES, ESTADO, esta bitácora, los 4 READMEs de motores, `docs/`, `paper.md`,
+  `JOSS_CHECKLIST.md`, `CONTRIBUTING.md`): el packing ya no es "determinista con golden test"
+  ni "sin semilla": tiene semilla fija `seed_base + i`, criterio real y 39 tests con doble de
+  PACKMOL, pero **sigue sin golden del radio y sin corrida con PACKMOL real** (PK-1, PK-6).
+  La MD **nunca tuvo corridas de 15 ni 35 ns**: eran títulos sobre stubs de 10 ps; hoy los
+  `.in` dicen 5/25/10 ns y siguen sin correr porque la preparación del sistema (MD-1…MD-5)
+  sigue rota.
+- ✅ **Batería verde tras la fusión:** `ruff check` y `ruff format --check` limpios; `pytest`
+  60 pasan + 1 saltado (`@engine`, PACKMOL real); `compileall` de los 3 motores;
+  `verificar_protocolo_md.py` OK (protocolo = referencia SIRAH salvo desvíos declarados). No
+  hubo que arreglar nada que la fusión rompiera.
+- ✅ **`HOJA_DE_RUTA.md §0` reescrito con el estado real**: hecho / sigue roto / decisiones del
+  autor (CIENCIA-1, CIENCIA-2, DC-1, DC-5, DC-6, DC-7, DC-8 y las DC-A…DC-G del packing).
+- ⬜ **Siguiente:** revisar y fusionar esta rama a `main` de una sentada; luego PK-1 (PACKMOL
+  real en la máquina de Lucio), PO-1/PO-3 (poro), MD-1…MD-5 (preparación del sistema), y las
+  decisiones DC-1/DC-5 antes de JOSS.
+
+---
+
 ## 2026-10-05 (25) — Reconciliar la documentación con las auditorías (RP-1, parte doc)
 
 - ✅ **Leídas las 4 ramas de auditoría** (`consolidate-audit-roadmap-k82rek` = `HOJA_DE_RUTA.md`,
@@ -35,6 +74,7 @@
 - ⬜ **Siguiente:** DC-1 (Lucio: reparar packing/poro antes de enviar a JOSS, ~6 días, o
   enviar reetiquetado) y DC-5 (SIRAH). Luego Ola 1–2 de `HOJA_DE_RUTA.md` (T1, PK-1…PK-5).
   Pendiente de RP-1: fusionar en `main` los 9 informes (`auditorias/2026-10-04/`) y esta rama.
+  **[Hecho en (26): fusionados en la raíz del repo, no en `auditorias/`.]**
   Fuera de este pase (código, no docs): los anclajes sintéticos de `md.py` ("el fallo real",
   `source: packmanreplicas1/1_2`) → MD-10; el badge "(ilustrativo)" vaciado en `40f4b03` → PO-6.
 

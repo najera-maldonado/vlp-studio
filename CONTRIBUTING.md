@@ -55,14 +55,19 @@ illustrative output disagreeing with reality is expected, not a bug. See
    cd nanocapsule-mvp
    ruff check src tests          # lint
    ruff format --check src tests # formatting
-   python -m pytest -q           # 22 tests
+   python -m pytest -q           # 60 tests (+1 skipped without a real Packmol)
    ```
    Continuous integration runs exactly these, plus a `compileall` pass over the other three
    engines. A pull request that fails them will not be reviewed until it passes.
 5. **Add a test when you change behaviour.** Smoke tests belong in `tests/test_smoke.py` and
-   should stay fast and engine-free. If your change alters a scientific number, the right
-   place is `tests/test_golden_science.py`, and changing a golden value needs a written
-   justification in the pull request: that is the whole point of freezing it.
+   should stay fast and engine-free. Packing-engine behaviour is tested in
+   `tests/test_packing_engine.py` and `tests/test_experiment_runner.py` against the Packmol
+   double in `tests/packmol_double.py`; if Packmol's log vocabulary changes, update the double
+   and the fixtures in `tests/fixtures/packmol_logs/` together. If your change alters a
+   scientific number, the right place is `tests/test_golden_science.py`, and changing a golden
+   value needs a written justification in the pull request: that is the whole point of
+   freezing it. A change to a PackMan `.in` must keep `PackMan.v.1.2/verificar_protocolo_md.py`
+   passing (update its declared-deviation list in the same commit).
 6. **Describe the change in terms of the funnel.** Which gate does it affect, and does it
    change a real measurement or an illustrative placeholder?
 
@@ -106,14 +111,19 @@ maintenance one.
 licences that forbid redistribution, so they will not be bundled into the Docker image or
 the repository, however convenient that would be.
 
-**Open scientific decisions are the author's to make.** Three issues are recorded as
+**Open scientific decisions are the author's to make.** Two issues are recorded as
 deliberately unresolved in [`ESTADO.md`](ESTADO.md) §4b, and pull requests that resolve them
 unilaterally will not be merged. The engine audits of 2026-10-04 give a recommendation for
 each (recorded in `ESTADO.md` §4b); the choice is still the author's:
 
-- `CIENCIA-1` — the sign of the ±1 Å internal-radius safety margin.
+- `CIENCIA-1` — the sign of the ±1 Å internal-radius safety margin (or its redefinition as
+  `d_min − r_vdW`).
 - `CIENCIA-2` — coarse-grained versus all-atom resolution of the substrate system.
-- `CIENCIA-3` — PackMan's heating protocol.
+
+(`CIENCIA-3`, PackMan's heating protocol, was closed on 2026-10-05 by adopting the SIRAH
+reference protocol.) The packing-specific decisions listed in
+`nanocapsule-mvp/REPARACION_PACKING.md` §3 (exclusion radius, headline statistic, violation
+threshold) are the author's as well; see also `HOJA_DE_RUTA.md` §3.
 
 Reporting them more clearly, or adding a test that pins current behaviour, is welcome.
 

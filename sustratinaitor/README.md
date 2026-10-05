@@ -11,8 +11,9 @@ configuration for a coarse-grained molecular dynamics simulation. It complements
 > system (`3J7L-GYE.pdb`: the coarse-grained capsid plus 200 GYE copies) exists with its
 > Packmol log (converged, violation 0.000, seed 1234567). Solvation, ionisation and the MD
 > itself have **not** been executed. Two independent audits of this engine (2026-10-04,
-> `AUDITORIA_SUSTRATO_Y_CG.md` on branches `claude/audit-sirah-coarse-grain-conversion-e9h0rt`
-> and `claude/audit-coarse-grained-conversion-rfst1e`) found:
+> [`AUDITORIA_SUSTRATO_Y_CG.md`](../AUDITORIA_SUSTRATO_Y_CG.md) and
+> [`AUDITORIA_SUSTRATO_Y_CG_B.md`](../AUDITORIA_SUSTRATO_Y_CG_B.md)) found (none of it repaired
+> as of 2026-10-05):
 >
 > - **The capsid conversion is correct** and reproducible byte for byte
 >   (`pdb2pqr --ff=AMBER` → `cgconv.pl`; 180 `TER`, all BPG/BPE beads present). It is the
@@ -170,14 +171,15 @@ now, without running anything, because the committed hybrid is ruled out by phys
   an all-atom MD of GYE). `GYE_cg_manual.pdb` is **not** a usable starting point (see
   stage 2).
 - **Option B — take the substrate out of the coarse-grained MD** (recommended by the audits).
-  Gate 4 simulates capsid + enzyme in SIRAH (PackMan, once repaired); substrate physics
+  Gate 4 simulates capsid + enzyme in SIRAH (PackMan, whose MD protocol was repaired on
+  2026-10-05 but whose system preparation is still pending); substrate physics
   (pore crossing, active site) is done all-atom in small systems, reusing `GYE.mol2` /
   `GYE.frcmod`, which are a correct GAFF2/AM1-BCC parametrisation. Stage 4 of this engine
   would then be retired.
 - **All all-atom** for the whole capsid — not viable at this size.
 
 Tracked as `CIENCIA-2` in [`ESTADO.md`](../ESTADO.md) §4b; tasks SU-1 to SU-3 and decision
-DC-3 in `HOJA_DE_RUTA.md` (branch `claude/consolidate-audit-roadmap-k82rek`).
+DC-3 in [`HOJA_DE_RUTA.md`](../HOJA_DE_RUTA.md).
 
 ## Contributing and support
 

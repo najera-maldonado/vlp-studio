@@ -15,17 +15,19 @@ physical criterion before it is allowed through to the next.
 > not supported by the code and data in the repository. The claims have been corrected
 > throughout the public documentation; every correction, with its evidence, is listed in
 > [`CORRECCIONES_DOCUMENTACION.md`](CORRECCIONES_DOCUMENTACION.md). The repair plan
-> consolidating all audit findings lives in `HOJA_DE_RUTA.md` on the branch
-> `claude/consolidate-audit-roadmap-k82rek`.
+> consolidating all audit findings is [`HOJA_DE_RUTA.md`](HOJA_DE_RUTA.md); its §0 states
+> what has been repaired and what has not. On 2026-10-05 the audit reports, the roadmap and
+> two repairs — the packing engine (`nanocapsule-mvp/REPARACION_PACKING.md`) and the PackMan
+> MD protocol (PackMan v1.3.0) — were merged into `main`.
 
 ## The four-gate funnel
 
 | Gate | Question | Engine | Status |
 |------|----------|--------|--------|
 | **1 · Through** | Does the substrate fit through the capsid pore? | HOLE2 + mutant screening (PyMOL) + docking (Vina) — [Poromania](Poromania.v.1.2.) | Engine runs end to end; **result under review**. The only committed pore profile was measured on an unmutated structure with the HOLE seed point 7.6 Å off the symmetry axis, so it does not describe the pore it is filed under |
-| **2 · Inside** | Does the enzyme pack inside the capsid? | Packmol + PyMOL — [Studio](nanocapsule-mvp) | Engine runs; **capacity number under review**. The acceptance criterion never fires (it looks for a line Packmol does not write) and the fallback accepts the capsid alone, so the reported capacity is not yet a measurement. Seeds are random in the production path |
+| **2 · Inside** | Does the enzyme pack inside the capsid? | Packmol + PyMOL — [Studio](nanocapsule-mvp) | Engine runs; **capacity number still under review**. The acceptance criterion was repaired on 2026-10-05 (it now reads the real Packmol log line, counts the enzyme copies actually placed, rejects forced output, uses fixed seeds and is covered by 39 engine tests with a Packmol double). No run with a real Packmol binary has been made since the repair, and no committed multi-replica result exists |
 | **3 · Outside** | Can the enzyme be de-immunised? | (real engine pending; illustrative today) | Illustrative |
-| **4 · Survives** | Does the assembly hold up under molecular dynamics? | Coarse-grained SIRAH MD — [PackMan](PackMan.v.1.2) | **MD never run, and not runnable as committed**: the automated path builds an invalid topology (no hydrogens, no `TER` records) and the committed inputs total ~240 ps, not the 15/35 ns their titles state |
+| **4 · Survives** | Does the assembly hold up under molecular dynamics? | Coarse-grained SIRAH MD — [PackMan](PackMan.v.1.2) | **MD never run.** The five-stage SIRAH protocol was repaired on 2026-10-05 (PackMan v1.3.0: 5 ns + 25 ns + 10 ns per production chunk, checked against the SIRAH reference in CI). **No 15 ns or 35 ns simulation ever existed**: those were titles on 10 ps stubs. The system-preparation path still builds an invalid topology (no hydrogens, no `TER` records), so the protocol cannot yet run end to end |
 
 The **Studio** (3D web interface) wires gates 1 and 2 together interactively. Gates 3 and 4
 are represented in the interface in illustrative form while their real engines are being
@@ -42,7 +44,7 @@ A monorepo with four independently versioned engines:
 - **[`Poromania.v.1.2./`](Poromania.v.1.2.)** — pore analysis pipeline: HOLE2 +
   mutagenesis (PyMOL) + docking. `v1.2.0`
 - **[`PackMan.v.1.2/`](PackMan.v.1.2)** — system preparation and coarse-grained SIRAH MD
-  protocol for the enzyme-inside-capsid system. `v1.2.0`
+  protocol for the enzyme-inside-capsid system. `v1.3.0`
 - **[`sustratinaitor/`](sustratinaitor)** — builds the substrate and packs it around the
   capsid for MD. `v0.1.0`
 
@@ -85,17 +87,22 @@ user-facing documentation. `ESTADO.md` is the authoritative map of what actually
 
 - **Pinned environment:** `nanocapsule-mvp/requirements.lock` (exact versions, generated
   with `pip-compile`; Docker and CI both install from it).
-- **Continuous integration:** GitHub Actions runs smoke tests, a golden test and lint on
-  every push and pull request ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
-  The golden test freezes the substrate cross-section calculation of gate 1
-  (`substrate_section`, RDKit). **No test covers the packing engine** (radius, Packmol
-  input, acceptance criterion, statistics or seeds).
-- **Packing seeds are not yet deterministic.** `config/default.yaml` declares
-  `engines.packmol.seed_base` and `use_random_seeds`, but no module reads them: the
-  production path (`experiment_runner.py` → `run_parallel_replicas`) passes no seed base and
-  each replica draws a random seed. The seed actually used is written to each replica's
-  `metadata.json`, so a past run can be identified, but a run cannot be declared in advance
-  from the configuration. Fixing this is task PK-4 of the repair plan.
+- **Continuous integration:** GitHub Actions runs lint, the Studio test suite, a
+  `compileall` pass over the other three engines and the static check of PackMan's MD
+  inputs against the SIRAH reference on every push and pull request
+  ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
+- **What the tests cover:** 17 smoke tests; 5 golden tests that freeze the substrate
+  cross-section calculation of gate 1 (`substrate_section`, RDKit); and, since 2026-10-05,
+  39 tests of the packing engine and runner that exercise the real Python code against a
+  Packmol double emitting the strings of the two real Packmol logs in the repository. There
+  is still **no golden test of the packing radius** (task PK-6), and no test runs a real
+  Packmol binary in CI (one marked test does so where Packmol is installed).
+- **Packing seeds are fixed by default since 2026-10-05:** replica *i* uses
+  `engines.packmol.seed_base + i` (1234567 by default), `use_random_seeds: true` switches to
+  recorded random seeds, and every seed is written to `metadata.json` and `report.txt`. Two
+  caveats remain: the Packmol timeout can still turn "fits" into "timeout" on a slower
+  machine (now recorded as such, no longer counted as "does not fit"), and the repaired
+  criterion has not yet been exercised against a real Packmol binary (task PK-1).
 - **Heavy input data:** the default structure library travels in the repository; the large
   P22 capsid is fetched on demand with `nanocapsule-mvp/scripts/fetch_data.sh`.
 
@@ -103,11 +110,12 @@ user-facing documentation. `ESTADO.md` is the authoritative map of what actually
 
 ```bash
 cd nanocapsule-mvp
-python -m pytest -q      # 22 fast tests; does not exercise the heavy engines
+python -m pytest -q      # 60 fast tests (+1 skipped without a real Packmol); no heavy engines
 ```
 
-The 22 tests pass with every defect listed in the audit note above present: they validate
-wiring and the gate 1 cross-section, not the packing or pore engines.
+The smoke and golden tests validate wiring and the gate 1 cross-section; the engine tests
+validate the packing engine's acceptance criterion, centring, seeds and statistics against a
+Packmol double. Nothing in CI validates the pore engine or runs a real binary.
 
 ## Contributing and support
 

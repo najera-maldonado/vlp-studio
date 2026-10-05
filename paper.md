@@ -75,10 +75,13 @@ experiment and records the seed of every replica alongside its output, so that a
 can be identified and repeated. The Python environment is pinned to exact versions, and the
 same lock file is used by the container image and by continuous integration. A "golden"
 regression test freezes known numerical results of the substrate cross-section calculation,
-so a change to that geometry code is caught even when nothing crashes. Two limits of the
-current release must be stated: the configured seed base is not yet honoured by the
-production path (replicas draw random seeds, recorded after the fact), and the packing
-engine itself has no automated tests; both are open items in the repository's repair plan.
+so a change to that geometry code is caught even when nothing crashes. The packing engine
+reads its seed base from the configuration (replica *i* uses `seed_base + i`, every seed is
+recorded with its output) and is exercised by 39 automated tests against a Packmol test
+double that emits the strings of real Packmol logs. Two limits of the current release must
+be stated: the repaired acceptance criterion has not yet been exercised against a real
+Packmol binary, and there is no regression test of the internal-radius calculation; both are
+open items in the repository's repair plan.
 
 **It is explicit about what is measured and what is not.** Research software in this area
 frequently presents placeholder output indistinguishably from computed output. Here, every
@@ -124,22 +127,28 @@ The status below reflects an independent audit of the four engines carried out i
 validated, and the repository documents each correction.
 
 Gates 1 and 2 have real engines wired end to end, but **neither has produced a validated
-measurement yet**. In gate 2 the acceptance test that decides whether a packing converged
-parses a Packmol log line that Packmol does not write, and its fallback accepts the capsid
-alone, so the capacity the engine reports is not yet a measurement; the fix is a small,
-identified change with a test double. In gate 1 the only pore profile committed to the
-repository was measured on an unmutated structure with the HOLE seed point off the symmetry
-axis, and is marked invalid in place. Gate 3 is a placeholder: no epitope predictor is wired
-in, and its endpoint declares itself illustrative. Gate 4's **molecular dynamics has not
-been executed, and the committed inputs do not constitute a runnable protocol**: the three
-SIRAH stages are 10 ps test stubs (about 240 ps in total, against roughly 1 µs in the
-reference SIRAH protocol), eight further inputs are all-atom files applied to a
-coarse-grained topology, and the automated preparation path produces a topology without
-hydrogens or chain terminators. The corresponding interface tab shows synthetic curves,
-labelled as such; no dynamics result in this repository should be treated as validated.
-Three scientific decisions are recorded as open rather than silently resolved — an
-internal-radius safety margin, the coarse-grained versus all-atom resolution of the
-substrate system, and the heating protocol — and the audit gives a recommendation for each.
+measurement yet**. In gate 2 the audit found that the acceptance test deciding whether a
+packing converged parsed a Packmol log line that Packmol does not write, and that its
+fallback accepted the capsid alone; that criterion was rewritten (it now counts the enzyme
+copies placed and rejects forced output) and covered with tests against a Packmol double,
+but no experiment has been run with a real Packmol binary since, so the capacity the engine
+reports is still presented as under review. In gate 1 the only pore profile committed to
+the repository was measured on an unmutated structure with the HOLE seed point off the
+symmetry axis, and is marked invalid in place. Gate 3 is a placeholder: no epitope predictor
+is wired in, and its endpoint declares itself illustrative. Gate 4's **molecular dynamics
+has not been executed**. The audit found that the committed inputs did not constitute a
+runnable protocol: the three SIRAH stages were 10 ps test stubs under titles announcing
+15 ns and 35 ns (about 240 ps in total, against roughly 1 µs in the reference SIRAH
+protocol), and eight further inputs were all-atom files applied to a coarse-grained
+topology. The protocol was replaced by the five stages of the SIRAH reference with fixed
+seeds, checked parameter by parameter in continuous integration; the automated preparation
+path, however, still produces a topology without hydrogens or chain terminators, so the
+protocol cannot yet be run end to end. The corresponding interface tab shows synthetic
+curves, labelled as such; no dynamics result in this repository should be treated as
+validated. Two scientific decisions are recorded as open rather than silently resolved — an
+internal-radius safety margin and the coarse-grained versus all-atom resolution of the
+substrate system — and the audit gives a recommendation for each; a third, the heating
+protocol, was closed by adopting the SIRAH reference.
 The Studio is a single-user local research server, without authentication or a job queue.
 It is research software, not a clinical tool.
 
