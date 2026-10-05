@@ -299,23 +299,38 @@ def run_experiment():
                 }
             )
 
-        results = svc.run_experiment(capsid, enzyme, n_replicas=n_replicas)
+        results = svc.run_experiment(
+            capsid, enzyme, n_replicas=n_replicas, internal_radius=data.get("internal_radius")
+        )
+        success = bool(results.get("success", False))
         return jsonify(
             {
-                "status": "completed",
-                "success": results.get("success", False),
+                # Un experimento sin ninguna réplica aceptada NO es "completed":
+                # se reporta como fallo con su causa, para que la UI no lo pinte en verde.
+                "status": "completed" if success else "failed",
+                "success": success,
+                "error": None if success else results.get("error", "Ninguna réplica aceptada"),
                 "best_result": results.get("best", 0),
                 "mean": results.get("mean", 0.0),
-                "stdev": results.get("stdev", 0.0),
+                "stdev": results.get("stdev"),  # None = no definida (< 2 réplicas)
                 "median": results.get("median", 0.0),
                 "worst": results.get("worst", 0),
                 "n_replicas_success": results.get("n_replicas_success", 0),
                 "n_replicas_total": results.get("n_replicas_total", n_replicas),
+                "n_replicas_at_best": results.get("n_replicas_at_best", 0),
                 "internal_radius": results.get("internal_radius", 0.0),
+                "radius_source": results.get("radius_source"),
                 "experiment_dir": results.get("experiment_dir", ""),
-                "best_file": results.get("best_file", ""),
+                "best_file": results.get("best_file") or "",
+                "seeds": (results.get("run_config") or {}).get("seeds", []),
+                "warnings": results.get("warnings", []),
+                "rejection_reasons": results.get("rejection_reasons", {}),
                 "all_results": results.get("all_results", []),
-                "message": f"Mejor resultado: {results.get('best', 0)} enzimas",
+                "message": (
+                    f"Mejor resultado: {results.get('best', 0)} enzimas"
+                    if success
+                    else results.get("error", "Ninguna réplica aceptada")
+                ),
             }
         )
     except FileNotFoundError as e:

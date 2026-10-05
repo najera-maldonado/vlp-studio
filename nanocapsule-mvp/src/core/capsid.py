@@ -16,6 +16,7 @@ except ImportError:
     print("Advertencia: PyMOL no está disponible. Algunas funciones estarán limitadas.")
 
 from .config import ConfigManager
+from .pdb_geometry import center_pdb
 
 
 class Capsid:
@@ -41,6 +42,10 @@ class Capsid:
         self.config = config or ConfigManager()
         self.centered_path = None
         self.internal_radius = None
+        # Procedencia del radio: "calculated" (PyMOL) o "default" (valor de reserva de la
+        # config). Quien consuma el radio para un experimento debe comprobarlo: el valor
+        # de reserva no distingue BMV (90 Å real) de una cápside cualquiera.
+        self.radius_source: Optional[str] = None
         self.center = (0.0, 0.0, 0.0)
 
         # Validar que el archivo existe
@@ -74,6 +79,7 @@ class Capsid:
             default_radius = self.config.get("packing.internal_radius_default", 90.0)
             print(f"PyMOL no disponible. Usando radio por defecto: {default_radius} Å")
             self.internal_radius = default_radius
+            self.radius_source = "default"
             return default_radius
 
         try:
@@ -140,11 +146,14 @@ class Capsid:
                 # No se encontró colisión, usar valor por defecto
                 radio_colision = self.config.get("packing.internal_radius_default", 90.0)
                 print(f"No se detectó colisión. Usando radio por defecto: {radio_colision} Å")
+                self.radius_source = "default"
             else:
-                # CORRECCIÓN: Expandir 1 Å más allá de la colisión como en original
-                # Esto da margen de maniobra para el empaquetamiento
+                # DECISIÓN CIENTÍFICA PENDIENTE (CIENCIA-1, AUDITORIA_PACKING P-08/PK-06):
+                # el código suma 1 Å como el script original; el docstring y la
+                # documentación dicen restar. No se cambia aquí: es criterio del autor.
                 radio_colision = radio_colision + 1.0
                 print(f"Radio interno calculado: {radio_colision} Å (colisión + 1 Å)")
+                self.radius_source = "calculated"
 
             self.internal_radius = radio_colision
 
@@ -165,58 +174,43 @@ class Capsid:
             # Usar valor por defecto en caso de error
             default_radius = self.config.get("packing.internal_radius_default", 90.0)
             self.internal_radius = default_radius
+            self.radius_source = "default"
             return default_radius
 
     def center_structure(self, output_path: Optional[str] = None) -> str:
         """
-        Centra la estructura en el origen de coordenadas.
+        Centra la estructura en el origen de coordenadas (traslación por el centroide).
+
+        No usa PyMOL: es una traslación de coordenadas en Python puro que conserva el
+        resto del archivo (registros ``TER``, cabeceras). Es el mismo centroide
+        (media aritmética de coordenadas) que usa ``calculate_internal_radius``.
 
         Args:
             output_path: Ruta archivo salida (opcional).
-                        Si no se proporciona, usa capside_centered.pdb
+                        Si no se proporciona, usa <stem>_centered.pdb junto al original.
 
         Returns:
             Ruta al archivo centrado
 
         Raises:
-            RuntimeError: Si PyMOL no está disponible
+            RuntimeError: Si la estructura no se puede centrar (sin átomos, E/S)
         """
-        if not PYMOL_AVAILABLE:
-            raise RuntimeError("PyMOL es requerido para centrar estructura")
-
         if output_path is None:
             # Usar ruta absoluta para el archivo centrado
             base_path = Path(self.pdb_path).resolve()
             output_path = str(base_path.parent / f"{base_path.stem}_centered.pdb")
 
         try:
-            cmd.reinitialize()
-            cmd.load(self.pdb_path, "structure")
+            written, centroid = center_pdb(self.pdb_path, output_path)
+        except (OSError, ValueError) as e:
+            raise RuntimeError(f"Error centrando estructura: {e}") from e
 
-            # Calcular centro de masa
-            cmd.center("structure", origin=1)
-
-            # Alternativamente, trasladar al origen
-            import numpy as np
-
-            coords = cmd.get_coords("structure")
-            if coords is not None:
-                com = np.mean(coords, axis=0)
-                cmd.alter_state(1, "structure", f"x = x - {com[0]}")
-                cmd.alter_state(1, "structure", f"y = y - {com[1]}")
-                cmd.alter_state(1, "structure", f"z = z - {com[2]}")
-
-            # Guardar estructura centrada
-            cmd.save(output_path, "structure")
-            cmd.delete("all")
-
-            self.centered_path = output_path
-            print(f"Estructura centrada guardada en: {output_path}")
-
-            return output_path
-
-        except Exception as e:
-            raise RuntimeError(f"Error centrando estructura: {e}")
+        self.centered_path = written
+        print(
+            f"Estructura centrada guardada en: {written} "
+            f"(centroide original: {centroid[0]:.2f}, {centroid[1]:.2f}, {centroid[2]:.2f})"
+        )
+        return written
 
     def get_geometric_properties(self) -> Dict[str, Any]:
         """

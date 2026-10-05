@@ -1,15 +1,22 @@
 """
 Ejecutor de experimentos con soporte para procesamiento paralelo.
 Integra el ExperimentManager con el ParallelPacker para ejecutar réplicas.
+
+Política "que falle, no que avise" (AUDITORIA_PACKING PK-02/P-11, HOJA_DE_RUTA T3):
+un experimento NO se ejecuta con un radio de reserva ni con una cápside sin centrar.
+Si el radio no se pudo calcular o el centrado falla, se lanza una excepción con la
+causa; nunca se sigue adelante en silencio.
 """
 
 import sys
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-sys.path.append(str(Path(__file__).parent.parent))
-
-from packing.parallel_packer import ParallelPacker
+try:
+    from ..packing.parallel_packer import DEFAULT_SEED_BASE, ParallelPacker
+except ImportError:  # ejecución como script suelto (python experiment_runner.py ...)
+    sys.path.append(str(Path(__file__).parent.parent))
+    from packing.parallel_packer import DEFAULT_SEED_BASE, ParallelPacker
 
 from .capsid import Capsid
 from .cargo import Cargo
@@ -34,9 +41,32 @@ class ExperimentRunner:
         self.experiment_manager = ExperimentManager(
             output_base_dir=output_base_dir, config=self.config
         )
+        packmol_cfg = self.config.get_engine_config("packmol") or {}
+        max_workers = packmol_cfg.get("max_workers")
         self.parallel_packer = ParallelPacker(
-            packmol_executable=self.config.get("engines.packmol.executable", "packmol")
+            packmol_executable=packmol_cfg.get("executable", "packmol"),
+            max_workers=int(max_workers) if max_workers else None,
         )
+
+    def packing_parameters(self) -> Dict[str, Any]:
+        """
+        Único punto de lectura de los parámetros de empaquetamiento desde la config.
+
+        Los valores de reserva coinciden con ``config/default.yaml``; si una clave falta
+        en el YAML se usa el mismo número que está documentado ahí.
+        """
+        packmol_cfg = self.config.get_engine_config("packmol") or {}
+        return {
+            "tolerance": float(self.config.get("packing.tolerance", 2.0)),
+            "exclusion_radius": float(self.config.get("packing.exclusion_radius", 5.0)),
+            "collision_margin": float(self.config.get("packing.collision_margin", 2.0)),
+            "max_violation_threshold": float(
+                self.config.get("packing.max_violation_threshold", 0.10)
+            ),
+            "timeout": float(packmol_cfg.get("timeout", 300)),
+            "seed_base": int(packmol_cfg.get("seed_base", DEFAULT_SEED_BASE)),
+            "use_random_seeds": bool(packmol_cfg.get("use_random_seeds", False)),
+        }
 
     def run_maximum_packing(
         self,
@@ -44,7 +74,8 @@ class ExperimentRunner:
         enzyme_file: str,
         capsid_name: Optional[str] = None,
         enzyme_name: Optional[str] = None,
-        n_replicas: int = 10,
+        n_replicas: Optional[int] = None,
+        internal_radius: Optional[float] = None,
     ) -> Dict[str, Any]:
         """
         Ejecuta empaquetamiento máximo con múltiples réplicas en paralelo.
@@ -54,16 +85,24 @@ class ExperimentRunner:
             enzyme_file: Archivo PDB de la enzima
             capsid_name: Nombre de la cápside para organización
             enzyme_name: Nombre de la enzima para organización
-            n_replicas: Número de réplicas a ejecutar
+            n_replicas: Número de réplicas (None → ``experiments.n_replicas`` de la config)
+            internal_radius: Radio interno en Å dado por el usuario. Si es None se
+                calcula con PyMOL y se exige que el cálculo haya ocurrido de verdad.
 
         Returns:
             Diccionario con resultados consolidados
+
+        Raises:
+            FileNotFoundError: si falta algún PDB de entrada
+            RuntimeError: si el radio no se pudo calcular o el centrado falló
         """
         # Usar nombres de archivo si no se proporcionan nombres
         if not capsid_name:
             capsid_name = str(Path(capsid_file).stem)
         if not enzyme_name:
             enzyme_name = str(Path(enzyme_file).stem)
+        if n_replicas is None:
+            n_replicas = int(self.config.get("experiments.n_replicas", 10))
 
         print(f"\n{'=' * 60}")
         print("EXPERIMENTO DE EMPAQUETAMIENTO MÁXIMO")
@@ -83,96 +122,72 @@ class ExperimentRunner:
         print(f"  Enzima: {Path(enzyme_file).resolve()}\n")
 
         # Configurar estructura de experimento
-        experiment_dir = self.experiment_manager.setup_experiment(capsid_name, enzyme_name)
-
+        experiment_dir = self.experiment_manager.setup_experiment(
+            capsid_name, enzyme_name, n_replicas=n_replicas
+        )
         if experiment_dir is None:
             raise ValueError("No se pudo configurar el directorio del experimento")
-
+        experiment_dir = Path(experiment_dir)
         print(f"Directorio de experimento: {experiment_dir}")
 
-        # Calcular radio interno de la cápside y centrarla
-        print("Calculando radio interno de la cápside...")
-        print(f"Archivo de cápside: {capsid_file}")
-
-        try:
-            capsid = Capsid(capsid_file)
+        # 1) Radio interno: calculado de verdad o dado por el usuario; nunca el de reserva.
+        capsid = Capsid(capsid_file, config=self.config)
+        if internal_radius is not None:
+            internal_radius = float(internal_radius)
+            radius_source = "user"
+            print(f"Radio interno dado por el usuario: {internal_radius:.2f} Å\n")
+        else:
+            print("Calculando radio interno de la cápside...")
             internal_radius = capsid.calculate_internal_radius()
+            radius_source = capsid.radius_source
+            if radius_source != "calculated" or internal_radius is None:
+                default = self.config.get("packing.internal_radius_default", 90.0)
+                raise RuntimeError(
+                    "No se pudo calcular el radio interno de la cápside (PyMOL no "
+                    "disponible en este intérprete o cálculo fallido). No se ejecuta el "
+                    f"experimento con el valor de reserva ({default} Å): instala el módulo "
+                    "Python `pymol` o pasa `internal_radius` explícitamente."
+                )
+            print(f"Radio interno calculado: {internal_radius:.2f} Å\n")
 
-            if internal_radius is None:
-                print("Advertencia: Radio interno retornó None, usando valor por defecto")
-                internal_radius = self.config.get("packing.internal_radius_default", 90.0)
+        # 2) Centrado de cápside y enzima (Python puro). Si falla, se aborta: una cápside
+        #    sin centrar con la esfera en el origen empaqueta enzimas en el vacío.
+        #    Los archivos centrados van al directorio del experimento, no a Input/.
+        print("Centrando cápside y enzima...")
+        centered_capsid = capsid.center_structure(
+            output_path=str(experiment_dir / "capside_centered.pdb")
+        )
+        cargo = Cargo(enzyme_file, config=self.config)
+        centered_enzyme = cargo.center_structure(
+            output_path=str(experiment_dir / "enzima_centered.pdb")
+        )
 
-            print(f"Radio interno: {internal_radius:.2f} Å\n")
+        # 3) Parámetros: un solo sitio de lectura.
+        params = self.packing_parameters()
 
-            # IMPORTANTE: Centrar la cápside también
-            print("Centrando cápside para alinear con enzimas...")
-            centered_capsid = capsid.center_structure()
-            if centered_capsid:
-                capsid_file = centered_capsid  # Usar la cápside centrada
-                print(f"Cápside centrada guardada en: {centered_capsid}")
-
-        except Exception as e:
-            print(f"Error calculando radio interno: {e}")
-            internal_radius = self.config.get("packing.internal_radius_default", 90.0)
-            print(f"Usando radio interno por defecto: {internal_radius:.2f} Å\n")
-
-        # Preparar enzima (centrar)
-        print("Preparando enzima...")
-        try:
-            cargo = Cargo(enzyme_file)
-            centered_enzyme = cargo.center_structure()
-            if centered_enzyme is None:
-                print("Advertencia: No se pudo centrar la enzima, usando archivo original")
-                centered_enzyme = enzyme_file
-        except Exception as e:
-            print(f"Advertencia: Error centrando enzima: {e}")
-            print("Usando archivo original de enzima")
-            centered_enzyme = enzyme_file
-
-        # Obtener parámetros de configuración
-        tolerance = self.config.get("packing.tolerance", 2.0)
-        exclusion_radius = self.config.get("packing.exclusion_radius", 10.0)
-        max_violation_threshold = self.config.get("packing.max_violation_threshold", 0.05)
-        min_lines_threshold = self.config.get("packing.min_lines_threshold", 10000)
-
-        # Ejecutar réplicas en paralelo
         print(f"\nEjecutando {n_replicas} réplicas en paralelo...")
-        print("Esto puede tomar varios minutos...\n")
-
-        # Validar todos los parámetros antes de ejecutar
         print("Parámetros de ejecución:")
-        print(f"  Cápside: {capsid_file}")
+        print(f"  Cápside: {centered_capsid}")
         print(f"  Enzima: {centered_enzyme}")
-        print(f"  Radio interno: {internal_radius}")
-        print(f"  Tolerancia: {tolerance}")
-        print(f"  Radio exclusión: {exclusion_radius}")
-        print(f"  Umbral violación máx: {max_violation_threshold}")
+        print(f"  Radio interno: {internal_radius} ({radius_source})")
+        for k, v in params.items():
+            print(f"  {k}: {v}")
         print(f"  Directorio salida: {experiment_dir}\n")
 
-        # Verificar que ningún valor sea None
-        if any(v is None for v in [capsid_file, centered_enzyme, internal_radius, experiment_dir]):
-            raise ValueError(
-                f"Parámetros inválidos para empaquetamiento: "
-                f"capsid={capsid_file}, enzyme={centered_enzyme}, "
-                f"radius={internal_radius}, dir={experiment_dir}"
-            )
-
         results = self.parallel_packer.run_parallel_replicas(
-            capsid_file=str(capsid_file),
+            capsid_file=str(centered_capsid),
             enzyme_file=str(centered_enzyme),
             n_replicas=n_replicas,
             internal_radius=float(internal_radius),
-            tolerance=float(tolerance),
-            exclusion_radius=float(exclusion_radius),
             output_dir=str(experiment_dir),
-            max_violation_threshold=float(max_violation_threshold),
-            min_lines_threshold=int(min_lines_threshold),
+            **params,
         )
 
         # Agregar información adicional
         results["capsid_name"] = capsid_name
         results["enzyme_name"] = enzyme_name
         results["internal_radius"] = internal_radius
+        results["radius_source"] = radius_source
         results["experiment_dir"] = str(experiment_dir)
 
         # Mostrar resumen de resultados
@@ -198,10 +213,19 @@ class ExperimentRunner:
             )
             print(f"  - Mejor resultado: {results['best']} enzimas")
             print(f"  - Promedio: {results['mean']:.2f} enzimas")
-            print(f"  - Desviación estándar: {results['stdev']:.2f}")
+            stdev = results.get("stdev")
+            print(
+                "  - Desviación estándar: "
+                + (f"{stdev:.2f}" if stdev is not None else "no definida (< 2 réplicas)")
+            )
             print(f"  - Mejor archivo: {results.get('best_file', 'N/A')}")
         else:
             print(f"✗ Experimento fallido: {results.get('error', 'Error desconocido')}")
+            if results.get("rejection_reasons"):
+                print(f"  - Causas de rechazo: {results['rejection_reasons']}")
+
+        for w in results.get("warnings", []):
+            print(f"  - AVISO: {w}")
 
         print(f"\nResultados guardados en: {results.get('experiment_dir', 'N/A')}")
         print(f"{'=' * 60}\n")

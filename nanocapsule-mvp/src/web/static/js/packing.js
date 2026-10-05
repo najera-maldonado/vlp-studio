@@ -58,7 +58,10 @@ async function doRun() {
       body: JSON.stringify({ capsid, enzyme, n_replicas:+$('nRep').value, run_packing:true })
     });
     const d = await r.json();
-    if (!r.ok || d.status === 'error') throw new Error(d.error || 'fallo');
+    if (!r.ok || d.status === 'error' || d.status === 'failed' || d.success === false) {
+      if (d.n_replicas_total) updateStats(d);
+      throw new Error(d.error || 'ninguna réplica aceptada');
+    }
     updateStats(d);
     const secs = ((performance.now() - t0) / 1000).toFixed(0);
     if (d.best_file) {
@@ -75,7 +78,8 @@ let chReplicas, chSummary;
 function updateStats(d) {
   $('s-best').textContent = d.best_result ?? '—';
   $('s-mean').textContent = (d.mean ?? 0).toFixed(1);
-  $('s-std').textContent  = (d.stdev ?? 0).toFixed(2);
+  // stdev === null: no definida (menos de 2 réplicas exitosas); no se muestra un 0 falso.
+  $('s-std').textContent  = (d.stdev == null) ? '—' : d.stdev.toFixed(2);
   $('s-rep').textContent  = `${d.n_replicas_success}/${d.n_replicas_total}`;
 
   const reps = (d.all_results || []).map(x => ({ id:x.replica, n:x.n_packed || 0 }))

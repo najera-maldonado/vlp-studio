@@ -85,10 +85,14 @@ class ConfigManager:
                 "exclusion_radius": 5.0,
                 "tolerance": 2.0,
                 "max_violation_threshold": 0.10,
-                "min_lines_threshold": 10000,
             },
             "engines": {
-                "packmol": {"executable": "packmol", "timeout": 300},
+                "packmol": {
+                    "executable": "packmol",
+                    "timeout": 300,
+                    "seed_base": 1234567,
+                    "use_random_seeds": False,
+                },
                 "pymol": {"headless": True, "quiet": True},
             },
             "io": {
