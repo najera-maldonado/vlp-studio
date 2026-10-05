@@ -6,8 +6,13 @@
 > volver a los informes originales; solo en dos sitios (contenido literal de los `.in` de
 > SIRAH y scripts de validación CG) conviene abrir el original, y se dice dónde.
 >
-> **Fecha de corte:** 2026-10-04, sobre `main` en `40f4b03`. Ninguna reparación está hecha
-> todavía; los informes viven en ramas (§9) y no están fusionados en `main`.
+> **Fecha de corte del diagnóstico:** 2026-10-04, sobre `main` en `40f4b03`.
+> **Actualización 2026-10-05:** las 15 ramas `claude/` (los informes de §9, esta hoja, el
+> paquete JOSS y dos reparaciones de código) se fusionaron en una sola rama revisable; §0
+> dice qué quedó arreglado, qué sigue roto y qué espera al autor. Las fichas de §5 conservan
+> el diagnóstico original y llevan una línea **Estado (2026-10-05)** cuando algo cambió.
+> Las líneas de código citadas en las fichas son las de `40f4b03`; en el packing y en los
+> `.in` de PackMan ya no coinciden con el código actual.
 >
 > **Convenciones de las tablas.**
 > *Tipo:* **SW** = software (el código no hace lo que dice) · **CIENCIA** = decisión o
@@ -26,23 +31,95 @@
 
 ---
 
-## 0. Empieza aquí (los primeros diez pasos, en orden)
+## 0. Estado tras la fusión (2026-10-05) — empieza aquí
+
+### 0.1 Qué quedó arreglado
+
+Dos reparaciones de código entraron con la fusión. Ambas se verificaron con la batería
+completa (`ruff`, 60 tests + 1 saltado, `compileall`, `verificar_protocolo_md.py`), **no**
+con los motores reales (no hay PACKMOL, PyMOL ni AMBER en el entorno de la fusión).
+
+| Tarea | Estado | Qué se hizo | Evidencia |
+|---|---|---|---|
+| **RP-1** | ✅ hecha | 15 ramas fusionadas (merge commit por rama, conflictos explicados en cada mensaje); frases falsas corregidas en README, PENDIENTES, BITACORA, ESTADO, READMEs de los 4 motores, `docs/`, `paper.md`, `JOSS_CHECKLIST.md`, `CONTRIBUTING.md` | `git log --merges`; `CORRECCIONES_DOCUMENTACION.md` + su adenda |
+| **PK-2** | ✅ hecha | Criterio de aceptación real: línea `Maximum violation of target distance:` (último valor), `Success!` obligatorio, rechazo por `ENDED WITHOUT PERFECT PACKING` y `<output>_FORCED` aunque el exit sea 0, conteo exacto de copias (`cápside + N × enzima`), enzimas dentro de la cápside; fallback por líneas retirado; causa de cada rechazo en `metadata.json`/`report.txt`; `stdev` = `null` con < 2 réplicas; `n_replicas_at_best`; techo de búsqueda delatado | `nanocapsule-mvp/REPARACION_PACKING.md` §2.1; `tests/test_packing_engine.py` |
+| **PK-3** | 🟡 parcial | `center` + `fixed` en el `.inp`; centrado en Python puro que conserva `TER` y escribe en el directorio del experimento; el runner aborta si el centrado falla o si el radio es el de reserva (`Capsid.radius_source`); `internal_radius` explícito en la API. **Falta:** `/api/capsid/radius` sigue rotulando 90 Å como "calculado"; caché del radio por cápside; `/api/health` con `import pymol`; techo `range(5,200)` | `REPARACION_PACKING.md` §2.2–2.3 |
+| **PK-4** | ✅ hecha | `seed_base`, `use_random_seeds`, `timeout`, `collision_margin`, `max_workers` (nuevo) y `n_replicas` se leen del YAML; semilla `seed_base + i` (reintento `+1000·k`); `run_config` y semillas en `statistics.json`/`report.txt`; `/api/experiment/run` responde `failed` con `error` y la UI lo pinta como error. **Decisión de software:** la UI no envía el radio al experimento a propósito (DC-G) | `REPARACION_PACKING.md` §2.4–2.5 |
+| **PK-5** | ✅ hecha (sin golden del radio) | 30 tests del motor + 9 del runner con un doble de PACKMOL que emite las cadenas de los dos logs reales (fixtures); 28/30 fallan contra el código viejo; marcador `engine` para PACKMOL real; corren en CI. **El golden del radio sigue sin existir** (PK-6) | `tests/packmol_double.py`, `tests/fixtures/packmol_logs/` |
+| **T2** | 🟡 parcial | En el packing del Studio: `center` en el `.inp` y verificación geométrica a posteriori (enzimas fuera de la cápside → rechazo). **Falta:** la guarda previa (centroide de la estructura fija dentro de la región) y aplicarla a PackMan y sustratinaitor | `REPARACION_PACKING.md` §2.2 |
+| **MD-6** | ✅ hecha | PackMan v1.3.0: los 8 `.in` all-atom y `configurar_simulacion.sh` eliminados; los 5 `.in` copian `tutorial/5` con duraciones reales (eq1 5 ns, eq2 25 ns, prod 10 ns/trozo) y restricciones de la referencia; `run_MD.sh` de 5 etapas, reanudable, semillas fijas en `SEMILLAS.txt`, `DRY_RUN`; `prod-q_gpu.bsub` lanza `run_MD.sh`; `verificar_protocolo_md.py` en CI | `PackMan.v.1.2/CHANGELOG.md`; `python3 PackMan.v.1.2/verificar_protocolo_md.py -v` |
+| **DC-4** (CIENCIA-3) | ✅ aplicada | Protocolo sin rampa de calentamiento, 5 etapas SIRAH, `gamma_ln = 50`, `ig` fijo; coincide con la recomendación de §3 | `ESTADO.md` §4b |
+| **PO-1** | ✅ hecha en docs | `INVALIDO.md` en `mutants/mut_129HIS_132GLY/`; "1,92 Å" y "real de punta a punta" retirados de README, ESTADO, PENDIENTES, planes fósiles (con banner). **Falta** la parte de código (`_AXIS_MIN` sigue guardando 1,9 como 3-fold → PO-6) y preguntar a Lucio si el 1,92 Å llegó a la tesis | `Poromania.v.1.2./mutants/mut_129HIS_132GLY/INVALIDO.md` |
+| **MD-10** | 🟡 parcial | Documentación de PackMan (README, CHANGELOG, diagrama, texto de tesis) y ESTADO al día. **Falta:** los anclajes sintéticos de `nanocapsule-mvp/src/services/md.py` y `md_prepare` (ff19SB + TIP3P para un motor SIRAH) | `AUDITORIA_MD.md` §5 |
+
+Hallazgos de la pasada de "errores no documentados" depurados en `HALLAZGOS_VERIFICADOS.md`
+(85 de 97 sobreviven; 2 falsos positivos, entre ellos "199 de 200 sustratos fuera": C1).
+
+### 0.2 Qué sigue roto (por motor)
+
+- **Packing (Studio).** El criterio ya mide, pero **ninguna corrida con PACKMOL real** se ha
+  hecho desde la reparación: PK-1 (exit code, versión, `_FORCED`) sigue abierta y es lo
+  primero. `best` sigue siendo el titular (DC-6). El radio interno sigue con el `+1 Å`
+  (CIENCIA-1 / PK-6) y sin golden. PACKMOL sigue escribiendo 0 `TER` y seriales hex en el
+  PDB entregado (T1). Experimentos sin timestamp, `radio_interno.txt` global, `Input/Enzimas/`
+  mutado antes de la reparación (PK-8). Preview con seriales desbordados (PK-9).
+- **Poro (Poromania + Pac-Pore).** **Nada reparado en código.** Mutagénesis sin verificar
+  (PO-3), eje definido en cuatro sitios y mal condicionado en trímeros (PO-4), parser de HOLE
+  y `except: continue` (PO-5), gaussiana por defecto y `_AXIS_MIN` con el 1,9 (PO-6), sin
+  `rseed` en Poromania, idock sin semilla (DC-7). El único resultado commiteado está marcado
+  inválido; no hay ninguno válido.
+- **PackMan (MD).** El protocolo es ahora el de la referencia SIRAH, pero **no tiene
+  topología válida que simular**: `run_maestro.sh` entrega a `cgconv.pl` un PDB sin H y sin
+  `TER` (MD-2…MD-4), `convert_to_cg.sh` aborta con los seriales hex, `gensystem.leap` sin
+  disulfuros ni sal (MD-5), `setup_*.sh` con plantillas inexistentes, `run_maestro.sh` llama a
+  un script de análisis que no existe, análisis cpptraj con máscaras por `resSeq` (MD-9),
+  `fix_pdb_serial.py` desborda en el átomo 100 000 (T1). La MD **nunca ha corrido**; nunca
+  hubo corridas de 15 ni 35 ns.
+- **sustratinaitor.** **Nada reparado.** Salida de Packmol sin `TER` y con seriales hex, GYE
+  all-atom bajo protocolo de 20 fs, `GYE_cg_manual.pdb` inservible, etapa 4 que busca un
+  `prmtop` que tleap no produce (SU-1…SU-3).
+- **Repo / JOSS.** `THIRD_PARTY.md` ya declara el bundle de SIRAH, pero la decisión de
+  quitarlo o conservarlo (DC-5) sigue abierta. `setup.py`, `salud.sh`, `vlpstudio.kdl`,
+  `fetch_data.sh` con `wget` (RP-3). Tests de humo que aceptan `[]` (RP-4). Fósiles con banner,
+  no retirados (RP-6).
+
+### 0.3 Decisiones científicas que siguen esperando al autor
+
+Ninguna exige correr nada. Detalle y recomendación en §3; las específicas del packing en
+`nanocapsule-mvp/REPARACION_PACKING.md` §3.
+
+| ID | Decisión | Bloquea |
+|---|---|---|
+| **DC-1** | Estrategia JOSS: reparar el poro y correr PK-1 antes de enviar, o enviar con las puertas 1 y 2 "en revisión" (como ya dice la documentación) | el envío |
+| **DC-2** (CIENCIA-1) | Signo del ±1 Å del radio interno, o redefinirlo como `d_min − r_vdW` con dos números publicados | PK-6, y la cota de capacidad |
+| **DC-3** (CIENCIA-2) | Sacar el GYE de la MD CG (recomendado) o parametrizarlo en SIRAH | SU-2, SU-3 |
+| **DC-5** | Bundle de SIRAH: quitarlo (+ `fetch_data.sh`) o conservarlo declarado | Zenodo, JOSS |
+| **DC-6** | Qué estadístico publica el packing (hoy `best`; ya se reporta `n_replicas_at_best`) | PK-7 |
+| **DC-7** | Un solo motor de docking (Vina recomendado) | PO-9 |
+| **DC-8** | Qué poro y qué eje son la referencia (`BMV/poro5fold` recomendado) | PO-7, PO-8 |
+| **DC-B / DC-D** (`REPARACION_PACKING.md`) | `exclusion_radius = 5.0` y `max_violation_threshold = 0.10` ahora sí se aplican: hay que justificarlos | PK-7 |
+| **DC-F / DC-G** | Esfera inscrita como región de empaque (subestima el volumen); si la UI debe poder forzar un radio | paper, UI |
+| **PO-1 (pregunta)** | ¿El 1,92 Å llegó a la tesis o a una figura? Si sí, corrección | — |
+
+~~DC-4 (CIENCIA-3)~~ aplicada en PackMan v1.3.0.
+
+### 0.4 Los próximos diez pasos, en orden
 
 | # | ID | Tarea | Esfuerzo | GPU |
 |---|---|---|---|---|
-| 1 | **DC-1** | Decidir la estrategia JOSS: reparar antes de enviar (recomendado) o reetiquetar las puertas 1 y 2 como "en revisión" y enviar | 1 h | no |
-| 2 | **RP-1** | Fusionar los informes y scripts de las 9 ramas en `main`; corregir las frases falsas en README / PENDIENTES / BITACORA / ESTADO / `JOSS_CHECKLIST.md` | 2–3 h | no |
-| 3 | **PO-1** | Retirar de circulación el "1.92 Å" (el mutante es el WT): `INVALIDO.md` en la carpeta, corregir docs | 2 h | no |
-| 4 | **T1** | Utilidad única de normalización de PDB: reinsertar `TER`, renumerar seriales sin hexadecimal ni desbordamiento | 1 d | no |
-| 5 | **PK-1** | Medir PACKMOL real: código de salida al no converger, versión (en la máquina de Lucio) | 0,5 d | no |
-| 6 | **PK-2** | Reescribir el criterio de aceptación del packing (regex muerta, fallback ciego) y contar las enzimas colocadas | 1 d | no |
-| 7 | **PK-3** | `center` en el `.inp`; sin fallback silencioso de 90 Å; error explícito sin PyMOL | 0,5 d | no |
-| 8 | **PK-4** | Que el código lea la configuración que ya existe (semilla, timeout, margen, radio de la UI) | 0,5–1 d | no |
-| 9 | **PK-5** | Tests del packing con un doble de PACKMOL, en CI | 1,5 d | no |
-| 10 | **PO-3** | Verificar cada mutación tras aplicarla (Poromania y Studio) y dejar de silenciar errores | 1–2 d | no |
+| 1 | **Fusionar esta rama en `main`** | Revisar `claude/merge-reconcile-branches-pgj04l` y fusionarla de una sentada | 1 h | no |
+| 2 | **PK-1** | En la máquina de Lucio: `pytest -m engine` y un caso imposible con PACKMOL real; anotar versión, exit code, `_FORCED` | 0,5 d | no |
+| 3 | **DC-1 / DC-5** | Decidir estrategia JOSS y bundle de SIRAH | 1 h + consulta | no |
+| 4 | **T1** | Normalizador de PDB: reinsertar `TER`, seriales sin hex ni desbordamiento (desbloquea packing, PackMan, sustratinaitor) | 1 d | no |
+| 5 | **PO-3** | Verificar cada mutación tras `apply()`; `check=True`; sin `except: continue` | 1–2 d | no |
+| 6 | **PO-6** | Divulgar lo ilustrativo en el Studio: badge, sin gaussiana por defecto, `_AXIS_MIN` | 1 d | no |
+| 7 | **MD-1 → MD-5** | Preparación del sistema de PackMan: confirmar en local, protonar por componente, empaquetar con `TER`, `cgconv.pl`, `gensystem.leap` | 1–2 d | no |
+| 8 | **PK-3 (resto)** | `/api/capsid/radius` que diga "por defecto"; caché por cápside; `/api/health` con `import pymol` | 0,5 d | no |
+| 9 | **DC-2 → PK-6** | Radio interno con NumPy, dos números, golden del radio | 1–2 d | no |
+| 10 | **MD-7** | Humo en GPU (1 000 pasos) antes de cualquier producción | 1–2 h + GPU | **sí** |
 
-Con esos diez, el envío a JOSS deja de apoyarse en afirmaciones falsas. El resto de la lista
-(§4) sigue en orden de dependencia.
+Con el paso 2 verde y los pasos 5–6, la puerta 2 queda defendible y la 1 deja de afirmar lo
+que no mide; con el 7 y el 10, PackMan deja de ser "nunca corrió" por primera vez.
 
 ---
 
@@ -123,7 +200,7 @@ abierta. Ninguna exige correr nada.
 | **DC-1** | **Estrategia JOSS.** ¿Reparar packing y poro antes de enviar, o reetiquetar las puertas 1 y 2 como "motor listo, resultado en revisión" y enviar describiendo solo lo verificado? | **Reparar primero** (PK-1…PK-5 y PO-1, PO-3, PO-6: ~6 días). JOSS revisa que la funcionalidad coincida con lo descrito; hoy no coincide. Si hay prisa, reetiquetar es honesto y JOSS lo admite (ya se hizo con la MD). | RP-1 (qué frases escribir), el marcado "JOSS" de toda la lista |
 | **DC-2** | **CIENCIA-1 — radio interno.** | **Restar** (docstring, README, CLAUDE.md), o mejor: sustituir el bucle de PyMOL por `d_min` exacto con NumPy y publicar **dos números con nombre**: *radio interno físico* = `d_min − r_vdW` y *radio de la esfera de empaquetado* = físico − margen. Disuelve el ±1, elimina PyMOL de esta ruta y permite testear el radio en CI. | PK-6 |
 | **DC-3** | **CIENCIA-2 — resolución de sustratinaitor.** | **Opción B: sacar el GYE de la MD CG.** El híbrido commiteado está descartado por física (17 800 H explícitos a 20 fs sin SHAKE no integran; sin parámetros cruzados GAFF2×SIRAH; sin `TER`). La Puerta 4 corre cápside + enzima en SIRAH (PackMan reparado); la física del sustrato (cruce del poro, sitio activo) se hace all-atom en sistemas pequeños, como ya figura en PENDIENTES. La opción A (parametrizar GYE en SIRAH) es un subproyecto de 2–4 semanas y `GYE_cg_manual.pdb` **no** sirve de punto de partida. | SU-2, SU-3 |
-| **DC-4** | **CIENCIA-3 — protocolo de calentamiento de PackMan.** | **Eliminar `heat1..6`, `density_eq`, `final_eq`** y usar las 5 etapas de `tutorial/5` (em1 → em2 → eq1 → eq2 → md; SIRAH arranca `eq1` de 0 K bajo NPT con Langevin, sin rampa). `gamma_ln = 50`, 300 K, Berendsen, `ig` fijo por etapa, ≥ 100 ns en trozos de 10 ns. `configurar_simulacion.sh` no es "los `.in` correctos": su `eq1` restringe también el solvente y usa `gamma_ln = 5`; retirarlo. | MD-6 |
+| **DC-4** ✅ aplicada en v1.3.0 | **CIENCIA-3 — protocolo de calentamiento de PackMan.** | **Eliminar `heat1..6`, `density_eq`, `final_eq`** y usar las 5 etapas de `tutorial/5` (em1 → em2 → eq1 → eq2 → md; SIRAH arranca `eq1` de 0 K bajo NPT con Langevin, sin rampa). `gamma_ln = 50`, 300 K, Berendsen, `ig` fijo por etapa, ≥ 100 ns en trozos de 10 ns. `configurar_simulacion.sh` no es "los `.in` correctos": su `eq1` restringe también el solvente y usa `gamma_ln = 5`; retirarlo. | MD-6 |
 | **DC-5** | **Licencia de SIRAH.** El repo redistribuye 146 ficheros de SIRAH 2.3 (3,9 MB) incluyendo `tools/` bajo GPLv2, mientras `THIRD_PARTY.md` dice lo contrario. | Verificar los términos de SIRAH (académica) y **o** quitar el bundle del repo (y que `fetch_data.sh` lo descargue) **o** corregir `THIRD_PARTY.md` y declararlo. GPLv2+ de `cgconv.pl` es compatible con AGPLv3; el problema es la declaración falsa. | RP-1, Zenodo |
 | **DC-6** | **Qué estadístico publica el packing.** Hoy se muestra `best` (máximo sobre réplicas, que crece con el número de réplicas que elija el usuario) junto a media/σ como si fueran física. | Titular = **máximo observado en N réplicas** (etiquetado así, con semillas) + **fracción de réplicas que alcanzan el máximo** (es lo que demuestra convergencia) + mediana/IQR como dispersión del buscador. Y la curva `best(N réplicas)`. | PK-7 |
 | **DC-7** | **Motor de docking.** Poromania usa idock sin semilla y con `threads=$(nproc)`; el Studio usa Vina con `--seed 1`. Las afinidades no son comparables. | **Vina** (reproducible; ya es el camino del Studio). Retirar `5docking.sh` del camino vivo o fijarle semilla y `threads`. No mezclar afinidades de ambos en una figura. | PO-9 |
@@ -141,8 +218,8 @@ de software van antes que las de ciencia. Las olas 0–4 se hacen íntegras sin 
 | # | ID | Tarea | Motor | Tipo | Sev | Esfuerzo | Depende de | JOSS | GPU | Herramientas |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | DC-1 | Estrategia JOSS | repo | CIENCIA | — | 1 h | — | SÍ | no | — |
-| 2 | RP-1 | Fusionar ramas de auditoría; corregir afirmaciones en README/PENDIENTES/BITACORA/ESTADO/JOSS_CHECKLIST | repo | SW | ALTO | 2–3 h | DC-1 | SÍ | no | — |
-| 3 | PO-1 | Invalidar el 1.92 Å y lo derivado | poro | SW | CRÍTICO | 2 h | — | SÍ | no | — |
+| 2 | RP-1 ✅ | Fusionar ramas de auditoría; corregir afirmaciones en README/PENDIENTES/BITACORA/ESTADO/JOSS_CHECKLIST — **hecho 2026-10-05** | repo | SW | ALTO | 2–3 h | DC-1 | SÍ | no | — |
+| 3 | PO-1 ✅ docs | Invalidar el 1.92 Å y lo derivado — **docs hechas**; `_AXIS_MIN` → PO-6; pregunta a Lucio pendiente | poro | SW | CRÍTICO | 2 h | — | SÍ | no | — |
 | 4 | DC-5 | Licencia SIRAH | repo | CIENCIA | ALTO | 1 h + consulta | — | SÍ | no | — |
 
 ### Ola 1 — Transversal (desbloquea los cuatro motores)
@@ -150,7 +227,7 @@ de software van antes que las de ciencia. Las olas 0–4 se hacen íntegras sin 
 | # | ID | Tarea | Motor | Tipo | Sev | Esfuerzo | Depende de | JOSS | GPU | Herramientas |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 5 | T1 | Normalizador de PDB: `TER` + seriales | todos | SW | ALTO | 1 d | — | SÍ\* | no | — |
-| 6 | T2 | Guarda geométrica antes de Packmol: la región de empaque debe intersecar la estructura | packing, PackMan, sustratinaitor | SW | ALTO | 2 h | — | SÍ\* | no | — |
+| 6 | T2 🟡 | Guarda geométrica antes de Packmol: la región de empaque debe intersecar la estructura — **packing del Studio: `center` + verificación a posteriori hechas**; guarda previa y otros motores pendientes | packing, PackMan, sustratinaitor | SW | ALTO | 2 h | — | SÍ\* | no | — |
 | 7 | T3 | Política "que falle, no que avise" (lista concreta por motor) | todos | SW | ALTO | se reparte en PK-3, PO-3, PO-5, MD-3, SU-1, RP-3 | — | SÍ\* | no | — |
 
 ### Ola 2 — Packing, Fase 0 (lo mínimo para que la puerta 2 sea defendible)
@@ -158,10 +235,10 @@ de software van antes que las de ciencia. Las olas 0–4 se hacen íntegras sin 
 | # | ID | Tarea | Motor | Tipo | Sev | Esfuerzo | Depende de | JOSS | GPU | Herramientas |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 8 | PK-1 | Medir PACKMOL real: exit code, versión, `_FORCED` | packing | SW | CRÍTICO | 0,5 d | — | SÍ\* | no | packmol |
-| 9 | PK-2 | Criterio de aceptación nuevo + contar `n_packed` | packing | SW | CRÍTICO | 1 d | PK-1 (informa, no bloquea) | SÍ\* | no | — |
-| 10 | PK-3 | `center`; sin fallback 90 Å; error sin PyMOL; API distingue calculado/por defecto; caché por cápside | packing | SW | CRÍTICO | 0,5–1 d | — | SÍ\* | no | — |
-| 11 | PK-4 | Leer la config: `seed_base`, `use_random_seeds`, `timeout`, `collision_margin`; radio de la UI; `success=False` visible | packing | SW | ALTO | 0,5–1 d | — | SÍ\* | no | — |
-| 12 | PK-5 | Tests del motor con doble de PACKMOL (T1–T6 / R-5) en CI | packing | SW | ALTO | 1,5 d | PK-2, PK-3, PK-4 | SÍ\* | no | — |
+| 9 | PK-2 ✅ | Criterio de aceptación nuevo + contar `n_packed` — **hecho 2026-10-05** (`2Empaquetador_Maximo.py` de PackMan no tocado) | packing | SW | CRÍTICO | 1 d | PK-1 (informa, no bloquea) | SÍ\* | no | — |
+| 10 | PK-3 🟡 | `center`; sin fallback 90 Å; error sin PyMOL — **hechos**; API distingue calculado/por defecto; caché por cápside; `/api/health` con `import pymol` — **pendientes** | packing | SW | CRÍTICO | 0,5 d restante | — | SÍ\* | no | — |
+| 11 | PK-4 ✅ | Leer la config: `seed_base`, `use_random_seeds`, `timeout`, `collision_margin`; `success=False` visible — **hecho 2026-10-05**; radio de la UI: decisión DC-G | packing | SW | ALTO | 0,5–1 d | — | SÍ\* | no | — |
+| 12 | PK-5 ✅ | Tests del motor con doble de PACKMOL en CI — **hecho 2026-10-05** (39 tests); golden del radio → PK-6 | packing | SW | ALTO | 1,5 d | PK-2, PK-3, PK-4 | SÍ\* | no | — |
 
 ### Ola 3 — Poro, lo mínimo defendible
 
@@ -182,7 +259,7 @@ de software van antes que las de ciencia. Las olas 0–4 se hacen íntegras sin 
 | 20 | MD-3 | Empaquetar conservando H e insertando `TER`; arreglar `ls` lexicográfico, `N_ENZIMAS="1o"`, recentrado saltado, radio hardcodeado | PackMan | SW | CRÍTICO | 3–5 h | T1, MD-2 | NO | no | packmol |
 | 21 | MD-4 | `cgconv.pl` sobre el PDB correcto; `run_maestro.sh` y scripts rotos; validación CG automática | PackMan | SW | CRÍTICO | 1–2 h | MD-3 | NO | no | perl |
 | 22 | MD-5 | `gensystem.leap`: `bond` S–S, caja 20 Å, 0,15 M NaCl, sin `mbondi3`; dos pasadas | PackMan | SW | ALTO | 2–3 h + tleap | MD-4 | NO | no | AmberTools |
-| 23 | MD-6 | Cinco `.in` SIRAH + `run_MD.sh` + semillas fijas; borrar los 8 all-atom; retirar `configurar_simulacion.sh` | PackMan | SW+CIENCIA | CRÍTICO | 3–4 h | DC-4 (redactable sin MD-5; validable con) | NO | no | sander (sintaxis) |
+| 23 | MD-6 ✅ | Cinco `.in` SIRAH + `run_MD.sh` + semillas fijas; borrar los 8 all-atom; retirar `configurar_simulacion.sh` — **hecho 2026-10-05 (v1.3.0)**, verificado estáticamente en CI; sin validar con `sander` | PackMan | SW+CIENCIA | CRÍTICO | 3–4 h | DC-4 (redactable sin MD-5; validable con) | NO | no | sander (sintaxis) |
 | 24 | SU-1 | sustratinaitor: higiene (`TER`, nombres `-WAT`, `.in`, `set -e`, log truncado, README) | sustratinaitor | SW | ALTO | 3–4 h | T1 | NO | no | — |
 
 ### Ola 5 — Corridas y ciencia (exigen motores o GPU)
@@ -208,13 +285,14 @@ de software van antes que las de ciencia. Las olas 0–4 se hacen íntegras sin 
 | 36 | PK-8 | Provenance del packing: carpetas con timestamp, no escribir en `Input/`, restaurar GCase, limpiar `packed_*.pdb`, 7 vs 10 réplicas, metadata con versión/exit/tiempo | packing | SW | MEDIO | 1,5 d | — | NO | no | — |
 | 37 | PK-9 | Preview: seriales > 99 999, `END` en medio, IDs de cadena colapsados; determinismo | Studio | SW | ALTO | 0,5 d | T1 | NO | no | — |
 | 38 | PO-11 | Higiene de Poromania (APBS, cámara, pH, mejor score, `sort` lexicográfico, `DEL`, duplicados) | poro | SW | MEDIO/BAJO | 1–2 d | PO-4 | NO | no | — |
-| 39 | MD-10 | Documentación de PackMan + Studio `md.py` (quitar anclajes sintéticos; `md_prepare` emite SIRAH; SMILES ignorado) | PackMan, Studio | SW | MEDIO | 2–3 h | MD-6 | NO | no | — |
+| 39 | MD-10 🟡 | Documentación de PackMan — **hecha**; Studio `md.py` (quitar anclajes sintéticos; `md_prepare` emite SIRAH; SMILES ignorado) — **pendiente** | PackMan, Studio | SW | MEDIO | 2–3 h | MD-6 | NO | no | — |
 | 40 | RP-3 | Infra: `setup.py`, `ruff` sin pin, puerto 5001, `salud.sh`, `vlpstudio.kdl`, `fetch_data.sh`, `/api/result/pdb`, `/api/files/cleanup` | repo | SW | MEDIO | 1 d | — | parcial | no | — |
 | 41 | RP-4 | Tests que comprueben algo (`pore_channels`, preview, rutas sin cobertura) | repo | SW | MEDIO | 0,5 d | PK-5 | NO | no | — |
 | 42 | RP-5 | JOSS, solo Lucio: nombre/ORCID/afiliación, tag, Zenodo, DOIs de `paper.bib`, cronología | repo | — | — | 2 h | RP-1 | SÍ | no | — |
 | 43 | RP-6 | Retirar documentos fósiles y código muerto (al final, con cuidado: `1run_hole_old.sh` solo tras PO-4) | repo | SW | BAJO | 1 d | PO-4 | NO | no | — |
 
-**Totales aproximados.** Software: ~30–35 días-persona (la mitad es el poro). Ciencia: decisiones de horas +
+**Totales aproximados** (diagnóstico original; a 2026-10-05 quedan hechos ~5 días de los
+de software: PK-2/4/5, MD-6, RP-1). Software: ~30–35 días-persona (la mitad es el poro). Ciencia: decisiones de horas +
 2–4 días de corridas (packing, poro) + 1–3 días de GPU (MD) + opcionalmente 2–4 semanas
 (GYE-SIRAH). Sin GPU se completa todo salvo MD-7 y MD-8.
 
@@ -258,6 +336,8 @@ error; un test unitario con un PDB sintético de 100 010 átomos.
 (`3insertar_TER.py`).
 
 #### T2 — Guarda geométrica antes de Packmol · SW · ALTO · 2 h
+
+**Estado (2026-10-05).** Parcial. El packing del Studio escribe `center` bajo `fixed` y rechaza un output cuyas enzimas queden fuera de la cápside (`REPARACION_PACKING.md` §2.2). Falta la guarda *previa* (centroide dentro de la región) y aplicarla a PackMan y sustratinaitor.
 
 **Problema.** Tres motores especifican `inside sphere 0 0 0 R` o `inside box` respecto al
 origen mientras la estructura puede vivir a 360 Å de él (las cápsides de la biblioteca
@@ -315,6 +395,8 @@ exit code al no converger, y si el fichero regular queda escrito.
 
 #### PK-2 — Criterio de aceptación y conteo de enzimas · SW · CRÍTICO · 1 d
 
+**Estado (2026-10-05).** ✅ Hecha para el Studio (`parallel_packer.py` reescrito; `REPARACION_PACKING.md` §2.1; tests en `test_packing_engine.py`). Los puntos 1–3 de *Qué hacer* están; el punto 4 (`2Empaquetador_Maximo.py` de PackMan) **no** se tocó. Las líneas citadas abajo son las de `40f4b03`.
+
 **Problema.** `parallel_packer.py:34-36,191-193` busca `Maximum distance violation:`;
 PACKMOL escribe `Maximum violation of target distance:` (verificado contra los dos logs
 reales del repo: cero coincidencias; heredado de `2Empaquetador_Maximo.py:87`). Al no casar,
@@ -341,6 +423,8 @@ coloca 0 enzimas, el motor reporta 100 / σ 0 / 2 de 2 réplicas.
 
 #### PK-3 — Centrado, radio y fallbacks silenciosos · SW · CRÍTICO · 0,5–1 d
 
+**Estado (2026-10-05).** Parcial. Hechos: `center` en el `.inp`; centrado en Python puro (conserva `TER`, escribe en el experimento); el runner propaga el fallo de centrado y se niega a empaquetar con el radio de reserva (`Capsid.radius_source`); `internal_radius` explícito en la API. Pendientes: `/api/capsid/radius` sigue respondiendo 90,0 Å rotulado "calculado"; techo `range(5,200)`; caché por cápside; `/api/health` con `import pymol`; `d_min` con NumPy (→ PK-6).
+
 **Qué hacer.**
 - `parallel_packer.py:260-263`: `center` bajo `fixed 0. 0. 0. 0. 0. 0.` (T2).
 - `capsid.py`: sin PyMOL → **error**, nunca 90.0; quitar el techo de `range(5, 200)` o
@@ -364,6 +448,8 @@ Biblioteca.
 **Cierra.** PK-02, PK-07, PK-10, PK-13, PK-14, P-11, P-18, HALLAZGOS §2.4, §3.1, §3.2, §3.3.
 
 #### PK-4 — Leer la configuración que ya existe · SW · ALTO · 0,5–1 d
+
+**Estado (2026-10-05).** ✅ Hecha (`ExperimentRunner.packing_parameters()` como único punto de lectura; `REPARACION_PACKING.md` §2.4–2.5). Semillas `seed_base + i`, `timeout`, `collision_margin`, `max_workers`, `n_replicas` del YAML; `failed` visible en API y UI. El radio de la UI **no** se envía al experimento por decisión de software (DC-G): hacerlo a ciegas reproduciría el fallback silencioso.
 
 **Problema.** `default.yaml` declara `seed_base: 1234567`, `use_random_seeds: false`,
 `engines.packmol.timeout: 300`, `packing.collision_margin: 2.0`; ninguna se lee.
@@ -389,6 +475,8 @@ Un experimento con 0 réplicas exitosas se ve en rojo.
 HALLAZGOS §2.3, §2.5, §2.6, §2.7, §2.9.
 
 #### PK-5 — Tests del motor de packing · SW · ALTO · 1,5 d
+
+**Estado (2026-10-05).** ✅ Hecha salvo el golden del radio (PK-6): 30 tests del motor + 9 del runner con `tests/packmol_double.py` y los dos logs reales como fixtures; 28/30 fallan contra el código de `40f4b03`; `@pytest.mark.engine` para PACKMOL real. CI verde (60 + 1 saltado).
 
 **Problema.** `tests/test_golden_science.py` prueba `substrate_section` (puerta 1), no el
 packing; `test_smoke.py` ejercita el preview aleatorio. Cobertura del motor: cero. Los 22
@@ -467,6 +555,8 @@ es el fichero del ZIP de descarga. Usar T1; test que compare número de `MODEL` 
 ### 5.3 Poro (Poromania y Pac-Pore del Studio)
 
 #### PO-1 — Invalidar el 1.92 Å · SW · CRÍTICO · 2 h
+
+**Estado (2026-10-05).** ✅ Hecha en documentación (`INVALIDO.md` creado; README, ESTADO, PENDIENTES, `PLAN_POROMANIA.md`, `SESION_STUDIO.md` corregidos o con banner). Pendiente: `_AXIS_MIN` en `pore.py:32` sigue con 1,9 (→ PO-6) y la pregunta a Lucio sobre la tesis.
 
 **Evidencia.** `mutants/mut_129HIS_132GLY/receptor.pdb` ≡ `mutants/WT.pdb` (md5
 `d56a4e53…`; Ser129 y Val132 en las cinco subunidades). `mutants/WT.pdb` es
@@ -633,7 +723,7 @@ misma figura; "anchura" de zona estrecha calculada sobre puntos no contiguos;
 
 ### 5.4 PackMan (MD coarse-grained SIRAH)
 
-> El `PLAN_REPARACION_MD.md` (rama `claude/packman-repair-plan-9c287t`) tiene el contenido
+> El `PLAN_REPARACION_MD.md` (en `main` desde el 2026-10-05) tiene el contenido
 > literal de los cinco `.in` y los checklists detallados de cada paso. Es el único informe
 > al que conviene volver, para copiar y pegar. Las fichas de aquí resumen lo que decide y
 > lo que verifica, y añaden lo que los otros informes aportaron después.
@@ -723,6 +813,8 @@ calcular NaW/ClW). Exportar `AUTO_NRES` (29 117 para N = 1) para la máscara de 
 
 #### MD-6 — Los cinco `.in` SIRAH y `run_MD.sh` · SW+CIENCIA · CRÍTICO · 3–4 h
 
+**Estado (2026-10-05).** ✅ Hecha (PackMan v1.3.0; `CHANGELOG.md`). Desvíos respecto a *Qué hacer*: `eq1` usa `'!:WT4,NaW,ClW'`; `skinnb = 5` incluido; `prod` con `ig = 100101` en el fichero y `100100 + k` por trozo vía `run_MD.sh`. *Hecho cuando*: todo lo verificable sin AMBER lo comprueba `verificar_protocolo_md.py` en CI (inventario, parámetro a parámetro, marcadores all-atom, títulos vs `nstlim·dt`, cadena `-c/-ref` con `DRY_RUN=1`); la prueba con `sander` sobre 1CRN **no** se ha hecho.
+
 **Evidencia.** `eq1`/`eq2`/`prod` tienen `nstlim = 500` (10 ps) con títulos "15 ns",
 "35 ns", "fast test": 240 ps totales frente a 1,03 µs de referencia. `heat1..6`,
 `density_eq`, `final_eq` son all-atom (`dt = 0.002`, SHAKE, `cut = 9`, `gamma_ln = 2`,
@@ -801,6 +893,8 @@ sin warnings LCPO, el monitor marca ✓ en trabajos que terminaron bien,
 
 #### MD-10 — Documentación y Studio · SW · MEDIO · 2–3 h
 
+**Estado (2026-10-05).** Parcial. Hecha la parte de PackMan (README en inglés v1.3, CHANGELOG, `diagrama_archivos_dm.md`, `texto_tesis_archivos_dm.md`, ESTADO CIENCIA-3). Pendiente la parte del Studio: anclajes sintéticos de `md.py` y `md_prepare` (ff19SB + TIP3P, SMILES ignorado). Los `mdout`/`leap.log` de `packmanreplicas1/1_2` siguen sin pedirse.
+
 `CHANGELOG.md` 1.3.0; `README.md:17-24`, `diagrama_archivos_dm.md`,
 `texto_tesis_archivos_dm.md:15-17,27` (sin 6 calentamientos; `ReplicaExtra` no existe);
 `ESTADO.md` CIENCIA-3 decidida; `nanocapsule-mvp/src/services/md.py:20-122`: quitar los
@@ -857,6 +951,8 @@ con el radio interno. Documentar el criterio del "200" (12,3 mM en la caja).
 ### 5.6 Repositorio, infraestructura y JOSS
 
 #### RP-1 — Fusionar las auditorías y corregir las afirmaciones · SW · ALTO · 2–3 h
+
+**Estado (2026-10-05).** ✅ Hecha el 2026-10-05, con dos diferencias respecto a *Qué hacer*: los informes se fusionaron en la raíz del repo, no en `auditorias/2026-10-04/` (los documentos vivos ya los enlazan por ese nombre), y los duplicados se renombraron con sufijo `_B` (`AUDITORIA_PACKING_B.md` = vdvq69, `AUDITORIA_SUSTRATO_Y_CG_B.md` = e9h0rt) siguiendo las etiquetas PK-A/PK-B, CG-A/CG-B de `HALLAZGOS_VERIFICADOS.md`. Las correcciones de la rama de reconciliación (`CORRECCIONES_DOCUMENTACION.md`) se completaron con el estado post-reparación.
 
 1. Fusionar en `main` los 9 informes (todos parten de `40f4b03`, 1 commit cada uno, sin
    conflictos salvo los dos `AUDITORIA_PACKING.md`: renombrar con sufijo de rama) en una
@@ -1059,22 +1155,32 @@ stubs → MD-6 · "positivo: prod/em/eq coinciden" → solo en parte (`ntr=0`) �
 
 ## 9. Fuentes
 
-Todas del 2026-10-04, un commit cada una sobre `40f4b03`, sin fusionar en `main`:
+Todas sobre `40f4b03`; **fusionadas en `main` el 2026-10-05** (rama
+`claude/merge-reconcile-branches-pgj04l`, un merge commit por rama). Nombre final de cada
+archivo en el repo:
 
-| Informe | Rama | Alcance |
+| Informe (nombre en `main`) | Rama de origen | Alcance |
 |---|---|---|
 | `AUDITORIA_MD.md` | `claude/audit-packman-dynamics-engine-52svym` | PackMan: inputs, parámetros vs SIRAH, setup, reproducibilidad |
 | `PLAN_REPARACION_MD.md` | `claude/packman-repair-plan-9c287t` | Plan paso a paso de PackMan, con los `.in` literales |
-| `AUDITORIA_PACKING.md` | `claude/audit-packing-engine-vdvq69` | Packing: fuente de PACKMOL, réplica NumPy del radio, regex contra logs |
-| `AUDITORIA_PACKING.md` | `claude/audit-packing-engine-wwph45` | Packing: motor ejecutado con doble de PACKMOL, radio por percentiles, golden |
+| `AUDITORIA_PACKING.md` (PK-A) | `claude/audit-packing-engine-wwph45` | Packing: motor ejecutado con doble de PACKMOL, radio por percentiles, golden |
+| `AUDITORIA_PACKING_B.md` (PK-B) | `claude/audit-packing-engine-vdvq69` | Packing: fuente de PACKMOL, réplica NumPy del radio, regex contra logs |
 | `AUDITORIA_PORO.md` | `claude/audit-poro-engine-giea7e` | Poro: dos implementaciones, HOLE, mutagénesis, docking |
-| `AUDITORIA_SUSTRATO_Y_CG.md` + `herramientas/auditoria_cg.py` | `claude/audit-coarse-grained-conversion-rfst1e` | Conversión CG reproducida byte a byte; GYE; CIENCIA-2 |
-| `AUDITORIA_SUSTRATO_Y_CG.md` + `herramientas/auditoria_cg/` | `claude/audit-sirah-coarse-grain-conversion-e9h0rt` | Conversión CG; `TER`; seriales hex; `fix_pdb_serial.py` |
-| `HALLAZGOS_NO_DOCUMENTADOS_2026-10-04.md` | `claude/find-undocumented-errors-4ssuye` | 99 hallazgos nuevos en los 4 motores + repo; sospechas descartadas |
-| `JOSS_CHECKLIST.md` + `paper.md`, `paper.bib`, `docs/`, `CONTRIBUTING.md`, READMEs en inglés | `claude/prepare-joss-submission-29k493` | Paquete de envío a JOSS |
+| `AUDITORIA_SUSTRATO_Y_CG.md` (CG-A) + `herramientas/auditoria_cg.py` | `claude/audit-coarse-grained-conversion-rfst1e` | Conversión CG reproducida byte a byte; GYE; CIENCIA-2 |
+| `AUDITORIA_SUSTRATO_Y_CG_B.md` (CG-B) + `herramientas/auditoria_cg/` | `claude/audit-sirah-coarse-grain-conversion-e9h0rt` | Conversión CG; `TER`; seriales hex; `fix_pdb_serial.py` |
+| `AUDITORIA_SOFTWARE_STUDIO.md` | `claude/studio-software-audit-khbd96` | Capa de software del Studio (quinta auditoría) |
+| `HALLAZGOS_NO_DOCUMENTADOS_2026-10-04.md` | `claude/find-undocumented-errors-4ssuye` | 97 hallazgos nuevos en los 4 motores + repo; sospechas descartadas |
+| `HALLAZGOS_VERIFICADOS.md` | `claude/debug-undocumented-findings-7s0u1a` | Depuración del anterior: 85 sobreviven, 2 falsos positivos, severidades recalibradas |
+| `HOJA_DE_RUTA.md` (esta) | `claude/consolidate-audit-roadmap-k82rek` | Consolidación de las auditorías |
+| `JOSS_CHECKLIST.md` + `paper.md`, `paper.bib`, `docs/`, `CONTRIBUTING.md`, READMEs en inglés | `claude/prepare-joss-submission-29k493` | Paquete de envío a JOSS (escrito antes de las auditorías) |
+| `CORRECCIONES_DOCUMENTACION.md` + docs corregidas | `claude/reconcile-documentation-audit-findings-0vlyl1` | Reconciliación de la documentación pública con las auditorías (incluye la rama JOSS) |
+| `nanocapsule-mvp/REPARACION_PACKING.md` + código y tests | `claude/fix-packing-engine-pf6f6y` | **Reparación** del packing: PK-2, PK-3 (parte), PK-4, PK-5 |
+| `PackMan.v.1.2/` v1.3.0 (`CHANGELOG.md`, `verificar_protocolo_md.py`) | `claude/repair-packman-md-protocol-sbzbf0` | **Reparación** del protocolo MD: MD-6, DC-4 |
 
-Contexto ya en `main`: `REVISION_MOTORES.md` (briefing), `REVISION_MOTORES_hallazgos_sellados.md`
-(pasada previa, solo lectura de código), `ESTADO.md`, `PENDIENTES.md`.
+Contradicciones entre las dos auditorías de cada par (packing, CG): resueltas en §2 (C3, C5,
+C6). Contexto previo en `main`: `REVISION_MOTORES.md` (briefing),
+`REVISION_MOTORES_hallazgos_sellados.md` (pasada previa, solo lectura de código),
+`ESTADO.md`, `PENDIENTES.md`.
 
 Medición propia de esta consolidación (Python puro, sin dependencias) para resolver C1:
 centroide de la cápside en `sustratinaitor/3_empaquetado_packmol/3J7L-GYE.pdb` = (0, 0, 0);
