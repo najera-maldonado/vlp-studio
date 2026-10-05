@@ -18,6 +18,13 @@ sospecha sin verificar, para cross-check solo DESPUÉS de la propia pasada — n
   depende de la MD) + **réplicas → condición 6 enzimas → all-atom del sitio activo**, que
   sirven justo para COMPROBAR si la MD se sostiene. Cuello de botella = GPU. ~1 mes JOSS,
   ~3-4 meses la ciencia (ver conversación de estimación).
+- [x] **Pasada hecha (2026-10-04):** auditoría de los 4 motores buscando errores NO
+  documentados → [`HALLAZGOS_NO_DOCUMENTADOS_2026-10-04.md`](HALLAZGOS_NO_DOCUMENTADOS_2026-10-04.md).
+  99 hallazgos con evidencia verificada + sospechas descartadas. **Lo más grave:** el
+  mutante versionado de Poromania es el WT byte a byte (§1.1) y el sistema de
+  `sustratinaitor` tiene 199 de 200 sustratos fuera de la cápside (§7.1). Sigue faltando
+  lo que pide `REVISION_MOTORES.md`: los `.out`/trayectorias reales para juzgar la MD
+  ejecutada, no solo los scripts.
 
 ## 🎯 Meta cumplida: PUBLICABLE COMO SOFTWARE (release v0.1.0)
 - [x] **Fase A — instalable:** Docker construye/arranca (.dockerignore, fix libgl1), engines documentados.
