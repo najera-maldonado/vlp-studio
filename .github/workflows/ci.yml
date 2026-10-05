@@ -61,3 +61,7 @@ jobs:
         run: |
           python -m compileall -q -x 'sirah_x2\.3' \
             "Poromania.v.1.2." "PackMan.v.1.2" "sustratinaitor"
+      - name: Protocolo MD de PackMan coincide con la referencia SIRAH
+        # Verificación estática (sin AMBER): cada .in parámetro por parámetro contra
+        # sirah_x2.3_24-07.amber/tutorial/5, títulos vs nstlim*dt, cadena de run_MD.sh.
+        run: python PackMan.v.1.2/verificar_protocolo_md.py

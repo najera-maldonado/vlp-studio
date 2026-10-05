@@ -8,7 +8,10 @@ module purge
 module load asigna/1_gpu
 module load amber/22_gpu
 
+# Lanza el protocolo SIRAH completo (em1 -> em2 -> eq1 -> eq2 -> prod en trozos)
+# sobre el sistema del directorio actual. run_MD.sh es reanudable: si el job se
+# corta por limite de cola, volver a enviarlo continua desde la etapa pendiente.
+# NAME se autodetecta de capside-*-cg-WAT.prmtop; exportarlo si hay varios.
 date
-pmemd.cuda -O -i prod_md_WT4.in -p capside-3_cg-WAT.prmtop -c capside-3_cg-WAT_eq2.ncrst -o capside-3_cg-WAT_prod_md.out -r capside-3_cg-WAT_prod_md.ncrst -x capside-3_cg-WAT_prod_md.nc
-
+NCHUNKS=${NCHUNKS:-10} bash run_MD.sh cuda ${NAME:-}
 date

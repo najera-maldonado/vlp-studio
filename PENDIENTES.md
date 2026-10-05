@@ -80,7 +80,7 @@ sospecha sin verificar, para cross-check solo DESPUÉS de la propia pasada — n
 **Decisiones (Lucio, al correr la MD):**
 - [ ] **CIENCIA-1** — `capsid.py` radio ±1 Å (IA recomienda restar). Ver ESTADO §4b.
 - [ ] **CIENCIA-2** — resolución de `sustratinaitor` (CG vs all-atom).
-- [ ] **CIENCIA-3** — protocolo de heat de `PackMan`.
+- [x] **CIENCIA-3** — protocolo de heat de `PackMan` (2026-10-05, v1.3.0: sin heat, 5 etapas SIRAH, verificador en CI).
 
 ## Software — features nuevas (la IA puede hacerlas; no bloquean publicar)
 > De los apuntes de Lucio (2026-09-18).
